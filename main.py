@@ -42,7 +42,7 @@ app = Flask(__name__, static_folder='frontend', static_url_path='')
 CORS(app)
 
 # إعدادات التطبيق
-app_env = os.environ.get('FLASK_ENV', 'development')
+app_env = os.environ.get('FLASK_ENV', 'production')
 app_config = config.get(app_env, config['default'])
 app.config.from_object(app_config)
 
@@ -54,6 +54,23 @@ if not os.path.exists(log_dir):
 # إنشاء مثيلات الوحدات
 db = Database()
 simulation = AgriculturalSimulation()
+
+# إعداد الخطوط متعددة اللغات
+try:
+    pdfmetrics.registerFont(TTFont('Arabic', os.path.join(current_dir, 'fonts', 'arial.ttf')))
+    pdfmetrics.registerFont(TTFont('Arabic-Bold', os.path.join(current_dir, 'fonts', 'arialbd.ttf')))
+    pdfmetrics.registerFont(TTFont('Latin', os.path.join(current_dir, 'fonts', 'arial.ttf')))
+    pdfmetrics.registerFont(TTFont('Latin-Bold', os.path.join(current_dir, 'fonts', 'arialbd.ttf')))
+except:
+    print("Warning: Custom fonts not found. Using default fonts.")
+    pdfmetrics.registerFont(TTFont('Arabic', 'Helvetica'))
+    pdfmetrics.registerFont(TTFont('Arabic-Bold', 'Helvetica-Bold'))
+    pdfmetrics.registerFont(TTFont('Latin', 'Helvetica'))
+    pdfmetrics.registerFont(TTFont('Latin-Bold', 'Helvetica-Bold'))
+
+# إعدادات API من متغيرات البيئة
+API_KEY = os.environ.get("API_KEY", "IqjlPs2uNLx3cmzjM1wKX5oHiVsLXgsLHXBYEr36q5GbsNqRa9")
+API_URL = os.environ.get("API_URL", "https://plant.id/api/v3/identification")
 
 # ========== مسارات الواجهة الأمامية ==========
 
@@ -68,7 +85,7 @@ def serve_static(path):
     except:
         return send_from_directory(app.static_folder, '404.html'), 404
 
-# ========== مسارات API للمحاكاة (من server.py) ==========
+# ========== مسارات API للمحاكاة ==========
 
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
@@ -363,29 +380,7 @@ def get_species():
         app.logger.error(f"Error in get_species: {str(e)}")
         return jsonify({"success": False, "error": str(e)}), 500
 
-# ========== مسارات API للتحليل (من app.py) ==========
-
-# إعدادات الخطوط متعددة اللغات
-try:
-    pdfmetrics.registerFont(TTFont('Arabic', 'arial.ttf'))
-    pdfmetrics.registerFont(TTFont('Arabic-Bold', 'arialbd.ttf'))
-    pdfmetrics.registerFont(TTFont('Latin', 'arial.ttf'))
-    pdfmetrics.registerFont(TTFont('Latin-Bold', 'arialbd.ttf'))
-except:
-    try:
-        pdfmetrics.registerFont(TTFont('Arabic', 'c:/windows/fonts/arial.ttf'))
-        pdfmetrics.registerFont(TTFont('Arabic-Bold', 'c:/windows/fonts/arialbd.ttf'))
-        pdfmetrics.registerFont(TTFont('Latin', 'c:/windows/fonts/arial.ttf'))
-        pdfmetrics.registerFont(TTFont('Latin-Bold', 'c:/windows/fonts/arialbd.ttf'))
-    except:
-        print("Warning: Custom fonts not found. Using default fonts.")
-        pdfmetrics.registerFont(TTFont('Arabic', 'Helvetica'))
-        pdfmetrics.registerFont(TTFont('Arabic-Bold', 'Helvetica-Bold'))
-        pdfmetrics.registerFont(TTFont('Latin', 'Helvetica'))
-        pdfmetrics.registerFont(TTFont('Latin-Bold', 'Helvetica-Bold'))
-
-API_KEY = "IqjlPs2uNLx3cmzjM1wKX5oHiVsLXgsLHXBYEr36q5GbsNqRa9"
-API_URL = "https://plant.id/api/v3/identification"
+# ========== مسارات API للتحليل ==========
 
 DISEASE_TRANSLATIONS = {
     "Tomato___Late_blight": {
