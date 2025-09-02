@@ -23,8 +23,6 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.fonts import addMapping
-import arabic_reshaper
-from bidi.algorithm import get_display
 from scipy import stats
 
 # إعداد المسارات
@@ -36,6 +34,7 @@ sys.path.insert(0, backend_dir)
 from config import config
 from simulation_models import AgriculturalSimulation
 from database import Database
+from font_setup import arabic_text, create_pdf, draw_arabic_text, draw_multiline_arabic_text
 
 # إنشاء التطبيق
 app = Flask(__name__, static_folder='frontend', static_url_path='')
@@ -54,19 +53,6 @@ if not os.path.exists(log_dir):
 # إنشاء مثيلات الوحدات
 db = Database()
 simulation = AgriculturalSimulation()
-
-# إعداد الخطوط متعددة اللغات
-try:
-    pdfmetrics.registerFont(TTFont('Arabic', os.path.join(current_dir, 'fonts', 'arial.ttf')))
-    pdfmetrics.registerFont(TTFont('Arabic-Bold', os.path.join(current_dir, 'fonts', 'arialbd.ttf')))
-    pdfmetrics.registerFont(TTFont('Latin', os.path.join(current_dir, 'fonts', 'arial.ttf')))
-    pdfmetrics.registerFont(TTFont('Latin-Bold', os.path.join(current_dir, 'fonts', 'arialbd.ttf')))
-except:
-    print("Warning: Custom fonts not found. Using default fonts.")
-    pdfmetrics.registerFont(TTFont('Arabic', 'Helvetica'))
-    pdfmetrics.registerFont(TTFont('Arabic-Bold', 'Helvetica-Bold'))
-    pdfmetrics.registerFont(TTFont('Latin', 'Helvetica'))
-    pdfmetrics.registerFont(TTFont('Latin-Bold', 'Helvetica-Bold'))
 
 # إعدادات API من متغيرات البيئة
 API_KEY = os.environ.get("API_KEY", "IqjlPs2uNLx3cmzjM1wKX5oHiVsLXgsLHXBYEr36q5GbsNqRa9")
@@ -491,13 +477,6 @@ PLANT_ADVICE = {
     }
 }
 
-def arabic_text(text):
-    try:
-        reshaped_text = arabic_reshaper.reshape(text)
-        return get_display(reshaped_text)
-    except:
-        return text
-
 def identify_plant(image_data):
     try:
         if "," in image_data:
@@ -629,13 +608,14 @@ def generate_report():
         
         styles = getSampleStyleSheet()
         
+        # تعريف أنماط الخطوط
         title_style = ParagraphStyle(
             name="ReportTitle", 
             fontSize=18, 
-            alignment=1, 
+            alignment=1,  # توسيط
             textColor=colors.HexColor("#2e7d32"),
             spaceAfter=20,
-            fontName="Arabic-Bold" if language == "ar" else "Latin-Bold"
+            fontName='Amiri-Bold' if language == "ar" else 'Amiri'
         )
         
         section_style = ParagraphStyle(
@@ -644,7 +624,7 @@ def generate_report():
             textColor=colors.HexColor("#2e7d32"), 
             spaceAfter=12,
             spaceBefore=20,
-            fontName="Arabic-Bold" if language == "ar" else "Latin-Bold",
+            fontName='Amiri-Bold' if language == "ar" else 'Amiri',
             leftIndent=5
         )
         
@@ -653,9 +633,9 @@ def generate_report():
             fontSize=11, 
             leading=14,
             textColor=colors.HexColor("#333333"),
-            fontName="Arabic" if language == "ar" else "Latin",
+            fontName='Amiri' if language == "ar" else 'Amiri',
             spaceAfter=6,
-            alignment=2 if language == "ar" else 0
+            alignment=2 if language == "ar" else 0  # 2=RTL, 0=LTR
         )
         
         content = []
@@ -733,7 +713,7 @@ def generate_report():
         info_table = Table(info_data, colWidths=[4*cm, 10*cm])
         info_table.setStyle(TableStyle([
             ("ALIGN", (0, 0), (-1, -1), "RIGHT" if language == "ar" else "LEFT"),
-            ("FONTNAME", (0, 0), (-1, -1), "Arabic" if language == "ar" else "Latin"),
+            ("FONTNAME", (0, 0), (-1, -1), 'Amiri'),
             ("FONTSIZE", (0, 0), (-1, -1), 11),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
             ("TOPPADDING", (0, 0), (-1, -1), 8),
@@ -741,7 +721,7 @@ def generate_report():
             ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f5f5f5")),
             ("BACKGROUND", (1, 0), (1, -1), colors.HexColor("#fafafa")),
             ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#333333")),
-            ("FONTNAME", (0, 0), (0, -1), "Arabic-Bold" if language == "ar" else "Latin-Bold"),
+            ("FONTNAME", (0, 0), (0, -1), 'Amiri-Bold'),
         ]))
         content.append(info_table)
         content.append(Spacer(1, 20))

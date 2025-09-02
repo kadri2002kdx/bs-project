@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 # eco
-=======
 # ecoplant-dz
->>>>>>> 5ad1be466bb8e44917ec4d2098254fa6b430677c
 
 
 
@@ -23,7 +20,6 @@ cd existing_repo
 git remote add origin https://gitlab.com/hkadri2003/eco.git
 =======
 git remote add origin https://gitlab.com/hayth78678/ecoplant-dz.git
->>>>>>> 5ad1be466bb8e44917ec4d2098254fa6b430677c
 git branch -M main
 git push -uf origin main
 ```
