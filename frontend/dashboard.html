@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | EcoPlant DZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --success: #4caf50;
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            padding: 15px 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+        
+        .nav-links a {
+            font-weight: 600;
+            position: relative;
+            padding: 8px 0;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .notification-icon, .messages-icon {
+            position: relative;
+            color: var(--dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .notification-icon:hover, .messages-icon:hover {
+            color: var(--primary);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 80px auto 0;
+            padding: 20px;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-banner p {
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        
+        .banner-icon {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        
+        .user-profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .profile-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            position: relative;
+        }
+        
+        .badge-icon[data-tooltip] {
+            cursor: help;
+        }
+        
+        .badge-icon[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: var(--dark);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-group {
+            margin-bottom: 15px;
+        }
+        
+        .detail-group h3 {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .detail-group p {
+            font-size: 1.1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        
+        .chart-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        
+        .recent-activity h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-content p {
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        /* النوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.4s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 15px;
+        }
+        
+        .close:hover {
+            color: var(--primary-dark);
+        }
+        
+        .modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-right: 30px;
+        }
+        
+        .modal p, .modal li {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .modal ul {
+            padding-right: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(46, 125, 50, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* نافذة الملف الشخصي العام */
+        .public-profile-modal .modal-content {
+            max-width: 500px;
+        }
+        
+        .public-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .public-profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .public-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .public-profile-info h2 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .public-profile-info p {
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .public-profile-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .public-detail-group {
+            margin-bottom: 10px;
+        }
+        
+        .public-detail-group h3 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .public-detail-group p {
+            font-size: 1rem;
+        }
+        
+        .public-profile-badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .message-user-btn {
+            margin-top: 20px;
+            display: inline-flex;
+            width: auto;
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .notification-toast.show {
+            opacity: 1;
+        }
+        
+        .notification-toast.success {
+            background: var(--primary);
+        }
+        
+        .notification-toast.error {
+            background: #d32f2f;
+        }
+        
+        .notification-toast.info {
+            background: #1976d2;
+        }
+        
+        @media (max-width: 992px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .public-profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <!-- استبدال أيقونة GIF -->
+                <img src="images/EcoPlant.gif" alt="EcoPlant Logo" width="50" height="50">
+                <span>EcoPlant DZ</span>
+            </a> 
+            
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="dashboard.html" class="active">لوحة التحكم</a>
+                <a href="questions.html">الأسئلة</a>
+                <a href="messages.html">الرسائل</a>
+                <a href="about.html">من نحن</a>
+                <a href="contact.html">التواصل و الدعم</a>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notification-icon" onclick="openModal('notificationsModal')">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationCount">0</span>
+                </div>
+                
+                <div class="messages-icon" onclick="window.location.href='messages.html'">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge" id="messageCount">0</span>
+                </div>
+                
+                <div class="user-menu">
+                    <button class="user-btn">
+                        <div class="user-avatar" id="navAvatar">م</div>
+                        <span id="navUserName">مستخدم</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- محتوى لوحة التحكم -->
+    <div class="dashboard-container">
+        <!-- رسالة ترحيب -->
+        <div class="welcome-banner">
+            <i class="fas fa-seedling banner-icon"></i>
+            <h1 id="welcomeTitle">مرحباً بك في لوحة التحكم!</h1>
+            <p id="welcomeSubtitle">هنا يمكنك متابعة نشاطك وإحصائياتك في مجتمع EcoPlant DZ</p>
+        </div>
+        
+        <!-- بطاقة الملف الشخصي -->
+        <div class="user-profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar" onclick="viewPublicProfile(currentUser ? currentUser.uid : '')">م</div>
+                <div class="profile-info">
+                    <h2 id="profileName">مستخدم EcoPlant</h2>
+                    <p id="profileRole">عضو في مجتمع EcoPlant DZ</p>
+                    <div class="profile-badges" id="profileBadges">
+                        <div class="badge-icon" data-tooltip="مستكشف مبكر">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="detail-group">
+                    <h3>الولاية</h3>
+                    <p id="profileState">غير محدد</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>الجامعة/المؤسسة</h3>
+                    <p id="profileUniversity">غير محدد</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>التخصص</h3>
+                    <p id="profileSpecialization">غير محدد</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>نقاط Eco</h3>
+                    <p id="profileEcoPoints">0 نقطة</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- إحصائيات سريعة -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="questionsCount">0</h3>
+                    <p>أسئلة</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="answersCount">0</h3>
+                    <p>إجابات</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="badgesCount">1</h3>
+                    <p>شارات</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="ecoPointsCount">0</h3>
+                    <p>نقاط Eco</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- الرسوم البيانية -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>نشاطك خلال الشهر</h3>
+                <div class="chart-container">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3>توزيع النقاط</h3>
+                <div class="chart-container">
+                    <canvas id="pointsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- النشاط الأخير -->
+        <div class="recent-activity">
+            <h3>النشاط الأخير</h3>
+            <ul class="activity-list" id="activityList">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p>انضممت إلى مجتمع EcoPlant DZ</p>
+                        <span class="activity-time" id="joinDate">الآن</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('privacyModal')">سياسة الخصوصية</a>
+                <a href="#" onclick="openModal('termsModal')">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- نافذة الملف الشخصي العام -->
+    <div id="publicProfileModal" class="modal public-profile-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('publicProfileModal')">&times;</span>
+            <div id="publicProfileContent">
+                <!-- سيتم تحميل محتوى الملف الشخصي هنا -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة قريباً -->
+    <div id="comingSoonModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('comingSoonModal')">&times;</span>
+            <h2>قريباً</h2>
+            <p>هذه الصفحة قيد التطوير وستكون متاحة قريباً. نعمل بجد لتقديم أفضل تجربة ممكنة لمستخدمي منصة EcoPlant DZ.</p>
+            <p>في هذه الصفحة، ستجد:</p>
+            <ul>
+                <li>قائمة شاملة بالأنواع النباتية أو الأنظمة البيئية في الجزائر</li>
+                <li>معلومات مفصلة عن كل نوع أو نظام بيئي</li>
+                <li>صور ووصف دقيق للمواقع</li>
+                <li>إمكانية طرح الأسئلة والمشاركة في النقاشات</li>
+            </ul>
+            <p>شكراً لصبرك واهتمامك بمنصتنا!</p>
+        </div>
+    </div>
+    
+    <!-- نافذة الإشعارات -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('notificationsModal')">&times;</span>
+            <h2>الإشعارات</h2>
+            <div id="notificationsList">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة الملف الشخصي -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('profileModal')">&times;</span>
+            <h2>الملف الشخصي</h2>
+            <div class="profile-header">
+                <div class="profile-avatar" id="modalProfileAvatar">م</div>
+                <div class="profile-info">
+                    <h2 id="modalProfileName">مستخدم EcoPlant</h2>
+                    <p id="modalProfileRole">عضو في مجتمع EcoPlant DZ</p>
+                    <div class="profile-badges" id="modalProfileBadges">
+                        <div class="badge-icon" title="مستكشف مبكر">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="detail-group">
+                    <h3>البريد الإلكتروني</h3>
+                    <p id="modalProfileEmail">سيتم عرضه بعد تسجيل الدخول</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>الولاية</h3>
+                    <p id="modalProfileState">غير محدد - يرجى التحديث من الإعدادات</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>الجامعة/المؤسسة</h3>
+                    <p id="modalProfileUniversity">غير محدد - يرجى التحديث من الإعدادات</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>التخصص</h3>
+                    <p id="modalProfileSpecialization">غير محدد - يرجى التحديث من الإعدادات</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>نقاط Eco</h3>
+                    <p id="modalProfileEcoPoints">0 نقطة</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h3>تاريخ الانضمام</h3>
+                    <p id="modalProfileJoinDate">اليوم</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة الإعدادات -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('settingsModal')">&times;</span>
+            <h2>الإعدادات</h2>
+            <div id="settingsForm">
+                <div class="form-group">
+                    <label for="settingsFirstName">الاسم الأول</label>
+                    <input type="text" id="settingsFirstName" class="form-control" placeholder="أدخل اسمك الأول">
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsLastName">الاسم الأخير</label>
+                    <input type="text" id="settingsLastName" class="form-control" placeholder="أدخل اسمك الأخير">
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsState">الولاية</label>
+                    <input type="text" id="settingsState" class="form-control" placeholder="أدخل ولايتك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsUniversity">الجامعة/المؤسسة</label>
+                    <input type="text" id="settingsUniversity" class="form-control" placeholder="أدخل جامعتك أو مؤسستك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsSpecialization">التخصص</label>
+                    <input type="text" id="settingsSpecialization" class="form-control" placeholder="أدخل تخصصك">
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsBio">السيرة الذاتية</label>
+                    <textarea id="settingsBio" class="form-control" rows="4" placeholder="أدخل سيرتك الذاتية"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="settingsPhoto">صورة الملف الشخصي</label>
+                    <input type="file" id="settingsPhoto" class="form-control" accept="image/*">
+                    <small style="color: var(--gray); margin-top: 5px; display: block;">اختر صورة جديدة لملفك الشخصي (PNG, JPG, GIF)</small>
+                </div>
+                
+                <div class="form-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('settingsModal')">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProfileSettings()">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة من نحن -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+            <h2>من نحن</h2>
+            <p>مرحباً بكم في منصة EcoPlant DZ، المنصة البيئية الرائدة في الجزائر التي تهدف إلى نشر الوعي البيئي وتعزيز المعرفة حول التنوع البيولوجي في بلادنا.</p>
+            <p>تأسست منصتنا على يد فريق من الباحثين والمهتمين بالبيئة الجزائرية، ونسعى جاهدين لتوفير مصدر موثوق للمعلومات حول النباتات والحيوانات والأنظمة البيئية في الجزائر.</p>
+            <p>رؤيتنا هي بناء مجتمع بيئي نشط ومتعلم، يساهم في الحفاظ على ثرواتنا الطبيعية للأجيال القادمة.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة اتصل بنا -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('contactModal')">&times;</span>
+            <h2>اتصل بنا</h2>
+            <p>نحن نرحب بجميع استفساراتكم واقتراحاتكم. لا تتردد في التواصل معنا عبر أي من الوسائل التالية:</p>
+            <p><i class="fas fa-envelope"></i> البريد الإلكتروني: <a href="mailto:contact@ecoplant-dz.dz">contact@ecoplant-dz.dz</a></p>
+            <p><i class="fas fa-phone"></i> الهاتف: +213 123 456 789</p>
+            <p><i class="fas fa-map-marker-alt"></i>العنوان : جامعة حمه لخضر بالوادي </p>
+            <p>سنتواصل معك في أقرب وقت ممكن للرد على استفساراتكم.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+            <p>نتخذ إجراءات أمنية مناسبة لحماية بياناتك من الوصول غير المصرح به أو التعديل أو الكشف أو التدمير.</p>
+            <p>للاستفسارات حول سياسة الخصوصية، يرجى التواصل معنا على: contact@ecoplant-dz.dz</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2>شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+            <p>يحظر عليك نشر أو مشاركة أي محتوى غير قانوني أو مسيء أو تشهيري أو مخل بالآداب العامة، أو انتهاك حقوق الملكية الفكرية للآخرين.</p>
+            <p>نحن نحتفظ بالحق في حذف أي محتوى ينتهك هذه الشروط أو إيقاف حسابك دون إشعار مسبق.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة التحميل -->
+    <div id="loadingModal" class="modal" style="display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.5);">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+    
+    <!-- إشعارات النظام -->
+    <div id="notificationToast" class="notification-toast"></div>
+    
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
+    <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVELN-Jca7q3xtS0uWk2ZrNnlqXJzsKpg",
+            authDomain: "ecoplant-dz-148bf.firebaseapp.com",
+            databaseURL: "https://ecoplant-dz-148bf-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ecoplant-dz-148bf",
+            storageBucket: "ecoplant-dz-148bf.appspot.com",
+            messagingSenderId: "233372376001",
+            appId: "1:233372376001:web:2c261f4bf161a65f726d40",
+            measurementId: "G-4PJZMLMKJE"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const storage = firebase.storage();
+        
+        // متغيرات عامة
+        let currentUser = null;
+        let activityChart = null;
+        let pointsChart = null;
+        
+        // مراقبة حالة المستخدم
+        document.addEventListener("DOMContentLoaded", () => {
+            auth.onAuthStateChanged(async (user) => {
+                const loadingModal = document.getElementById("loadingModal");
+                
+                if (!user) {
+                    localStorage.clear();
+                    window.location.href = "login.html";
+                    return;
+                }
+                
+                try {
+                    currentUser = user;
+                    const snapshot = await db.ref("users/" + user.uid).once("value");
+                    const userData = snapshot.val() || {};
+                    
+                    // حفظ البيانات محليًا
+                    localStorage.setItem("user", JSON.stringify(userData));
+                    
+                    // تحديث واجهة المستخدم
+                    updateUserInterface(userData, user);
+                    
+                    // تحميل الإحصائيات
+                    loadUserStats(user.uid);
+                    
+                    // تحميل الرسوم البيانية
+                    loadCharts(user.uid);
+                    
+                    // تحميل النشاط الأخير
+                    loadRecentActivity(user.uid);
+                    
+                    // تحميل الإشعارات
+                    loadNotifications(user.uid);
+                    
+                    // إخفاء نافذة التحميل
+                    if (loadingModal) loadingModal.style.display = "none";
+                } catch (err) {
+                    console.error("فشل تحميل بيانات المستخدم:", err);
+                    showNotification("فشل في تحميل بيانات المستخدم", "error");
+                    if (loadingModal) loadingModal.style.display = "none";
+                }
+            });
+        });
+        
+        // تحديث واجهة المستخدم
+        function updateUserInterface(userData, user) {
+            const fullName = `${userData.firstName || ""} ${userData.lastName || ""}`.trim() || "مستخدم EcoPlant";
+            
+            // تحديث البيانات النصية
+            safeSetText("navUserName", fullName);
+            safeSetText("welcomeTitle", `مرحباً ${userData.firstName || "مستخدم"} في لوحة التحكم!`);
+            safeSetText("profileName", fullName);
+            safeSetText("profileRole", userData.role || "عضو في مجتمع EcoPlant DZ");
+            safeSetText("profileState", userData.state || "غير محدد");
+            safeSetText("profileUniversity", userData.university || "غير محدد");
+            safeSetText("profileSpecialization", userData.specialization || "غير محدد");
+            safeSetText("profileEcoPoints", `${userData.ecoPoints || 0} نقطة`);
+            safeSetText("ecoPointsCount", userData.ecoPoints || 0);
+            
+            // تحديث نافذة الملف الشخصي
+            safeSetText("modalProfileName", fullName);
+            safeSetText("modalProfileRole", userData.role || "عضو في مجتمع EcoPlant DZ");
+            safeSetText("modalProfileEmail", user.email || "غير محدد");
+            safeSetText("modalProfileState", userData.state || "غير محدد");
+            safeSetText("modalProfileUniversity", userData.university || "غير محدد");
+            safeSetText("modalProfileSpecialization", userData.specialization || "غير محدد");
+            safeSetText("modalProfileEcoPoints", `${userData.ecoPoints || 0} نقطة`);
+            
+            const joinDate = userData.createdAt ? new Date(userData.createdAt) : new Date();
+            safeSetText("modalProfileJoinDate", joinDate.toLocaleDateString('ar-AR'));
+            safeSetText("joinDate", formatTime(userData.createdAt || Date.now()));
+            
+            // تحديث الصورة الرمزية
+            const avatarUrl = user.photoURL || userData.photoURL;
+            if (avatarUrl) {
+                safeSetHTML("profileAvatar", `<img src="${avatarUrl}" alt="${fullName}">`);
+                safeSetHTML("navAvatar", `<img src="${avatarUrl}" alt="${fullName}">`);
+                safeSetHTML("modalProfileAvatar", `<img src="${avatarUrl}" alt="${fullName}">`);
+            } else {
+                const letter = (userData.firstName?.[0] || user.displayName?.[0] || "م").toUpperCase();
+                safeSetText("profileAvatar", letter);
+                safeSetText("navAvatar", letter);
+                safeSetText("modalProfileAvatar", letter);
+            }
+            
+            // تحديث الشارات
+            updateBadges(userData.badges || []);
+        }
+        
+        // تحديث الشارات
+        function updateBadges(badges) {
+            const badgesContainer = document.getElementById("profileBadges");
+            const modalBadgesContainer = document.getElementById("modalProfileBadges");
+            
+            if (!badges || badges.length === 0) {
+                badgesContainer.innerHTML = `
+                    <div class="badge-icon" data-tooltip="مستكشف مبكر">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                `;
+                modalBadgesContainer.innerHTML = `
+                    <div class="badge-icon" title="مستكشف مبكر">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                `;
+                return;
+            }
+            
+            let badgesHTML = "";
+            badges.forEach(badge => {
+                badgesHTML += `
+                    <div class="badge-icon" data-tooltip="${badge.name}">
+                        <i class="${badge.icon}"></i>
+                    </div>
+                `;
+            });
+            
+            badgesContainer.innerHTML = badgesHTML;
+            modalBadgesContainer.innerHTML = badgesHTML;
+            
+            // تحديث عدد الشارات
+            safeSetText("badgesCount", badges.length);
+        }
+        
+        // تحميل إحصائيات المستخدم
+        async function loadUserStats(userId) {
+            try {
+                // تحميل عدد الأسئلة
+                const questionsSnapshot = await db.ref("questions").orderByChild("userId").equalTo(userId).once("value");
+                const questionsCount = questionsSnapshot.numChildren();
+                safeSetText("questionsCount", questionsCount);
+                
+                // تحميل عدد الإجابات
+                const answersSnapshot = await db.ref("answers").orderByChild("userId").equalTo(userId).once("value");
+                const answersCount = answersSnapshot.numChildren();
+                safeSetText("answersCount", answersCount);
+                
+                // تحميل عدد الرسائل غير المقروءة
+                const messagesSnapshot = await db.ref("messages").orderByChild("receiverId").equalTo(userId).once("value");
+                let unreadCount = 0;
+                messagesSnapshot.forEach(childSnapshot => {
+                    if (!childSnapshot.val().read) {
+                        unreadCount++;
+                    }
+                });
+                
+                const messageBadge = document.getElementById("messageCount");
+                if (messageBadge) {
+                    messageBadge.textContent = unreadCount > 0 ? unreadCount : "";
+                }
+            } catch (error) {
+                console.error("فشل تحميل الإحصائيات:", error);
+            }
+        }
+        
+        // تحميل الرسوم البيانية
+        async function loadCharts(userId) {
+            try {
+                // تحميل بيانات النشاط الشهري
+                const activityData = await getMonthlyActivityData(userId);
+                renderActivityChart(activityData);
+                
+                // تحميل بيانات توزيع النقاط
+                const pointsData = await getPointsDistributionData(userId);
+                renderPointsChart(pointsData);
+            } catch (error) {
+                console.error("فشل تحميل الرسوم البيانية:", error);
+                
+                // عرض بيانات افتراضية في حالة الفشل
+                renderActivityChart([5, 8, 12, 15]);
+                renderPointsChart([40, 35, 25]);
+            }
+        }
+        
+        // الحصول على بيانات النشاط الشهري
+        async function getMonthlyActivityData(userId) {
+            try {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                // إنشاء مصفوفة للأيام الأربعة الماضية
+                const data = [0, 0, 0, 0];
+                
+                // الحصول على نشاط الأسئلة
+                const questionsSnapshot = await db.ref("questions")
+                    .orderByChild("userId")
+                    .equalTo(userId)
+                    .once("value");
+                
+                questionsSnapshot.forEach(childSnapshot => {
+                    const question = childSnapshot.val();
+                    const questionDate = new Date(question.createdAt);
+                    
+                    if (questionDate.getMonth() === currentMonth && questionDate.getFullYear() === currentYear) {
+                        const weekIndex = Math.floor(questionDate.getDate() / 7);
+                        if (weekIndex < 4) {
+                            data[weekIndex]++;
+                        }
+                    }
+                });
+                
+                // الحصول على نشاط الإجابات
+                const answersSnapshot = await db.ref("answers")
+                    .orderByChild("userId")
+                    .equalTo(userId)
+                    .once("value");
+                
+                answersSnapshot.forEach(childSnapshot => {
+                    const answer = childSnapshot.val();
+                    const answerDate = new Date(answer.createdAt);
+                    
+                    if (answerDate.getMonth() === currentMonth && answerDate.getFullYear() === currentYear) {
+                        const weekIndex = Math.floor(answerDate.getDate() / 7);
+                        if (weekIndex < 4) {
+                            data[weekIndex]++;
+                        }
+                    }
+                });
+                
+                return data;
+            } catch (error) {
+                console.error("فشل الحصول على بيانات النشاط:", error);
+                return [5, 8, 12, 15]; // بيانات افتراضية
+            }
+        }
+        
+        // رسم بياني للنشاط
+        function renderActivityChart(data) {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            
+            // تدمير الرسم البياني القائم إذا وجد
+            if (activityChart) {
+                activityChart.destroy();
+            }
+            
+            activityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4'],
+                    datasets: [{
+                        label: 'النشاط',
+                        data: data,
+                        borderColor: '#2e7d32',
+                        tension: 0.1,
+                        fill: true,
+                        backgroundColor: 'rgba(46, 125, 50, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // الحصول على بيانات توزيع النقاط
+        async function getPointsDistributionData(userId) {
+            try {
+                // في تطبيق حقيقي، سيتم حساب هذه القيم من قاعدة البيانات
+                // هنا نستخدم قيم افتراضية
+                return [40, 35, 25];
+            } catch (error) {
+                console.error("فشل الحصول على بيانات توزيع النقاط:", error);
+                return [40, 35, 25]; // بيانات افتراضية
+            }
+        }
+        
+        // رسم بياني لتوزيع النقاط
+        function renderPointsChart(data) {
+            const ctx = document.getElementById('pointsChart').getContext('2d');
+            
+            // تدمير الرسم البياني القائم إذا وجد
+            if (pointsChart) {
+                pointsChart.destroy();
+            }
+            
+            pointsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['الأسئلة', 'الإجابات', 'المشاركات'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            '#2e7d32',
+                            '#4caf50',
+                            '#8bc34a'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // تحميل النشاط الأخير
+        async function loadRecentActivity(userId) {
+            try {
+                const activityList = document.getElementById("activityList");
+                activityList.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+                
+                // الحصول على نشاط الأسئلة الأخيرة
+                const questionsSnapshot = await db.ref("questions")
+                    .orderByChild("userId")
+                    .equalTo(userId)
+                    .limitToLast(3)
+                    .once("value");
+                
+                // الحصول على نشاط الإجابات الأخيرة
+                const answersSnapshot = await db.ref("answers")
+                    .orderByChild("userId")
+                    .equalTo(userId)
+                    .limitToLast(3)
+                    .once("value");
+                
+                let activities = [];
+                
+                // إضافة الأسئلة
+                questionsSnapshot.forEach(childSnapshot => {
+                    const question = childSnapshot.val();
+                    activities.push({
+                        type: 'question',
+                        title: question.title,
+                        timestamp: question.createdAt,
+                        icon: 'fa-question-circle'
+                    });
+                });
+                
+                // إضافة الإجابات
+                answersSnapshot.forEach(childSnapshot => {
+                    const answer = childSnapshot.val();
+                    activities.push({
+                        type: 'answer',
+                        title: `رد على سؤال`,
+                        timestamp: answer.createdAt,
+                        icon: 'fa-comments'
+                    });
+                });
+                
+                // إضافة نشاط الانضمام
+                const userSnapshot = await db.ref("users/" + userId).once("value");
+                const userData = userSnapshot.val() || {};
+                activities.push({
+                    type: 'join',
+                    title: 'انضممت إلى مجتمع EcoPlant DZ',
+                    timestamp: userData.createdAt || Date.now(),
+                    icon: 'fa-user-plus'
+                });
+                
+                // ترتيب النشاط حسب التاريخ
+                activities.sort((a, b) => b.timestamp - a.timestamp);
+                
+                // عرض آخر 5 أنشطة
+                activities = activities.slice(0, 5);
+                
+                // تحديث واجهة المستخدم
+                let html = '';
+                activities.forEach(activity => {
+                    html += `
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas ${activity.icon}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p>${activity.title}</p>
+                                <span class="activity-time">${formatTime(activity.timestamp)}</span>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                activityList.innerHTML = html;
+            } catch (error) {
+                console.error("فشل تحميل النشاط الأخير:", error);
+                document.getElementById("activityList").innerHTML = `
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>انضممت إلى مجتمع EcoPlant DZ</p>
+                            <span class="activity-time">الآن</span>
+                        </div>
+                    </li>
+                `;
+            }
+        }
+        
+        // تحميل الإشعارات
+        function loadNotifications(userId) {
+            const notificationsList = document.getElementById('notificationsList');
+            const notificationCount = document.getElementById('notificationCount');
+            
+            notificationsList.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+            
+            db.ref('notifications/' + userId)
+                .orderByChild('timestamp')
+                .limitToLast(10)
+                .on('value', (snapshot) => {
+                    let count = 0;
+                    let html = '';
+                    
+                    if (snapshot.exists()) {
+                        snapshot.forEach((childSnapshot) => {
+                            const notification = childSnapshot.val();
+                            if (!notification.read) count++;
+                            
+                            html += `
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas ${notification.icon || 'fa-bell'}"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <p>${notification.message}</p>
+                                        <span class="activity-time">${formatTime(notification.timestamp)}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        notificationCount.textContent = count > 0 ? count : '';
+                    } else {
+                        html = `
+                            <p>لا توجد إشعارات جديدة حالياً. ستحصل على إشعارات عندما:</p>
+                            <ul>
+                                <li>يتم الرد على أسئلتك</li>
+                                <li>يتم تقييم إجاباتك</li>
+                                <li>تحصل على شارات جديدة</li>
+                                <li>يتم إرسال رسالة جديدة لك</li>
+                                <li>يتم نشر محتوى جديد يهمك</li>
+                            </ul>
+                        `;
+                        notificationCount.textContent = '';
+                    }
+                    
+                    notificationsList.innerHTML = html;
+                });
+        }
+        
+        // عرض الملف الشخصي العام
+        function viewPublicProfile(userId) {
+            if (!userId) {
+                showNotification("معرف المستخدم غير متاح", "error");
+                return;
+            }
+            
+            db.ref('users/' + userId).once('value').then((snapshot) => {
+                const userData = snapshot.val();
+                if (!userData) {
+                    showNotification("لم يتم العثور على بيانات المستخدم", "error");
+                    return;
+                }
+                
+                const fullName = `${userData.firstName || ""} ${userData.lastName || ""}`.trim() || "مستخدم EcoPlant";
+                const avatarUrl = userData.photoURL || '';
+                const avatarHtml = avatarUrl ? 
+                    `<img src="${avatarUrl}" alt="${fullName}">` : 
+                    (userData.firstName?.[0] || 'م').toUpperCase();
+                
+                const publicProfileContent = document.getElementById('publicProfileContent');
+                publicProfileContent.innerHTML = `
+                    <div class="public-profile-header">
+                        <div class="public-profile-avatar">
+                            ${avatarHtml}
+                        </div>
+                        <div class="public-profile-info">
+                            <h2>${fullName}</h2>
+                            <p>${userData.role || 'عضو في مجتمع EcoPlant DZ'}</p>
+                            <div class="public-profile-badges">
+                                ${(userData.badges || []).map(badge => `
+                                    <div class="badge-icon" data-tooltip="${badge.name}">
+                                        <i class="${badge.icon}"></i>
+                                    </div>
+                                `).join('') || `
+                                    <div class="badge-icon" data-tooltip="مستكشف مبكر">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="public-profile-details">
+                        <div class="public-detail-group">
+                            <h3>الولاية</h3>
+                            <p>${userData.state || 'غير محدد'}</p>
+                        </div>
+                        
+                        <div class="public-detail-group">
+                            <h3>الجامعة/المؤسسة</h3>
+                            <p>${userData.university || 'غير محدد'}</p>
+                        </div>
+                        
+                        <div class="public-detail-group">
+                            <h3>التخصص</h3>
+                            <p>${userData.specialization || 'غير محدد'}</p>
+                        </div>
+                        
+                        <div class="public-detail-group">
+                            <h3>نقاط Eco</h3>
+                            <p>${userData.ecoPoints || 0} نقطة</p>
+                        </div>
+                        
+                        ${userData.bio ? `
+                        <div class="public-detail-group">
+                            <h3>السيرة الذاتية</h3>
+                            <p>${userData.bio}</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="public-detail-group">
+                            <h3>تاريخ الانضمام</h3>
+                            <p>${userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('ar-AR') : 'غير محدد'}</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary message-user-btn" onclick="sendMessageToUser('${userId}')">
+                        <i class="fas fa-envelope"></i> إرسال رسالة
+                    </button>
+                `;
+                
+                openModal('publicProfileModal');
+            }).catch(error => {
+                console.error("فشل تحميل الملف الشخصي:", error);
+                showNotification("فشل في تحميل الملف الشخصي", "error");
+            });
+        }
+        
+        // إرسال رسالة إلى مستخدم
+        function sendMessageToUser(userId) {
+            closeModal('publicProfileModal');
+            window.location.href = `messages.html?userId=${userId}`;
+        }
+        
+        // فتح نافذة الإعدادات مع البيانات الحالية
+        function openSettingsModal() {
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+            
+            // تعبئة الحقول بالبيانات الحالية
+            document.getElementById("settingsFirstName").value = userData.firstName || "";
+            document.getElementById("settingsLastName").value = userData.lastName || "";
+            document.getElementById("settingsState").value = userData.state || "";
+            document.getElementById("settingsUniversity").value = userData.university || "";
+            document.getElementById("settingsSpecialization").value = userData.specialization || "";
+            document.getElementById("settingsBio").value = userData.bio || "";
+            
+            openModal('settingsModal');
+        }
+        
+        // حفظ إعدادات الملف الشخصي
+        async function saveProfileSettings() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    showNotification("يجب تسجيل الدخول أولاً", "error");
+                    return;
+                }
+                
+                showNotification("جاري حفظ التغييرات...", "info");
+                
+                const updatedData = {
+                    firstName: document.getElementById("settingsFirstName").value,
+                    lastName: document.getElementById("settingsLastName").value,
+                    state: document.getElementById("settingsState").value,
+                    university: document.getElementById("settingsUniversity").value,
+                    specialization: document.getElementById("settingsSpecialization").value,
+                    bio: document.getElementById("settingsBio").value,
+                    updatedAt: Date.now()
+                };
+                
+                // التحقق من وجود صورة جديدة
+                const photoInput = document.getElementById("settingsPhoto");
+                if (photoInput.files && photoInput.files[0]) {
+                    const file = photoInput.files[0];
+                    const storageRef = storage.ref(`profilePhotos/${user.uid}`);
+                    const uploadTask = storageRef.put(file);
+                    
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // يمكن إضافة مؤشر التقدم هنا
+                        }, 
+                        (error) => {
+                            console.error("فشل رفع الصورة:", error);
+                            showNotification("فشل في رفع الصورة", "error");
+                        }, 
+                        async () => {
+                            try {
+                                const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                                updatedData.photoURL = downloadURL;
+                                
+                                // تحديث صورة المستخدم في Firebase Auth
+                                await user.updateProfile({ photoURL: downloadURL });
+                                
+                                // تحديث بيانات المستخدم في قاعدة البيانات
+                                await updateProfile(updatedData);
+                                
+                                showNotification("تم تحديث الملف الشخصي بنجاح", "success");
+                                closeModal('settingsModal');
+                            } catch (error) {
+                                console.error("فشل تحديث الصورة:", error);
+                                showNotification("فشل في تحديث الصورة", "error");
+                            }
+                        }
+                    );
+                } else {
+                    // تحديث البيانات دون صورة
+                    await updateProfile(updatedData);
+                    showNotification("تم تحديث الملف الشخصي بنجاح", "success");
+                    closeModal('settingsModal');
+                }
+            } catch (error) {
+                console.error("فشل حفظ الإعدادات:", error);
+                showNotification("فشل في حفظ الإعدادات", "error");
+            }
+        }
+        
+        // تحديث بيانات الملف الشخصي
+        async function updateProfile(updatedData) {
+            try {
+                const user = auth.currentUser;
+                if (!user) return false;
+                
+                // تحديث الاسم في Firebase Auth
+                if (updatedData.firstName || updatedData.lastName) {
+                    const displayName = `${updatedData.firstName || ""} ${updatedData.lastName || ""}`.trim();
+                    if (displayName) {
+                        await user.updateProfile({ displayName });
+                    }
+                }
+                
+                // تحديث البيانات في قاعدة البيانات
+                await db.ref('users/' + user.uid).update(updatedData);
+                
+                // تحديث البيانات المحلية
+                const currentUserData = JSON.parse(localStorage.getItem("user") || "{}");
+                const newUserData = { ...currentUserData, ...updatedData };
+                localStorage.setItem("user", JSON.stringify(newUserData));
+                
+                // تحديث واجهة المستخدم
+                updateUserInterface(newUserData, user);
+                
+                return true;
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                return false;
+            }
+        }
+        
+        // أدوات مساعدة
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
+        
+        function safeSetHTML(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
+        
+        function formatTime(timestamp) {
+            if (!timestamp) return 'الآن';
+            
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'الآن';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} دقيقة`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} ساعة`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)} يوم`;
+            
+            return date.toLocaleDateString('ar-AR');
+        }
+        
+        // إدارة النوافذ المنبثقة
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // إدارة القائمة المنسدلة
+        document.querySelector('.user-btn').addEventListener('click', function() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+        
+        // إغلاق القائمة المنسدلة عند النقر خارجها
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.user-btn') && !event.target.closest('.user-btn')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+        
+        // تسجيل الخروج
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            try {
+                await auth.signOut();
+                localStorage.clear();
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error("فشل تسجيل الخروج:", error);
+                showNotification("فشل في تسجيل الخروج", "error");
+            }
+        });
+        
+        // عرض إشعارات النظام
+        function showNotification(message, type = "info") {
+            const toast = document.getElementById("notificationToast");
+            if (!toast) return;
+            
+            toast.textContent = message;
+            toast.className = "notification-toast";
+            toast.classList.add(type);
+            toast.classList.add("show");
+            
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

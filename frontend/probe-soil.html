@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسبار تحليل التربة | EcoPlant DZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* المتغيرات العامة */
+        :root {
+            --success: #4caf50;
+            --primary: #5d4037;
+            --primary-dark: #3e2723;
+            --primary-light: #8d6e63;
+            --secondary: #388e3c;
+            --accent: #ffb300;
+            --light: #f5f5f6;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+            --shadow: 0 5px 15px rgba(0,0,0,0.1);
+            --shadow-hover: 0 10px 25px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f5f6 0%, #e8f5e9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            padding: 80px 0;
+        }
+        /* شريط التنقل */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            padding: 15px 0;
+        }
+        .navbar.scrolled {
+            padding: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+            border-radius: 12px;
+        }
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            opacity: 0.1;
+        }
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
+        }
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .nav-item.home::before { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+        .nav-item.analysis::before { background: linear-gradient(135deg, #2196f3, #0d47a1); }
+        .nav-item.plant::before { background: linear-gradient(135deg, #8bc34a, #33691e); }
+        .nav-item.soil::before { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+        .nav-item.simulation::before { background: linear-gradient(135deg, #9c27b0, #4a148c); }
+        .nav-item.ecosystems::before { background: linear-gradient(135deg, #00bcd4, #006064); }
+        .nav-item.species::before { background: linear-gradient(135deg, #ff9800, #e65100); }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(93, 64, 55, 0.1);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            border: none;
+        }
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1.05rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(93, 64, 55, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(93, 64, 55, 0.45);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid var(--gray);
+        }
+        .btn-outline:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .btn-icon {
+            padding: 12px;
+            width: 46px;
+            height: 46px;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            right: -280px;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            transition: var(--transition);
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(93, 64, 55, 0.05);
+            color: var(--primary);
+        }
+        
+        .sidebar-item i {
+            margin-left: 15px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-item span {
+            font-weight: 500;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .sidebar-footer p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-footer .btn {
+            width: 100%;
+        }
+        
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+        
+        /* Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        /* أنماط قسم المستخدم في الشريط الجانبي */
+        .sidebar-user-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+        
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(93, 64, 55, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-left: 15px;
+            overflow: hidden;
+        }
+        
+        .sidebar-user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .sidebar-user-details {
+            flex: 1;
+        }
+        
+        .sidebar-user-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .sidebar-user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-user-menu {
+            margin-bottom: 10px;
+        }
+        
+        /* قسم التنبيه */
+        .feature-alert {
+            background: linear-gradient(135deg, #fff3cd, #ffecb5);
+            border: 2px solid #ffc107;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px auto;
+            max-width: 900px;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffc107" width="100px" height="100px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>') no-repeat;
+            background-size: contain;
+            opacity: 0.1;
+        }
+        
+        .alert-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+        
+        .alert-icon {
+            font-size: 2.5rem;
+            color: #ff9800;
+            flex-shrink: 0;
+        }
+        
+        .alert-title {
+            font-size: 1.8rem;
+            color: #7d6608;
+            margin: 0;
+            font-weight: 700;
+        }
+        
+        .alert-content {
+            color: #856404;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .alert-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-alert {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .btn-alert-primary {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.35);
+        }
+        
+        .btn-alert-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.45);
+        }
+        
+        .btn-alert-secondary {
+            background: transparent;
+            color: #7d6608;
+            border: 2px solid #ffc107;
+        }
+        
+        .btn-alert-secondary:hover {
+            background: rgba(255, 193, 7, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* قسم العنوان */
+        .page-header {
+            padding: 160px 0 80px;
+            background: linear-gradient(135deg, rgba(93, 64, 55, 0.08), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1587351021759-24e2bdefb13a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .page-subtitle {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .page-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            color: var(--dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .page-text {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        /* جهاز المسبار */
+        .probe-section {
+            position: relative;
+            z-index: 2;
+            margin-top: -60px;
+        }
+        .probe-container {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .probe-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            padding: 25px 40px;
+            color: white;
+        }
+        .probe-header h2 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .probe-header h2 i {
+            color: var(--accent);
+        }
+        .probe-content {
+            padding: 40px;
+        }
+        .connection-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 50px;
+            align-items: center;
+        }
+        .device-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        .device-image img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .connection-controls {
+            flex: 1;
+            min-width: 300px;
+        }
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--border-radius);
+        }
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e0e0e0;
+        }
+        .status-indicator.connected {
+            background: #4caf50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .connection-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .instructions {
+            background: rgba(93, 64, 55, 0.05);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 40px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .instructions h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+        .instructions ol {
+            padding-right: 20px;
+        }
+        .instructions li {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        /* قراءات المسبار */
+        .readings-section {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            box-shadow: var(--shadow);
+            margin-top: 50px;
+            display: none;
+        }
+        .readings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .readings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .reading-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .reading-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+        }
+        .reading-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .reading-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .reading-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .reading-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+            transition: var(--transition);
+        }
+        .reading-unit {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+        .reading-note {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(93, 64, 55, 0.08);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+        }
+        .gauge-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 30px auto;
+        }
+        .gauge {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .gauge-pointer {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 4px;
+            height: 45%;
+            background: var(--primary);
+            transform-origin: bottom center;
+            transform: translateX(-50%) rotate(0deg);
+            transition: transform 1s ease;
+            border-radius: 4px;
+        }
+        .gauge-center {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            transform: translate(-50%, 50%);
+            z-index: 2;
+        }
+        .gauge-labels {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .gauge-label {
+            position: absolute;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 80px 0 0;
+            position: relative;
+            overflow: hidden;
+            margin-top: 100px;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            opacity: 0.05;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 60px;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-col p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            opacity: 0.9;
+            transition: var(--transition);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a i {
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            padding-right: 8px;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover i {
+            transform: translateX(-5px);
+        }
+        
+        .contact-info {
+            list-style: none;
+        }
+        
+        .contact-info li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+.contact-info i {
+    color: var(--accent);
+    font-size: 1.2rem;
+    min-width: 20px;
+}
+
+        
+        .team-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .team-member i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+            color: var(--dark);
+        }
+        
+        .newsletter {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .newsletter input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px 0 0 50px;
+            color: white;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: none;
+        }
+        
+        .newsletter input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .newsletter button {
+            padding: 0 25px;
+            background: linear-gradient(90deg, var(--accent), #ff9800);
+            border: none;
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .newsletter button:hover {
+            background: linear-gradient(90deg, #ffb300, #ff8f00);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 30px 0;
+            text-align: center;
+            opacity: 0.8;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .bg-leaf {
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .leaf-1 { top: 10%; left: 5%; transform: rotate(15deg); }
+        .leaf-2 { top: 15%; right: 10%; transform: rotate(-25deg); animation-delay: 2s; }
+        .leaf-3 { bottom: 10%; left: 15%; transform: rotate(40deg); animation-delay: 4s; }
+        .leaf-4 { bottom: 15%; right: 5%; transform: rotate(-15deg); animation-delay: 6s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotate, 0)); }
+            50% { transform: translateY(-20px) rotate(var(--rotate, 0)); }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.4s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            transition: var(--transition);
+        }
+        
+        .close:hover {
+            color: var(--primary-dark);
+        }
+        
+        .modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal h2 i {
+            color: var(--accent);
+        }
+        
+        .modal p, .modal li {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .modal ul {
+            padding-right: 20px;
+        }
+        
+        /* الإشعارات */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 3000;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .notification-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .notification-error {
+            background: #C62828;
+            color: white;
+        }
+        
+        .notification-warning {
+            background: #F57C00;
+            color: white;
+        }
+        
+        .notification-info {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* التصميم المتجاوب */
+        @media (max-width: 992px) {
+            .page-title {
+                font-size: 2.8rem;
+            }
+            
+            .main-nav {
+                gap: 5px;
+            }
+            
+            .nav-item {
+                padding: 5px 10px;
+            }
+            
+            .nav-item i {
+                font-size: 1.2rem;
+            }
+            
+            .nav-item span {
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 140px 0 60px;
+            }
+            
+            .page-title {
+                font-size: 2.4rem;
+            }
+            
+            .feature-alert {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            
+            .alert-title {
+                font-size: 1.5rem;
+            }
+            
+            .alert-content {
+                font-size: 1rem;
+            }
+            
+            .alert-actions {
+                flex-direction: column;
+            }
+            
+            .btn-alert {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .probe-content {
+                padding: 30px 20px;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-col {
+                text-align: center;
+            }
+            
+            .footer-links a {
+                justify-content: center;
+            }
+            
+            .contact-info li {
+                justify-content: center;
+            }
+            
+            .team-section {
+                justify-content: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .newsletter {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .newsletter input {
+                border-radius: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .newsletter button {
+                border-radius: 50px;
+                padding: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .page-text {
+                font-size: 1rem;
+            }
+            
+            .connection-buttons {
+                flex-direction: column;
+            }
+            
+            .reading-card {
+                padding: 20px;
+            }
+            
+            .reading-value {
+                font-size: 2rem;
+            }
+            
+            .gauge-container {
+                height: 150px;
+            }
+        }
+        .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden; /* مهم */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* يخلي الصورة تتناسب داخل الدائرة */
+    display: block;
+}
+
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            
+            <div class="main-nav">
+                <a href="index.html" class="nav-item home">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="analysis.html" class="nav-item analysis">
+                    <i class="fas fa-camera"></i>
+                    <span>تحليل الصور</span>
+                </a>
+                <a href="probe-plant.html" class="nav-item plant">
+                    <i class="fas fa-leaf"></i>
+                    <span>مسبار النبات</span>
+                </a>
+                <a href="probe-soil.html" class="nav-item soil active">
+                    <i class="fas fa-mountain"></i>
+                    <span>مسبار التربة</span>
+                </a>
+                <a href="simulation.html" class="nav-item simulation">
+                    <i class="fas fa-flask"></i>
+                    <span>المحاكاة</span>
+                </a>
+                <a href="ecosystems.html" class="nav-item ecosystems">
+                    <i class="fas fa-globe"></i>
+                    <span>النظم البيئية</span>
+                </a>
+                <a href="species.html" class="nav-item species">
+                    <i class="fas fa-paw"></i>
+                    <span>الأنواع</span>
+                </a>
+            </div>  
+            
+            <div class="nav-actions">
+                <button class="action-btn" id="sidebarToggle" title="القائمة الجانبية">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- عنصر تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+                <a href="login.html" class="action-btn" id="loginBtn" title="تسجيل الدخول" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
+                
+                <!-- قائمة المستخدم (تظهر فقط عندما يكون المستخدم مسجلاً) -->
+                <div class="user-menu" id="userMenu">
+                    <button class="user-btn">
+                        <div class="user-avatar" id="userAvatar">م</div>
+                        <span id="userName">مستخدم</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>القائمة الرئيسية</h3>
+            <p>استكشف جميع خدماتنا</p>
+        </div>
+        
+        <!-- معلومات المستخدم في الشريط الجانبي (تظهر فقط عند تسجيل الدخول) -->
+        <div class="sidebar-user-section" id="sidebarUserSection">
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="sidebar-user-details">
+                    <h4 id="sidebarUserName">اسم المستخدم</h4>
+                    <p id="sidebarUserRole">عضو في EcoPlant DZ</p>
+                </div>
+            </div>
+            <div class="sidebar-user-menu">
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="fas fa-user"></i>
+                    <span>الملف الشخصي</span>
+                </a>
+                <a href="#" class="sidebar-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+            <div class="sidebar-divider"></div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="questions.html" class="sidebar-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>الأسئلة</span>
+                </a>
+            </li>
+            <li>
+                <a href="messages.html" class="sidebar-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>الرسائل</span>
+                </a>
+            </li>
+            <li>
+                <a href="about.html" class="sidebar-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>من نحن</span>
+                </a>
+            </li>
+            <li>
+                <a href="contact.html" class="sidebar-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>التواصل و الدعم</span>
+                </a>
+            </li>
+        </ul>
+        
+        <!-- قسم تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+        <div class="sidebar-footer" id="sidebarLoginSection">
+            <p>لم تقم بتسجيل الدخول بعد؟</p>
+            <a href="login.html" class="btn btn-primary">تسجيل الدخول</a>
+        </div>
+    </div>
+    
+    <!-- قسم العنوان -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <span class="page-subtitle">تحليل دقيق لخصائص التربة</span>
+                <h1 class="page-title">مسبار تحليل التربة الذكي</h1>
+                <p class="page-text">
+                    قم بقياس خصائص التربة الأساسية بدقة عالية باستخدام مسبارنا المتطور.
+                    احصل على نتائج فورية لـ pH، الملوحة، الرطوبة والمواد العضوية مع توصيات مخصصة لتحسين جودة التربة.
+                </p>
+                <div class="actions">
+                    <a href="#probe" class="btn btn-primary">
+                        <i class="fas fa-plug"></i> توصيل المسبار
+                    </a>
+                    <a href="#how-it-works" class="btn btn-secondary">
+                        <i class="fas fa-info-circle"></i> تعليمات الاستخدام
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- قسم التنبيه حول عدم جاهزية الميزة -->
+    <div class="container">
+        <div class="feature-alert">
+            <div class="alert-header">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="alert-title">تنبيه هام: الميزة غير جاهزة بعد</h2>
+            </div>
+            <div class="alert-content">
+                <p>نود إعلامكم أن ميزة مسبار تحليل التربة غير متاحة حالياً لأن الشركة لم تنتج المسبار المادي بعد. هذه الصفحة توضح الوظائف المتوقعة عندما يصبح الجهاز متاحاً.</p>
+                <p>نعمل حالياً على تطوير البرمجيات والواجهات التحضيرية، وسنعلن عن توفر المسبار فور انتهاء عملية التصنيع.</p>
+            </div>
+            <div class="alert-actions">
+                <a href="contact.html" class="btn-alert btn-alert-primary">
+                    <i class="fas fa-envelope"></i> اتصل بنا للمزيد من المعلومات
+                </a>
+                <a href="index.html" class="btn-alert btn-alert-secondary">
+                    <i class="fas fa-home"></i> العودة إلى الصفحة الرئيسية
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- قسم المسبار -->
+    <section class="probe-section" id="probe">
+        <div class="container">
+            <div class="probe-container">
+                <div class="probe-header">
+                    <h2><i class="fas fa-mountain"></i> مسبار تحليل خصائص التربة</h2>
+                </div>
+                
+                <div class="probe-content">
+                    <div class="connection-section">
+                        <div class="device-image">
+                            <img src="https://images.unsplash.com/photo-1587351021759-24e2bdefb13a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="مسبار التربة">
+                        </div>
+                        
+                        <div class="connection-controls">
+                            <div class="connection-status">
+                                <div class="status-indicator" id="statusIndicator"></div>
+                                <div class="status-text" id="statusText">غير متصل</div>
+                            </div>
+                            
+                            <div class="connection-buttons">
+                                <button class="btn btn-primary" id="connectBtn">
+                                    <i class="fas fa-plug"></i> توصيل المسبار
+                                </button>
+                                <button class="btn btn-secondary" id="simulateBtn">
+                                    <i class="fas fa-laptop-code"></i> محاكاة القراءة
+                                </button>
+                                <button class="btn btn-outline" id="disconnectBtn">
+                                    <i class="fas fa-times"></i> قطع الاتصال
+                                </button>
+                            </div>
+                            
+                            <p style="margin-top: 25px; color: var(--gray);">
+                                ملاحظة: يتطلب التوصيل الفعلي استخدام متصفح يدعم WebUSB مثل Chrome أو Edge
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="instructions" id="how-it-works">
+                        <h3><i class="fas fa-info-circle"></i> تعليمات الاستخدام</h3>
+                        <ol>
+                            <li>قم بتوصيل المسبار بمنفذ USB في جهازك</li>
+                            <li>انقر على زر "توصيل المسبار" للاتصال بالجهاز</li>
+                            <li>أدخل المسبار في التربة على عمق 15-20 سم</li>
+                            <li>انتظر لمدة 30 ثانية حتى تستقر القراءات</li>
+                            <li>احفظ النتائج أو شاركها مع الخبراء للتحليل المتقدم</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="actions" style="justify-content: center;">
+                        <button class="btn btn-primary" id="startReadingBtn" disabled>
+                            <i class="fas fa-play"></i> بدء القراءة
+                        </button>
+                        <button class="btn btn-secondary" id="saveBtn" disabled>
+                            <i class="fas fa-save"></i> حفظ النتائج
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="readings-section" id="readingsSection">
+                <div class="readings-header">
+                    <h2 style="font-size: 2rem; color: var(--primary-dark);">نتائج تحليل التربة</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-download"></i> تحميل التقرير
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-share-alt"></i> مشاركة النتائج
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="readings-grid">
+                    <div class="reading-card">
+                        <div class="reading-icon">
+                            <i class="fas fa-water"></i>
+                        </div>
+                        <h3 class="reading-title">الرطوبة</h3>
+                        <div class="reading-value" id="moistureValue">0</div>
+                        <div class="reading-unit">نسبة مئوية (%)</div>
+                        <div class="reading-note">المستوى الأمثل: 40-60%</div>
+                        <div class="gauge-container">
+                            <div class="gauge">
+                                <div class="gauge-pointer" id="moisturePointer"></div>
+                                <div class="gauge-center"></div>
+                                <div class="gauge-labels">
+                                    <div class="gauge-label" style="bottom: 10%; left: 10%;">0</div>
+                                    <div class="gauge-label" style="bottom: 10%; right: 10%;">100</div>
+                                    <div class="gauge-label" style="bottom: 50%; left: 5%;">50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reading-card">
+                        <div class="reading-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="reading-title">الحموضة (pH)</h3>
+                        <div class="reading-value" id="phValue">0</div>
+                        <div class="reading-unit">درجة الحموضة</div>
+                        <div class="reading-note">المستوى الأمثل: 6.0-7.5</div>
+                        <div class="gauge-container">
+                            <div class="gauge">
+                                <div class="gauge-pointer" id="phPointer"></div>
+                                <div class="gauge-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reading-card">
+                        <div class="reading-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h3 class="reading-title">الملوحة (EC)</h3>
+                        <div class="reading-value" id="ecValue">0</div>
+                        <div class="reading-unit">مللي سيمنس/سم</div>
+                        <div class="reading-note">المستوى الأمثل: 0.8-1.8</div>
+                        <div class="gauge-container">
+                            <div class="gauge">
+                                <div class="gauge-pointer" id="ecPointer"></div>
+                                <div class="gauge-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reading-card">
+                        <div class="reading-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3 class="reading-title">المادة العضوية</h3>
+                        <div class="reading-value" id="organicValue">0</div>
+                        <div class="reading-unit">نسبة مئوية (%)</div>
+                        <div class="reading-note">المستوى الأمثل: 3-5%</div>
+                        <div class="gauge-container">
+                            <div class="gauge">
+                                <div class="gauge-pointer" id="organicPointer"></div>
+                                <div class="gauge-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container" style="margin: 40px 0; height: 300px;">
+                    <canvas id="soilChart"></canvas>
+                </div>
+                
+                <div class="diagnosis-section" style="background: rgba(56, 142, 60, 0.05); border-left-color: var(--secondary);">
+                    <div class="diagnosis-header">
+                        <i class="fas fa-stethoscope"></i>
+                        <h3>تشخيص جودة التربة</h3>
+                    </div>
+                    <div class="diagnosis-content">
+                        <p id="diagnosisText">
+                            يرجى توصيل المسبار وبدء القراءة للحصول على تحليل كامل لجودة التربة.
+                        </p>
+                        
+                        <div id="recommendations" style="margin-top: 25px; display: none;">
+                            <h4 style="margin-bottom: 15px; color: var(--secondary);">التوصيات الزراعية:</h4>
+                            <ul class="solution-list">
+                                <li>إضافة مواد عضوية لتحسين جودة التربة</li>
+                                <li>استخدام سماد حمضي لضبط درجة الحموضة</li>
+                                <li>تطبيق نظام ري مناسب لتحسين الرطوبة</li>
+                                <li>زراعة محاصيل مناسبة لنوع التربة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <i class="fas fa-leaf bg-leaf leaf-1"></i>
+        <i class="fas fa-seedling bg-leaf leaf-2"></i>
+        <i class="fas fa-tree bg-leaf leaf-3"></i>
+        <i class="fas fa-spa bg-leaf leaf-4"></i>
+        
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>عن EcoPlant DZ</h3>
+                <p>منصة علمية تطبيقية لدراسة النباتات والتربة في الجزائر باستخدام أحدث التقنيات الذكية والذكاء الاصطناعي للحفاظ على التنوع البيئي.</p>
+                <div class="social-links">
+                    <a href="#" title="فيسبوك">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" title="تويتر">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" title="إنستغرام">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" title="لينكدإن">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="index.html" title="الصفحة الرئيسية">
+                            <i class="fas fa-home"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="analysis.html" title="تحليل الصور">
+                            <i class="fas fa-camera"></i>
+                            <span>تحليل الصور</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-plant.html" title="مسبار النبات">
+                            <i class="fas fa-leaf"></i>
+                            <span>مسبار النبات</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-soil.html" title="مسبار التربة">
+                            <i class="fas fa-mountain"></i>
+                            <span>مسبار التربة</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="ecosystems.html" title="النظم البيئية">
+                            <i class="fas fa-globe"></i>
+                            <span>النظم البيئية</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>فريق العمل</h3>
+                <p>تعرف على الفريق المبدع الذي يقف وراء المنصة:</p>
+                <div class="team-section">
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>قادري هيثم</span>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>هباز داليا</span>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">اتصل بنا</h3>
+                <ul class="contact-info">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>جامعة حمة لخضر - الوادي</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>0668840861</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>hkadri2003@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>النشرة الإخبارية</h3>
+                <p>اشترك ليصلك كل جديد عن أبحاثنا وتحديثات المنصة.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="بريدك الإلكتروني">
+                    <button>اشتراك</button>
+                </div>
+                
+                <h3 style="margin-top: 30px;">روابط مهمة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="#" onclick="openModal('privacyModal')" title="سياسة الخصوصية">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>سياسة الخصوصية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="openModal('termsModal')" title="شروط الاستخدام">
+                            <i class="fas fa-file-contract"></i>
+                            <span>شروط الاستخدام</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة | تم التطوير بواسطة فريق EcoPlant DZ</p>
+        </div>
+    </footer>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2><i class="fas fa-file-contract"></i> شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ======================
+            // العناصر الرئيسية
+            // ======================
+            const elements = {
+                // عناصر المسبار
+                connectBtn: document.getElementById('connectBtn'),
+                simulateBtn: document.getElementById('simulateBtn'),
+                disconnectBtn: document.getElementById('disconnectBtn'),
+                startReadingBtn: document.getElementById('startReadingBtn'),
+                saveBtn: document.getElementById('saveBtn'),
+                statusIndicator: document.getElementById('statusIndicator'),
+                statusText: document.getElementById('statusText'),
+                readingsSection: document.getElementById('readingsSection'),
+                diagnosisText: document.getElementById('diagnosisText'),
+                recommendations: document.getElementById('recommendations'),
+                
+                // عناصر القراءات
+                moistureValue: document.getElementById('moistureValue'),
+                phValue: document.getElementById('phValue'),
+                ecValue: document.getElementById('ecValue'),
+                organicValue: document.getElementById('organicValue'),
+                
+                // مؤشرات المقاييس
+                moisturePointer: document.getElementById('moisturePointer'),
+                phPointer: document.getElementById('phPointer'),
+                ecPointer: document.getElementById('ecPointer'),
+                organicPointer: document.getElementById('organicPointer'),
+                
+                // عناصر المستخدم
+                sidebarToggle: document.getElementById('sidebarToggle'),
+                sidebar: document.getElementById('sidebar'),
+                menuToggle: document.getElementById('menuToggle'),
+                mainNav: document.querySelector('.main-nav'),
+                loginBtn: document.getElementById('loginBtn'),
+                userMenu: document.getElementById('userMenu'),
+                sidebarUserSection: document.getElementById('sidebarUserSection'),
+                sidebarLoginSection: document.getElementById('sidebarLoginSection'),
+                userName: document.getElementById('userName'),
+                userAvatar: document.getElementById('userAvatar'),
+                sidebarUserName: document.getElementById('sidebarUserName'),
+                sidebarUserAvatar: document.getElementById('sidebarUserAvatar'),
+                sidebarUserRole: document.getElementById('sidebarUserRole')
+            };
+            
+            // ======================
+            // حالة التطبيق
+            // ======================
+            const state = {
+                isConnected: false,
+                isReading: false,
+                soilChart: null
+            };
+            
+            // ======================
+            // التهيئة
+            // ======================
+            function init() {
+                setupEventListeners();
+                checkAuthState();
+            }
+            
+            // ======================
+            // إعداد مستمعي الأحداث
+            // ======================
+            function setupEventListeners() {
+                // تبديل القائمة الجانبية
+                elements.sidebarToggle.addEventListener('click', () => {
+                    elements.sidebar.classList.toggle('open');
+                });
+                
+                // تبديل القائمة على الجوال
+                elements.menuToggle.addEventListener('click', () => {
+                    elements.mainNav.classList.toggle('show');
+                    
+                    // تحريك الأيقونة عند النقر
+                    const spans = elements.menuToggle.querySelectorAll('span');
+                    if (elements.mainNav.classList.contains('show')) {
+                        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                        spans[1].style.opacity = '0';
+                        spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+                    } else {
+                        spans[0].style.transform = 'rotate(0) translate(0)';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'rotate(0) translate(0)';
+                    }
+                });
+                
+                // تفعيل القائمة المنسدلة للمستخدم
+                if (document.querySelector('.user-btn')) {
+                    document.querySelector('.user-btn').addEventListener('click', function() {
+                        document.getElementById('userDropdown').classList.toggle('show');
+                    });
+                }
+                
+                // إغلاق القوائم عند النقر خارجها
+                window.addEventListener('click', function(e) {
+                    // إغلاق القائمة المنسدلة للمستخدم
+                    if (!e.target.matches('.user-btn') && !e.target.closest('.user-btn')) {
+                        const dropdown = document.getElementById('userDropdown');
+                        if (dropdown && dropdown.classList.contains('show')) {
+                            dropdown.classList.remove('show');
+                        }
+                    }
+                    
+                    // إغلاق القائمة الجانبية عند النقر خارجها
+                    if (!e.target.closest('.sidebar') && !e.target.closest('#sidebarToggle')) {
+                        elements.sidebar.classList.remove('open');
+                    }
+                });
+                
+                // أحداث المسبار
+                elements.connectBtn.addEventListener('click', () => {
+                    simulateConnection();
+                });
+                
+                elements.simulateBtn.addEventListener('click', () => {
+                    simulateConnection();
+                    setTimeout(() => {
+                        startReading();
+                    }, 1000);
+                });
+                
+                elements.disconnectBtn.addEventListener('click', () => {
+                    state.isConnected = false;
+                    state.isReading = false;
+                    updateConnectionStatus();
+                    elements.readingsSection.style.display = 'none';
+                    elements.startReadingBtn.disabled = true;
+                    elements.saveBtn.disabled = true;
+                    
+                    // إعادة تعيين القراءات
+                    elements.moistureValue.textContent = '0';
+                    elements.phValue.textContent = '0';
+                    elements.ecValue.textContent = '0';
+                    elements.organicValue.textContent = '0';
+                    
+                    // إعادة تعيين المؤشرات
+                    updateGauge(elements.moisturePointer, 0);
+                    updateGauge(elements.phPointer, 0);
+                    updateGauge(elements.ecPointer, 0);
+                    updateGauge(elements.organicPointer, 0);
+                    
+                    // إعادة تعيين التشخيص
+                    elements.diagnosisText.textContent = 'يرجى توصيل المسبار وبدء القراءة للحصول على تحليل كامل لجودة التربة.';
+                    elements.recommendations.style.display = 'none';
+                    
+                    // إعادة تعيين المخطط
+                    if(state.soilChart) state.soilChart.destroy();
+                });
+                
+                elements.startReadingBtn.addEventListener('click', () => {
+                    if (state.isConnected) {
+                        startReading();
+                    }
+                });
+                
+                // معالجة نموذج النشرة الإخبارية
+                document.querySelector('.newsletter button').addEventListener('click', function() {
+                    const emailInput = document.querySelector('.newsletter input');
+                    const email = emailInput.value.trim();
+                    
+                    if (email) {
+                        // هنا سيتم إضافة كود إرسال البريد الإلكتروني إلى الخادم
+                        
+                        // إظهار رسالة نجاح
+                        showNotification('تم اشتراكك في النشرة الإخبارية بنجاح!', 'success');
+                        
+                        // إعادة تعيين حقل الإدخال
+                        emailInput.value = '';
+                    } else {
+                        showNotification('الرجاء إدخال بريد إلكتروني صحيح', 'error');
+                    }
+                });
+                
+                // تأثيرات الشريط العلوي عند التمرير
+                window.addEventListener('scroll', function() {
+                    const navbar = document.querySelector('.navbar');
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+            }
+            
+            // ======================
+            // وظائف المسبار
+            // ======================
+            function simulateConnection() {
+                // عرض رسالة الاتصال
+                elements.statusText.textContent = 'جارٍ الاتصال...';
+                elements.connectBtn.disabled = true;
+                elements.simulateBtn.disabled = true;
+                
+                // محاكاة اتصال لمدة 3 ثوان
+                setTimeout(() => {
+                    state.isConnected = true;
+                    updateConnectionStatus();
+                    elements.connectBtn.disabled = false;
+                    elements.simulateBtn.disabled = false;
+                    elements.startReadingBtn.disabled = false;
+                }, 3000);
+            }
+            
+            function startReading() {
+                state.isReading = true;
+                elements.startReadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جار القراءة...';
+                elements.startReadingBtn.disabled = true;
+                
+                // محاكاة عملية القراءة لمدة 5 ثوان
+                setTimeout(() => {
+                    // توليد قراءات عشوائية (في الإصدار الحقيقي سيتم الحصول عليها من الجهاز)
+                    const moisture = 30 + Math.floor(Math.random() * 50);
+                    const ph = 5.0 + (Math.random() * 4).toFixed(1);
+                    const ec = (0.5 + Math.random() * 2.5).toFixed(1);
+                    const organic = 1 + Math.floor(Math.random() * 7);
+                    
+                    // تحديث القيم
+                    elements.moistureValue.textContent = moisture;
+                    elements.phValue.textContent = ph;
+                    elements.ecValue.textContent = ec;
+                    elements.organicValue.textContent = organic;
+                    
+                    // تحديث مؤشرات المقاييس
+                    updateGauge(elements.moisturePointer, moisture);
+                    updateGauge(elements.phPointer, (ph - 4) * 25); // تحويل 4-8 إلى 0-100
+                    updateGauge(elements.ecPointer, ec * 20); // تحويل 0-5 إلى 0-100
+                    updateGauge(elements.organicPointer, organic * 10); // تحويل 0-10 إلى 0-100
+                    
+                    // تحديث التشخيص
+                    updateDiagnosis(moisture, ph, ec, organic);
+                    
+                    // إنشاء أو تحديث المخطط
+                    createSoilChart(moisture, ph, ec, organic);
+                    
+                    // عرض النتائج
+                    elements.readingsSection.style.display = 'block';
+                    elements.startReadingBtn.innerHTML = '<i class="fas fa-play"></i> بدء القراءة';
+                    elements.startReadingBtn.disabled = false;
+                    elements.saveBtn.disabled = false;
+                    
+                    // التمرير إلى قسم النتائج
+                    elements.readingsSection.scrollIntoView({ behavior: 'smooth' });
+                }, 5000);
+            }
+            
+            function updateConnectionStatus() {
+                if (state.isConnected) {
+                    elements.statusIndicator.className = 'status-indicator connected';
+                    elements.statusText.textContent = 'متصل';
+                } else {
+                    elements.statusIndicator.className = 'status-indicator';
+                    elements.statusText.textContent = 'غير متصل';
+                }
+            }
+            
+            function updateGauge(pointer, value) {
+                // تحويل القيمة إلى زاوية (0-180 درجة)
+                const angle = (value / 100) * 180;
+                pointer.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+            }
+            
+            function updateDiagnosis(moisture, ph, ec, organic) {
+                let diagnosis = '';
+                let showRecommendations = true;
+                
+                if (moisture < 40) {
+                    diagnosis += 'نقص واضح في رطوبة التربة. ';
+                } else if (moisture > 60) {
+                    diagnosis += 'زيادة في رطوبة التربة. ';
+                } else {
+                    diagnosis += 'رطوبة التربة في المستوى المثالي. ';
+                }
+                
+                if (ph < 6.0) {
+                    diagnosis += 'التربة حمضية جداً. ';
+                } else if (ph > 7.5) {
+                    diagnosis += 'التربة قلوية جداً. ';
+                } else {
+                    diagnosis += 'درجة الحموضة مناسبة. ';
+                }
+                
+                if (ec < 0.8) {
+                    diagnosis += 'نقص في ملوحة التربة. ';
+                } else if (ec > 1.8) {
+                    diagnosis += 'زيادة في ملوحة التربة. ';
+                } else {
+                    diagnosis += 'ملوحة التربة ضمن الحدود الطبيعية. ';
+                }
+                
+                if (organic < 3) {
+                    diagnosis += 'نقص في المادة العضوية. ';
+                } else if (organic > 5) {
+                    diagnosis += 'زيادة في المادة العضوية. ';
+                } else {
+                    diagnosis += 'المادة العضوية في المستوى الأمثل. ';
+                }
+                
+                elements.diagnosisText.textContent = diagnosis;
+                elements.recommendations.style.display = showRecommendations ? 'block' : 'none';
+            }
+            
+            function createSoilChart(moisture, ph, ec, organic) {
+                const ctx = document.getElementById('soilChart').getContext('2d');
+                
+                if(state.soilChart) state.soilChart.destroy();
+                
+                state.soilChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['الرطوبة', 'الحموضة (pH)', 'الملوحة (EC)', 'المادة العضوية'],
+                        datasets: [{
+                            label: 'قياسات التربة',
+                            data: [moisture, ph * 10, ec * 20, organic * 10],
+                            backgroundColor: 'rgba(93, 64, 55, 0.2)',
+                            borderColor: 'rgba(93, 64, 55, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(93, 64, 55, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(93, 64, 55, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 100
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                rtl: true
+                            },
+                            title: {
+                                display: true,
+                                text: 'مقارنة قياسات التربة بالمستويات المثلى',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // ======================
+            // وظائف النوافذ المنبثقة
+            // ======================
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden'; // منع التمرير عند فتح النافذة
+            }
+            
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto'; // إعادة التمرير عند إغلاق النافذة
+            }
+            
+            // إغلاق النافذة عند النقر خارجها
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+            
+            // ======================
+            // وظائف التحقق من حالة المستخدم
+            // ======================
+            function checkAuthState() {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (user && user.email) {
+                    // المستخدم مسجل
+                    if (elements.loginBtn) elements.loginBtn.style.display = 'none';
+                    if (elements.userMenu) elements.userMenu.style.display = 'flex';
+                    if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'block';
+                    if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'none';
+                    
+                    // تحديث معلومات المستخدم
+                    if (elements.sidebarUserName) {
+                        elements.sidebarUserName.textContent = user.firstName ? 
+                            `${user.firstName} ${user.lastName || ''}` : 'مستخدم EcoPlant';
+                    }
+                    if (elements.sidebarUserRole) {
+                        elements.sidebarUserRole.textContent = user.role || 'عضو في EcoPlant DZ';
+                    }
+                    if (elements.userName) {
+                        elements.userName.textContent = user.firstName ? 
+                            `${user.firstName} ${user.lastName || ''}` : 'مستخدم';
+                    }
+                    
+                    // تحديث الصورة إذا كانت متاحة
+                    if (user.photoURL && elements.sidebarUserAvatar) {
+                        elements.sidebarUserAvatar.innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                    }
+                    if (user.photoURL && elements.userAvatar) {
+                        elements.userAvatar.innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                    } else if (user.firstName && elements.userAvatar) {
+                        elements.userAvatar.textContent = user.firstName.charAt(0);
+                    }
+                } else {
+                    // المستخدم غير مسجل
+                    if (elements.loginBtn) elements.loginBtn.style.display = 'flex';
+                    if (elements.userMenu) elements.userMenu.style.display = 'none';
+                    if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'none';
+                    if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'block';
+                }
+            }
+            
+            // دالة تسجيل الخروج
+            function logout() {
+                localStorage.removeItem('user');
+                checkAuthState();
+                window.location.href = 'login.html';
+            }
+            
+            // ======================
+            // إشعارات
+            // ======================
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                                    type === 'error' ? 'fa-times-circle' :
+                                    type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => notification.remove(), 300);
+                    }, 3000);
+                }, 10);
+            }
+            
+            // بدء التطبيق
+            init();
+            
+            // تهيئة الصفحة عند التحميل
+            window.addEventListener('load', function() {
+                // إضافة تأثير الظهور التدريجي للعناصر
+                const elements = document.querySelectorAll('.probe-container, .readings-section, .feature-alert');
+                
+                elements.forEach(element => {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(20px)';
+                    element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }, 300);
+                });
+            });
+        });
+        // ======================
+// وظائف إضافية لمعالجة الصور
+// ======================
+
+// دالة للتحقق من صحة رابط الصورة
+function isValidImageUrl(url) {
+    if (!url || url === 'undefined' || url === 'null' || url.trim() === '') {
+        return false;
+    }
+    
+    // التحقق من أن الرابط يبدأ بـ http أو https أو هو مسار نسبي
+    return url.startsWith('http://') || 
+           url.startsWith('https://') || 
+           url.startsWith('/') ||
+           url.startsWith('data:image/');
+}
+
+// تحديث دالة checkAuthState لمعالجة صور المستخدم بشكل صحيح
+function checkAuthState() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    if (user && user.email) {
+        // المستخدم مسجل
+        if (elements.loginBtn) elements.loginBtn.style.display = 'none';
+        if (elements.userMenu) elements.userMenu.style.display = 'flex';
+        if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'block';
+        if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'none';
+        
+        // تحديث معلومات المستخدم
+        if (document.getElementById('sidebarUserName')) {
+            document.getElementById('sidebarUserName').textContent = user.firstName ? 
+                `${user.firstName} ${user.lastName || ''}` : 'مستخدم EcoPlant';
+        }
+        if (document.getElementById('sidebarUserRole')) {
+            document.getElementById('sidebarUserRole').textContent = user.role || 'عضو في EcoPlant DZ';
+        }
+        if (document.getElementById('userName')) {
+            document.getElementById('userName').textContent = user.firstName ? 
+                `${user.firstName} ${user.lastName || ''}` : 'مستخدم';
+        }
+        
+        // تحديث الصورة إذا كانت متاحة وصالحة
+        if (user.photoURL && isValidImageUrl(user.photoURL)) {
+            if (document.getElementById('sidebarUserAvatar')) {
+                document.getElementById('sidebarUserAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+            }
+            if (document.getElementById('userAvatar')) {
+                document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+            }
+        } else if (user.firstName && document.getElementById('userAvatar')) {
+            // استخدام الحرف الأول من اسم المستخدم إذا لم تكن الصورة متاحة
+            document.getElementById('userAvatar').textContent = user.firstName.charAt(0);
+        }
+    } else {
+        // المستخدم غير مسجل
+        if (elements.loginBtn) elements.loginBtn.style.display = 'flex';
+        if (elements.userMenu) elements.userMenu.style.display = 'none';
+        if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'none';
+        if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'block';
+    }
+}
+    </script>
+</body>
+</html>

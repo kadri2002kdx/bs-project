@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكاة زراعية - النظام الذكي</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom-right-radius: 50px;
+            border-bottom-left-radius: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .btn-simulate {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn-simulate:hover {
+            background-color: #219150;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        .kpi-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+        }
+        .bg-gradient-success { background: linear-gradient(45deg, #11998e, #38ef7d); }
+        .bg-gradient-info { background: linear-gradient(45deg, #2193b0, #6dd5ed); }
+        .bg-gradient-warning { background: linear-gradient(45deg, #fce38a, #f38181); }
+        .bg-gradient-danger { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .result-section { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status"></div>
+        <h4 class="mt-3 text-success">جاري إجراء المحاكاة الدقيقة...</h4>
+        <p class="text-muted">يتم تحليل المناخ، التربة، والجدوى الاقتصادية</p>
+    </div>
+
+    <div class="header-bg text-center">
+        <div class="container">
+            <h1><i class="fas fa-seedling me-2"></i>نظام المحاكاة الزراعية الذكي</h1>
+            <p class="lead">أدخل البيانات الأساسية للحصول على تحليل شامل وتوقعات دقيقة</p>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <form id="simulationForm">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-sliders-h me-2"></i>إعدادات المحاكاة</div>
+                        <div class="card-body">
+                            
+                            <div class="mb-3">
+                                <label class="form-label">اسم السيناريو</label>
+                                <input type="text" class="form-control" name="scenario_name" value="سيناريو تجريبي 1">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">المحصول</label>
+                                <select class="form-select" id="plant_id" name="plant_id" required>
+                                    <option value="" disabled selected>جاري التحميل...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">الولاية (الموقع)</label>
+                                <select class="form-select" id="wilaya_id" name="wilaya_id" required>
+                                    <option value="" disabled selected>جاري التحميل...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">نوع التربة</label>
+                                <select class="form-select" id="soil" name="soil" required>
+                                    <option value="" disabled selected>جاري التحميل...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">نظام الري</label>
+                                <select class="form-select" id="water" name="water" required>
+                                    <option value="" disabled selected>جاري التحميل...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">نوع السماد الأساسي</label>
+                                <select class="form-select" id="fertilizer" name="fertilizer" required>
+                                    <option value="" disabled selected>جاري التحميل...</option>
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">المساحة (هكتار)</label>
+                                    <input type="number" class="form-control" name="area_ha" value="10" min="0.1" step="0.1">
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">المدة (سنوات)</label>
+                                    <input type="number" class="form-control" name="years" value="1" min="1" max="30">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">كمية الري (م³/هكتار)</label>
+                                <input type="number" class="form-control" name="irrigation_amount" value="5000">
+                            </div>
+
+                            <label class="form-label">التسميد (كغ/هكتار)</label>
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" placeholder="N" name="nitrogen" value="120" title="نيتروجين">
+                                <input type="number" class="form-control" placeholder="P" name="phosphorus" value="60" title="فوسفور">
+                                <input type="number" class="form-control" placeholder="K" name="potassium" value="80" title="بوتاسيوم">
+                            </div>
+
+                            <button type="submit" class="btn btn-simulate shadow">
+                                <i class="fas fa-play me-2"></i>بدء المحاكاة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8 result-section" id="resultsArea">
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-3 col-6 mb-2">
+                            <div class="kpi-box bg-gradient-success">
+                                <h6>مؤشر الاستدامة</h6>
+                                <h2 id="res_sustainability">0%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <div class="kpi-box bg-gradient-info">
+                                <h6>الربحية (ROI)</h6>
+                                <h2 id="res_profitability">0%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <div class="kpi-box bg-gradient-warning">
+                                <h6>الإجهاد المائي</h6>
+                                <h2 id="res_water_stress">0%</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-2">
+                            <div class="kpi-box bg-gradient-danger">
+                                <h6>الإجهاد الحراري</h6>
+                                <h2 id="res_heat_stress">0%</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">التحليل الاقتصادي (د.ج)</div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>الإنتاج السنوي (طن):</span>
+                                            <strong id="res_annual_yield">0</strong>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>التكلفة السنوية:</span>
+                                            <strong id="res_annual_cost" class="text-danger">0</strong>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>صافي الربح السنوي:</span>
+                                            <strong id="res_annual_profit" class="text-success">0</strong>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>سنوات استرداد رأس المال:</span>
+                                            <strong id="res_break_even">0</strong>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">توزيع التكاليف</div>
+                                <div class="card-body">
+                                    <canvas id="costsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark">
+                            <i class="fas fa-lightbulb me-2"></i>التوصيات الذكية
+                        </div>
+                        <div class="card-body">
+                            <ul id="recommendationsList" class="list-group list-group-flush">
+                                </ul>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted" id="simulationIdDisplay">Simulation ID: -</small>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // تهيئة المتغيرات للرسوم البيانية
+        let costsChart = null;
+
+        // عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadInitialData();
+        });
+
+        // 1. دالة لجلب البيانات المرجعية وتعبئة القوائم
+        async function loadInitialData() {
+            try {
+                // جلب البيانات بشكل متوازي
+                const [plants, wilayas, soils, waterSystems, fertilizers] = await Promise.all([
+                    fetch('/api/plants').then(r => r.json()),
+                    fetch('/api/wilayas').then(r => r.json()),
+                    fetch('/api/soils').then(r => r.json()),
+                    fetch('/api/water-systems').then(r => r.json()),
+                    fetch('/api/fertilizers').then(r => r.json())
+                ]);
+
+                // تعبئة القوائم
+                populateSelect('plant_id', plants.data, 'name');
+                populateSelect('wilaya_id', wilayas.data, 'name');
+                populateSelect('soil', soils.data, 'name');
+                populateSelect('water', waterSystems.data, 'name');
+                populateSelect('fertilizer', fertilizers.data, 'name');
+
+            } catch (error) {
+                console.error('فشل تحميل البيانات الأولية:', error);
+                alert('حدث خطأ في الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.');
+            }
+        }
+
+        function populateSelect(elementId, data, labelField) {
+            const select = document.getElementById(elementId);
+            select.innerHTML = ''; // مسح "جاري التحميل"
+            
+            if(!data || data.length === 0) {
+                const option = document.createElement('option');
+                option.text = "لا توجد بيانات";
+                select.add(option);
+                return;
+            }
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.text = item[labelField];
+                select.add(option);
+            });
+        }
+
+        // 2. معالجة تقديم النموذج (المحاكاة)
+        document.getElementById('simulationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // إظهار شاشة التحميل
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('resultsArea').style.display = 'none';
+
+            // تجميع البيانات
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            // تحويل الأرقام
+            ['area_ha', 'years', 'irrigation_amount', 'nitrogen', 'phosphorus', 'potassium'].forEach(k => {
+                data[k] = parseFloat(data[k]);
+            });
+
+            try {
+                const response = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(result);
+                } else {
+                    alert('خطأ في المحاكاة: ' + result.message);
+                }
+
+            } catch (error) {
+                console.error('Simulation Error:', error);
+                alert('حدث خطأ أثناء الاتصال بالخادم.');
+            } finally {
+                // إخفاء شاشة التحميل
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+
+        // 3. عرض النتائج
+        function displayResults(data) {
+            const kpis = data.kpis_summary;
+            const eco = data.economic_summary;
+            const fullResults = data.full_results;
+
+            // عرض KPIs
+            document.getElementById('res_sustainability').innerText = kpis.sustainability_index + '%';
+            document.getElementById('res_profitability').innerText = kpis.profitability + '%';
+            document.getElementById('res_water_stress').innerText = kpis.water_stress + '%';
+            document.getElementById('res_heat_stress').innerText = kpis.heat_stress + '%';
+
+            // عرض الاقتصاديات
+            document.getElementById('res_annual_yield').innerText = eco.annual_yield.toLocaleString();
+            document.getElementById('res_annual_cost').innerText = eco.annual_cost.toLocaleString();
+            document.getElementById('res_annual_profit').innerText = Math.round(eco.annual_profit).toLocaleString();
+            document.getElementById('res_break_even').innerText = eco.break_even_years;
+
+            // عرض التوصيات
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+            if (fullResults.recommendations && fullResults.recommendations.length > 0) {
+                fullResults.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.innerHTML = `<i class="fas fa-check-circle text-success me-2"></i> <strong>${rec.category}:</strong> ${rec.message}`;
+                    recList.appendChild(li);
+                });
+            } else {
+                recList.innerHTML = '<li class="list-group-item text-muted">لا توجد توصيات حرجة حالياً.</li>';
+            }
+
+            // عرض معرف المحاكاة
+            document.getElementById('simulationIdDisplay').innerText = `Simulation ID: ${data.simulation_id}`;
+
+            // رسم مخطط التكاليف
+            drawCostsChart(fullResults.economic.cost_breakdown);
+
+            // إظهار قسم النتائج
+            document.getElementById('resultsArea').style.display = 'block';
+            
+            // التمرير للنتائج
+            document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 4. دالة رسم المخطط البياني
+        function drawCostsChart(costs) {
+            const ctx = document.getElementById('costsChart').getContext('2d');
+            
+            if (costsChart) {
+                costsChart.destroy();
+            }
+
+            // تحويل كائن التكاليف إلى مصفوفات
+            const labels = Object.keys(costs);
+            const values = Object.values(costs);
+
+            costsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6', '#34495e', '#e67e22'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

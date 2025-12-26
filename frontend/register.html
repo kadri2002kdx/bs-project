@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب | EcoPlant DZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .register-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .register-header {
+            margin-bottom: 30px;
+        }
+        
+        .register-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .register-title {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .register-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+        }
+        
+        .register-links {
+            margin-top: 20px;
+        }
+        
+        .register-links a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .register-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: right;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .password-strength {
+            height: 5px;
+            margin-top: 8px;
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        .password-strength.weak {
+            background-color: #f44336;
+            width: 33%;
+        }
+        
+        .password-strength.medium {
+            background-color: #ff9800;
+            width: 66%;
+        }
+        
+        .password-strength.strong {
+            background-color: #4caf50;
+            width: 100%;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-feedback {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: var(--gray);
+        }
+        
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
+        
+        .custom-modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.4s;
+            text-align: center;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .custom-close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 15px;
+        }
+        
+        .custom-close:hover {
+            color: var(--primary-dark);
+        }
+        
+        .custom-modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-right: 30px;
+        }
+        
+        .custom-modal p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .register-card {
+                padding: 30px 20px;
+            }
+            
+            .register-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .custom-modal-content {
+                padding: 20px;
+                margin: 20% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            <div class="nav-links">
+                <a href="login.html">تسجيل الدخول</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- محتوى إنشاء الحساب -->
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1 class="register-title">إنشاء حساب جديد</h1>
+                <p class="register-subtitle">انضم إلى مجتمع EcoPlant DZ البيئي</p>
+            </div>
+            
+            <form id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">الاسم الأول</label>
+                        <input type="text" class="form-control" id="firstName" required>
+                        <div class="error-message" id="firstNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lastName">الاسم الأخير</label>
+                        <input type="text" class="form-control" id="lastName" required>
+                        <div class="error-message" id="lastNameError"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="email" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group password-container">
+                        <label for="password">كلمة المرور</label>
+                        <input type="password" class="form-control" id="password" required>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <div class="password-feedback" id="passwordFeedback"></div>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">تأكيد كلمة المرور</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">الدور</label>
+                        <select class="form-control" id="role" required>
+                            <option value="">اختر دورك...</option>
+                            <option value="student">طالب</option>
+                            <option value="teacher">أستاذ</option>
+                            <option value="researcher">باحث</option>
+                            <option value="farmer">فلاح</option>
+                            <option value="investor">مستثمر</option>
+                            <option value="other">آخر</option>
+                        </select>
+                        <div class="error-message" id="roleError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="state">الولاية</label>
+                        <select class="form-control" id="state" required>
+                            <option value="">اختر ولايتك...</option>
+                            <option value="adrar">أدرار</option>
+                            <option value="chlef">الشلف</option>
+                            <option value="laghouat">الأغواط</option>
+                            <option value="oum_el_bouaghi">أم البواقي</option>
+                            <option value="batna">باتنة</option>
+                            <option value="bejaia">بجاية</option>
+                            <option value="biskra">بسكرة</option>
+                            <option value="bechar">بشار</option>
+                            <option value="blida">البليدة</option>
+                            <option value="bouira">البويرة</option>
+                            <option value="tamanrasset">تمنراست</option>
+                            <option value="tebessa">تبسة</option>
+                            <option value="tlemcen">تلمسان</option>
+                            <option value="tiaret">تيارت</option>
+                            <option value="tizi_ouzou">تيزي وزو</option>
+                            <option value="algiers">الجزائر</option>
+                            <option value="djelfa">الجلفة</option>
+                            <option value="jijel">جيجل</option>
+                            <option value="setif">سطيف</option>
+                            <option value="saida">سعيدة</option>
+                            <option value="skikda">سكيكدة</option>
+                            <option value="sidi_bel_abbes">سيدي بلعباس</option>
+                            <option value="annaba">عنابة</option>
+                            <option value="guelma">قالمة</option>
+                            <option value="constantine">قسنطينة</option>
+                            <option value="medea">المدية</option>
+                            <option value="mostaganem">مستغانم</option>
+                            <option value="msila">المسيلة</option>
+                            <option value="mascara">معسكر</option>
+                            <option value="ouargla">ورقلة</option>
+                            <option value="oran">وهران</option>
+                            <option value="el_bayadh">البيض</option>
+                            <option value="illizi">إيليزي</option>
+                            <option value="bordj_bou_arreridj">برج بوعريريج</option>
+                            <option value="boumerdes">بومرداس</option>
+                            <option value="el_tarf">الطارف</option>
+                            <option value="tindouf">تندوف</option>
+                            <option value="tissemsilt">تيسمسيلت</option>
+                            <option value="el_oued">الوادي</option>
+                            <option value="khenchela">خنشلة</option>
+                            <option value="souk_ahras">سوق أهراس</option>
+                            <option value="tipaza">تيبازة</option>
+                            <option value="mila">ميلة</option>
+                            <option value="ain_defla">عين الدفلى</option>
+                            <option value="naama">النعامة</option>
+                            <option value="ain_temouchent">عين تموشنت</option>
+                            <option value="ghardaia">غرداية</option>
+                            <option value="relizane">غليزان</option>
+                            <option value="timimoun">تيميمون</option>
+                            <option value="bordj_badji_mokhtar">برج باجي مختار</option>
+                            <option value="ouled_jellal">أولاد جلال</option>
+                            <option value="beni_abbes">بني عباس</option>
+                            <option value="in_salah">عين صالح</option>
+                            <option value="in_guezzam">عين قزام</option>
+                            <option value="touggourt">تقرت</option>
+                            <option value="djanet">جانت</option>
+                            <option value="el_mghair">المغير</option>
+                            <option value="el_meniaa">المنيعة</option>
+                        </select>
+                        <div class="error-message" id="stateError"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="university">الجامعة/المؤسسة</label>
+                    <select class="form-control" id="university">
+                        <option value="">اختر جامعتك/مؤسستك (اختياري)...</option>
+                        <option value="ensa_algiers">المدرسة الوطنية العليا للفلاحة، الجزائر</option>
+                        <option value="usthb">جامعة العلوم والتكنولوجيا هواري بومدين، الجزائر</option>
+                        <option value="univ_algiers3">جامعة الجزائر 3 إبراهيم سلطان شيبوط، الجزائر</option>
+                        <option value="univ_blida1">جامعة البليدة 1 سعد دحلب، البليدة</option>
+                        <option value="univ_bejaia">جامعة بجاية عبد الرحمن ميرة، بجاية</option>
+                        <option value="univ_batna1">جامعة باتنة 1 الحاج لخضر، باتنة</option>
+                        <option value="univ_batna2">جامعة باتنة 2 مصطفى بن بولعيد، باتنة</option>
+                        <option value="univ_constantine1">جامعة قسنطينة 1 منتوري، قسنطينة</option>
+                        <option value="univ_constantine2">جامعة قسنطينة 2 عبد الحميد مهري، قسنطينة</option>
+                        <option value="univ_constantine3">جامعة قسنطينة 3 صالح بوبنيدر، قسنطينة</option>
+                        <option value="univ_oran1">جامعة وهران 1 أحمد بن بلة، وهران</option>
+                        <option value="univ_oran2">جامعة وهران 2 محمد بن أحمد، وهران</option>
+                        <option value="univ_oran_ustmbo">جامعة Sciences والتكنولوجيا محمد بوضياف، وهران</option>
+                        <option value="univ_setif1">جامعة سطيف 1 فرحات عباس، سطيف</option>
+                        <option value="univ_setif2">جامعة سطيف 2 محمد لمين دباغين، سطيف</option>
+                        <option value="univ_jijel">جامعة جيجل محمد الصديق بن يحيى، جيجل</option>
+                        <option value="univ_tlemcen">جامعة تلمسان أبو بكر بلقايد، تلمسان</option>
+                        <option value="univ_tizi_ouzou">جامعة تيزي وزو مولود معمري، تيزي وزو</option>
+                        <option value="univ_biskra">جامعة بسكرة محمد خيضر، بسكرة</option>
+                        <option value="univ_laghouat">جامعة الأغواط عمار ثليجي، الأغواط</option>
+                        <option value="univ_mostaganem">جامعة مستغانم عبد الحميد بن باديس، مستغانم</option>
+                        <option value="univ_msila">جامعة المسيلة محمد بوضياف، المسيلة</option>
+                        <option value="univ_medea">جامعة المدية يحي فارس، المدية</option>
+                        <option value="univ_souk_ahras">جامعة سوق أهراس محمد الشريف مساعدية، سوق أهراس</option>
+                        <option value="univ_tebessa">جامعة تبسة العربي التبسي، تبسة</option>
+                        <option value="univ_ouargla">جامعة ورقلة قاصدي مرباح، ورقلة</option>
+                        <option value="univ_ghardaia">جامعة غرداية، غرداية</option>
+                        <option value="univ_el_oued">جامعة الوادي حمة لخضر، الوادي</option>
+                        <option value="univ_adrar">جامعة أدرار أحمد دراية، أدرار</option>
+                        <option value="univ_bechar">جامعة بشار الطاهري محمد، بشار</option>
+                        <option value="other">مؤسسة أخرى</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialization">التخصص</label>
+                    <select class="form-control" id="specialization">
+                        <option value="">اختر تخصصك (اختياري)...</option>
+                        <optgroup label="علوم الطبيعة والحياة">
+                            <option value="biology_general">بيولوجيا عامة</option>
+                            <option value="cellular_biology">بيولوجيا خلوية وجزيئية</option>
+                            <option value="microbiology">علم الأحياء الدقيقة</option>
+                            <option value="zoology">علم الحيوان</option>
+                            <option value="botany">علم النبات</option>
+                            <option value="ecology">علم البيئة</option>
+                            <option value="environmental_biology">البيولوجيا البيئية والإيكولوجيا</option>
+                            <option value="biochemistry">البيوكيمياء</option>
+                            <option value="genetics">الوراثة</option>
+                            <option value="physiology">علم وظائف الأعضاء</option>
+                            <option value="food_science">علوم الأغذية والتغذية</option>
+                            <option value="biotechnology">التكنولوجيا الحيوية</option>
+                        </optgroup>
+                        <optgroup label="الفلاحة (العلوم الزراعية)">
+                            <option value="agronomy">العلوم الزراعية</option>
+                            <option value="agricultural_economics">الاقتصاد الفلاحي والتنمية الريفية</option>
+                            <option value="soil_science">علوم التربة</option>
+                            <option value="plant_protection">وقاية النبات</option>
+                            <option value="plant_production">الإنتاج النباتي</option>
+                            <option value="animal_production">الإنتاج الحيواني</option>
+                            <option value="forestry">الغابات</option>
+                            <option value="water_soil_science">علوم المياه والتربة</option>
+                            <option value="agricultural_engineering">هندسة زراعية</option>
+                            <option value="natural_resources_management">تسيير الموارد الطبيعية والفلاحية</option>
+                        </optgroup>
+                        <optgroup label="البيئة والمحيط">
+                            <option value="environmental_science">علوم البيئة</option>
+                            <option value="ecosystem_management">تسيير النظم البيئية</option>
+                            <option value="environmental_rehabilitation">الاستصلاح البيئي ومكافحة التلوث</option>
+                            <option value="renewable_energy">الطاقات المتجددة والبيئة</option>
+                            <option value="ecology_biodiversity">الإيكولوجيا والتنوع البيولوجي</option>
+                            <option value="marine_science">علوم البحر والمحيطات</option>
+                            <option value="earth_science">علوم الأرض والبيئة</option>
+                        </optgroup>
+                        <option value="other">تخصص آخر</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bio">السيرة الذاتية (اختياري)</label>
+                    <textarea class="form-control" id="bio" rows="3" placeholder="أخبرنا المزيد عن نفسك..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileImage">صورة الملف الشخصي (اختياري)</label>
+                    <input type="file" class="form-control" id="profileImage" accept="image/*">
+                    <div class="error-message" id="profileImageError"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب
+                </button>
+                
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="register-links">
+                    <p>هل لديك حساب بالفعل؟ <a href="login.html">سجل الدخول هنا</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('aboutModal')">من نحن</a>
+                <a href="#" onclick="openModal('contactModal')">اتصل بنا</a>
+                <a href="#" onclick="openModal('privacyModal')">سياسة الخصوصية</a>
+                <a href="#" onclick="openModal('termsModal')">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- نافذة منبثقة للرسائل -->
+    <div id="messageModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <span class="custom-close" onclick="closeModal('messageModal')">&times;</span>
+            <h2 id="modalTitle">عنوان الرسالة</h2>
+            <p id="modalMessage">محتوى الرسالة</p>
+            <button class="btn btn-primary" onclick="closeModal('messageModal')" id="modalButton">موافق</button>
+        </div>
+    </div>
+    
+    <!-- نافذة من نحن -->
+    <div id="aboutModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <span class="custom-close" onclick="closeModal('aboutModal')">&times;</span>
+            <h2>من نحن</h2>
+            <p>مرحباً بكم في منصة EcoPlant DZ، المنصة البيئية الرائدة في الجزائر التي تهدف إلى نشر الوعي البيئي وتعزيز المعرفة حول التنوع البيولوجي في بلادنا.</p>
+            <p>تأسست منصتنا على يد فريق من الباحثين والمهتمين بالبيئة الجزائرية، ونسعى جاهدين لتوفير مصدر موثوق للمعلومات حول النباتات والحيوانات والأنظمة البيئية في الجزائر.</p>
+            <p>رؤيتنا هي بناء مجتمع بيئي نشط ومتعلم، يساهم في الحفاظ على ثرواتنا الطبيعية للأجيال القادمة.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة اتصل بنا -->
+    <div id="contactModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <span class="custom-close" onclick="closeModal('contactModal')">&times;</span>
+            <h2>اتصل بنا</h2>
+            <p>نحن نرحب بجميع استفساراتكم واقتراحاتكم. لا تتردد في التواصل معنا عبر أي من الوسائل التالية:</p>
+            <p><i class="fas fa-envelope"></i> البريد الإلكتروني: <a href="mailto:contact@ecoplant-dz.dz">contact@ecoplant-dz.dz</a></p>
+            <p><i class="fas fa-phone"></i> الهاتف: +213 123 456 789</p>
+            <p><i class="fas fa-map-marker-alt"></i> العنوان: جامعة حمه لخضر بالوادي</p>
+            <p>سنتواصل معك في أقرب وقت ممكن للرد على استفساراتكم.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <span class="custom-close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+            <p>نتخذ إجراءات أمنية مناسبة لحماية بياناتك من الوصول غير المصرح به أو التعديل أو الكشف أو التدمير.</p>
+            <p>للاستفسارات حول سياسة الخصوصية، يرجى التواصل معنا على: contact@ecoplant-dz.dz</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <span class="custom-close" onclick="closeModal('termsModal')">&times;</span>
+            <h2>شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+            <p>يحظر عليك نشر أو مشاركة أي محتوى غير قانوني أو مسيء أو تشهيري أو مخل بالآداب العامة، أو انتهاك حقوق الملكية الفكرية للآخرين.</p>
+            <p>نحن نحتفظ بالحق في حذف أي محتوى ينتهك هذه الشروط أو إيقاف حسابك دون إشعار مسبق.</p>
+        </div>
+    </div>
+
+    <!-- تحميل Firebase بطريقة صحيحة -->
+    <script type="module">
+        // استيراد Firebase v10
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVELN-Jca7q3xtS0uWk2ZrNnlqXJzsKpg",
+            authDomain: "ecoplant-dz-148bf.firebaseapp.com",
+            databaseURL: "https://ecoplant-dz-148bf-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "ecoplant-dz-148bf",
+            storageBucket: "ecoplant-dz-148bf.appspot.com",
+            messagingSenderId: "233372376001",
+            appId: "1:233372376001:web:2c261f4bf161a65f726d40",
+            measurementId: "G-4PJZMLMKJE"
+        };
+        
+        // تهيئة Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        
+        // تهيئة واجهة المستخدم
+        document.addEventListener("DOMContentLoaded", function() {
+            initApp();
+        });
+        
+        // ✅ تهيئة التطبيق
+        function initApp() {
+            // التحقق من قوة كلمة المرور
+            document.getElementById('password').addEventListener('input', updatePasswordStrength);
+            
+            // معالجة تقديم النموذج
+            document.getElementById('registerForm').addEventListener('submit', handleRegister);
+            
+            // إعداد النوافذ المنبثقة
+            setupModals();
+            
+            // إضافة تحقق فوري عند ترك الحقل
+            setupLiveValidation();
+        }
+        
+        // ✅ إعداد التحقق الفوري
+        function setupLiveValidation() {
+            const inputs = document.querySelectorAll('#registerForm input, #registerForm select');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this.id);
+                });
+            });
+        }
+        
+        // ✅ التحقق من صحة الحقل
+        function validateField(fieldId) {
+            const value = document.getElementById(fieldId).value.trim();
+            let isValid = true;
+            let errorMessage = '';
+            
+            switch(fieldId) {
+                case 'firstName':
+                    if (!value) {
+                        errorMessage = 'الاسم الأول مطلوب';
+                        isValid = false;
+                    } else if (value.length < 2) {
+                        errorMessage = 'الاسم الأول يجب أن يكون على الأقل حرفين';
+                        isValid = false;
+                    }
+                    break;
+                case 'lastName':
+                    if (!value) {
+                        errorMessage = 'الاسم الأخير مطلوب';
+                        isValid = false;
+                    } else if (value.length < 2) {
+                        errorMessage = 'الاسم الأخير يجب أن يكون على الأقل حرفين';
+                        isValid = false;
+                    }
+                    break;
+                case 'email':
+                    if (!value) {
+                        errorMessage = 'البريد الإلكتروني مطلوب';
+                        isValid = false;
+                    } else if (!isValidEmail(value)) {
+                        errorMessage = 'يرجى إدخال بريد إلكتروني صحيح';
+                        isValid = false;
+                    }
+                    break;
+                case 'password':
+                    if (!value) {
+                        errorMessage = 'كلمة المرور مطلوبة';
+                        isValid = false;
+                    } else if (value.length < 8) {
+                        errorMessage = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+                        isValid = false;
+                    } else if (checkPasswordStrength(value) < 2) {
+                        errorMessage = 'كلمة المرور ضعيفة (يجب أن تحتوي على أحرف كبيرة وأرقام)';
+                        isValid = false;
+                    }
+                    break;
+                case 'confirmPassword':
+                    const password = document.getElementById('password').value;
+                    if (!value) {
+                        errorMessage = 'تأكيد كلمة المرور مطلوب';
+                        isValid = false;
+                    } else if (value !== password) {
+                        errorMessage = 'كلمة المرور غير متطابقة';
+                        isValid = false;
+                    }
+                    break;
+                case 'role':
+                    if (!value) {
+                        errorMessage = 'يرجى اختيار دورك';
+                        isValid = false;
+                    }
+                    break;
+                case 'state':
+                    if (!value) {
+                        errorMessage = 'يرجى اختيار ولايتك';
+                        isValid = false;
+                    }
+                    break;
+            }
+            
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                if (!isValid) {
+                    errorElement.textContent = errorMessage;
+                    errorElement.style.display = 'block';
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            }
+            
+            return isValid;
+        }
+        
+        // ✅ التحقق من صحة البريد الإلكتروني
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // ✅ التحقق من قوة كلمة المرور
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+        
+        function updatePasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const feedback = document.getElementById('passwordFeedback');
+            const strength = checkPasswordStrength(password);
+            strengthBar.className = 'password-strength';
+            feedback.textContent = '';
+            if (password.length > 0) {
+                if (strength < 2) {
+                    strengthBar.classList.add('weak');
+                    feedback.textContent = 'كلمة المرور ضعيفة';
+                    feedback.style.color = '#f44336';
+                } else if (strength < 4) {
+                    strengthBar.classList.add('medium');
+                    feedback.textContent = 'كلمة المرور متوسطة';
+                    feedback.style.color = '#ff9800';
+                } else {
+                    strengthBar.classList.add('strong');
+                    feedback.textContent = 'كلمة المرور قوية';
+                    feedback.style.color = '#4caf50';
+                }
+            }
+        }
+        
+        // ✅ النوافذ المنبثقة
+        function setupModals() {
+            // إغلاق النوافذ بالضغط على زر الإغلاق
+            document.querySelectorAll('.custom-close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    const modalId = this.closest('.custom-modal').id;
+                    closeModal(modalId);
+                });
+            });
+            
+            // إغلاق النوافذ بالضغط خارج المحتوى
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('custom-modal')) {
+                    closeModal(event.target.id);
+                }
+            });
+        }
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function showModal(title, message, buttonText = "موافق", onButtonClick = null) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalButton').textContent = buttonText;
+            
+            // إعداد وظيفة الزر
+            const modalButton = document.getElementById('modalButton');
+            modalButton.onclick = function() {
+                if (onButtonClick) {
+                    onButtonClick();
+                }
+                closeModal('messageModal');
+            };
+            
+            openModal('messageModal');
+        }
+        
+        // ✅ رفع صورة الملف الشخصي إلى Cloudinary
+        async function uploadProfileImage(file) {
+            if (!file) return null;
+            
+            try {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", "unsigned_preset"); // استخدم preset متاعك
+                
+                const response = await fetch("https://api.cloudinary.com/v1_1/dq5cgwwjt/image/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                return data.secure_url;
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                return null;
+            }
+        }
+        
+        // ✅ معالجة التسجيل
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            // إخفاء رسائل الخطأ القديمة
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // جمع البيانات من النموذج
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+            const state = document.getElementById('state').value;
+            const university = document.getElementById('university').value.trim();
+            const specialization = document.getElementById('specialization').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+            const profileImage = document.getElementById('profileImage').files[0];
+            
+            let isValid = true;
+            
+            // التحقق من صحة جميع الحقول
+            isValid = validateField('firstName') && isValid;
+            isValid = validateField('lastName') && isValid;
+            isValid = validateField('email') && isValid;
+            isValid = validateField('password') && isValid;
+            isValid = validateField('confirmPassword') && isValid;
+            isValid = validateField('role') && isValid;
+            isValid = validateField('state') && isValid;
+            
+            if (!isValid) {
+                showModal('خطأ', 'يرجى تصحيح الأخطاء في النموذج قبل المتابعة', 'حاول مجدداً');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+            
+            try {
+                // إنشاء المستخدم في Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // تحديث ملف المستخدم بالاسم الكامل
+                await updateProfile(user, {
+                    displayName: `${firstName} ${lastName}`
+                });
+                
+                // رفع صورة الملف الشخصي إذا تم اختيارها
+                let photoURL = null;
+                if (profileImage) {
+                    photoURL = await uploadProfileImage(profileImage);
+                    if (photoURL) {
+                        // تحديث صورة الملف الشخصي في Firebase Authentication
+                        await updateProfile(user, {
+                            photoURL: photoURL
+                        });
+                    }
+                }
+                
+                // حفظ بيانات المستخدم في Realtime Database
+                await set(ref(db, 'users/' + user.uid), {
+                    firstName,
+                    lastName,
+                    email,
+                    role,
+                    state,
+                    university: university || null,
+                    specialization: specialization || null,
+                    bio: bio || null,
+                    photoURL: photoURL || null,
+                    createdAt: Date.now(),
+                    ecoPoints: 0,
+                    emailVerified: false
+                });
+                
+                // إرسال بريد التحقق
+                await sendEmailVerification(user);
+                
+// عرض رسالة النجاح
+showModal(
+    'نجاح',
+    'تم إنشاء حسابك بنجاح! تم إرسال رابط التحقق إلى بريدك الإلكتروني.<br>يرجى التحقق من بريدك لتتمكن من استخدام حسابك بالكامل.<br><br><b>تنبيه:</b> قد تجد رسالة التأكيد في جزء الرسائل غير المرغوب بها (Spam) لأن الموقع لم يتم توثيقه بعد.',
+    'انتقل إلى صفحة تسجيل الدخول',
+    () => {
+        window.location.href = 'login.html';
+    }
+);
+
+                
+                // تسجيل الخروج تلقائيًا بعد إنشاء الحساب
+                await auth.signOut();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                let errorMessage = 'فشل إنشاء الحساب';
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'البريد الإلكتروني مسجل مسبقاً';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'صيغة البريد الإلكتروني غير صحيحة';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'كلمة المرور ضعيفة جداً';
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'فشل في الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت';
+                }
+                
+                showModal('خطأ', errorMessage, 'حاول مجدداً');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+            }
+        }
+    </script>
+</body>
+</html>

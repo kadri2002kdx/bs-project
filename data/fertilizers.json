@@ -1,0 +1,117 @@
+[
+  {
+    "id": 3,
+    "name": "نترات الأمونيوم 33.5%",
+    "type": "نيتروجيني",
+    "n_percent": 33.5,
+    "p2o5_percent": 0,
+    "k2o_percent": 0,
+    "form": "حبيبات",
+    "solubility_g_l": 1180,
+    "application_rate_kg_ha": 200,
+    "price_da_kg": 50,
+    "release_rate": "سريع جداً",
+    "efficiency_percent": 85,
+    "application_timing": ["مرحلة النمو الخضري المبكر", "قبل الإزهار"],
+    "compatibility": ["سوبر فوسفات", "كلوريد البوتاسيوم"],
+    "environmental_impact": {
+      "volatilization_loss": 10,
+      "leaching_potential": "مرتفع جداً",
+      "acidification_potential": "مرتفع"
+    },
+    "advantages": ["نيتروجين في صورة نترات وأمونيوم", "سرعة امتصاص عالية", "مناسب للتربة الباردة"],
+    "disadvantages": ["قابلية عالية للانفجار", "ممنوع تخزينه بكميات كبيرة", "فقد سريع بالرشح"]
+  },
+  {
+    "id": 4,
+    "name": "كبريتات البوتاسيوم 50%",
+    "type": "بوتاسي",
+    "n_percent": 0,
+    "p2o5_percent": 0,
+    "k2o_percent": 50,
+    "form": "مسحوق بلوري",
+    "solubility_g_l": 111,
+    "application_rate_kg_ha": 120,
+    "price_da_kg": 85,
+    "release_rate": "سريع",
+    "efficiency_percent": 90,
+    "application_timing": ["مرحلة تكوين الجذور", "مرحلة تكوين الثمار"],
+    "compatibility": ["معظم الأسمدة النيتروجينية والفوسفاتية"],
+    "environmental_impact": {
+      "volatilization_loss": 0,
+      "leaching_potential": "متوسط",
+      "acidification_potential": "منخفض"
+    },
+    "advantages": ["مصدر للبوتاسيوم والكبريت", "لا يحتوي على كلوريد", "ملائم للمحاصيل الحساسة للملوحة"],
+    "disadvantages": ["سعره مرتفع نسبياً", "يحتاج إلى رطوبة كافية للامتصاص"]
+  },
+  {
+    "id": 5,
+    "name": "سماد مركب NPK 15-15-15",
+    "type": "مركب",
+    "n_percent": 15,
+    "p2o5_percent": 15,
+    "k2o_percent": 15,
+    "form": "حبيبات",
+    "solubility_g_l": 200,
+    "application_rate_kg_ha": 300,
+    "price_da_kg": 70,
+    "release_rate": "متدرج",
+    "efficiency_percent": 80,
+    "application_timing": ["التحضير للزراعة", "نهاية النمو الخضري"],
+    "compatibility": ["يمكن استخدامه منفرداً"],
+    "environmental_impact": {
+      "volatilization_loss": 8,
+      "leaching_potential": "متوسط",
+      "acidification_potential": "متوسط"
+    },
+    "advantages": ["يغطي احتياجات متعددة", "توفير في تكاليف التسميد", "سهل في التطبيق"],
+    "disadvantages": ["نسب العناصر ثابتة", "قد لا يناسب جميع مراحل النمو"]
+  },
+  {
+    "id": 6,
+    "name": "سلفات الأمونيوم 21%",
+    "type": "نيتروجيني وكبريتي",
+    "n_percent": 21,
+    "p2o5_percent": 0,
+    "k2o_percent": 0,
+    "form": "بلورات",
+    "solubility_g_l": 743,
+    "application_rate_kg_ha": 250,
+    "price_da_kg": 40,
+    "release_rate": "سريع إلى متوسط",
+    "efficiency_percent": 75,
+    "application_timing": ["بداية الموسم", "للمحاصيل المحبة للكبريت"],
+    "compatibility": ["سوبر فوسفات", "أسمدة البوتاس"],
+    "environmental_impact": {
+      "volatilization_loss": 5,
+      "leaching_potential": "منخفض",
+      "acidification_potential": "مرتفع جداً"
+    },
+    "advantages": ["مصدر للنيتروجين والكبريت", "مثالي للتربات القلوية", "ثمنه اقتصادي"],
+    "disadvantages": ["يزيد من حموضة التربة", "غير مناسب للتربات الحامضية"]
+  },
+  {
+    "id": 7,
+    "name": "سوبر فوسفات الأحادي",
+    "type": "فوسفاتي",
+    "n_percent": 0,
+    "p2o5_percent": 18,
+    "k2o_percent": 0,
+    "form": "مسحوق ناعم",
+    "solubility_g_l": 25,
+    "application_rate_kg_ha": 150,
+    "price_da_kg": 35,
+    "release_rate": "متوسط",
+    "efficiency_percent": 70,
+    "application_timing": ["التحضير للزراعة", "مرحلة التأسيس"],
+    "compatibility": ["يوريا", "نترات الأمونيوم"],
+    "environmental_impact": {
+      "volatilization_loss": 0,
+      "leaching_potential": "منخفض جداً",
+      "acidification_potential": "مرتفع"
+    },
+    "advantages": ["يحتوي على الكالسيوم والكبريت", "ثمنه منخفض", "مناسب للمحاصيل المحبة للكبريت"],
+    "disadvantages": ["نسبة الفوسفور منخفضة", "شكله المسحوق صعب التطبيق في الأجواء العاصفة"]
+  }
+]

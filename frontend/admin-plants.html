@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع النظم البيئية | إيكو بلانت الجزائر</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <style>
+        /* المتغيرات العامة */
+        :root {
+            --success: #4caf50;
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 80px 0;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar.scrolled {
+            padding: 10px 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+            border-radius: 12px;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            opacity: 0.1;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .nav-item.home::before { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+        .nav-item.analysis::before { background: linear-gradient(135deg, #2196f3, #0d47a1); }
+        .nav-item.plant::before { background: linear-gradient(135deg, #8bc34a, #33691e); }
+        .nav-item.soil::before { background: linear-gradient(135deg, #795548, #3e2723); }
+        .nav-item.simulation::before { background: linear-gradient(135deg, #9c27b0, #4a148c); }
+        .nav-item.ecosystems::before { background: linear-gradient(135deg, #00bcd4, #006064); }
+        .nav-item.species::before { background: linear-gradient(135deg, #ff9800, #e65100); }
+        .nav-item.upload::before { background: linear-gradient(135deg, #e91e63, #880e4f); }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(46, 125, 50, 0.1);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            border: none;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.35);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.45);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid var(--gray);
+        }
+        
+        .btn-outline:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-icon {
+            padding: 12px;
+            width: 46px;
+            height: 46px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            right: -280px;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            transition: var(--transition);
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(46, 125, 50, 0.05);
+            color: var(--primary);
+        }
+        
+        .sidebar-item i {
+            margin-left: 15px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-item span {
+            font-weight: 500;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .sidebar-footer p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-footer .btn {
+            width: 100%;
+        }
+        
+        /* أنماط قسم المستخدم في الشريط الجانبي */
+        .sidebar-user-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-left: 15px;
+            overflow: hidden;
+        }
+        
+        .sidebar-user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .sidebar-user-details {
+            flex: 1;
+        }
+        
+        .sidebar-user-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .sidebar-user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-user-menu {
+            margin-bottom: 10px;
+        }
+        
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+        
+        /* Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        /* قسم العنوان */
+        .page-header {
+            padding: 160px 0 80px;
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.08), rgba(255, 255, 255, 0.9)), 
+                        url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80') center/cover no-repeat;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .page-subtitle {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .page-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            color: var(--dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .page-text {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+        
+        /* قسم رفع النظام البيئي */
+        .upload-section {
+            position: relative;
+            z-index: 2;
+            margin-top: -60px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 20px auto 0;
+            color: #777;
+        }
+        
+        /* نموذج رفع النظام البيئي */
+        .upload-form {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 50px;
+        }
+        
+        .form-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-section h3 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section h3 i {
+            color: var(--accent);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            background: white;
+            font-size: 1rem;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group.required label::after {
+            content: " *";
+            color: #f44336;
+        }
+        
+        /* حقل إضافة الأنواع */
+        .species-field {
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .species-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .species-header h4 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+        }
+        
+        .remove-species {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .remove-species:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+        
+        .add-species-btn {
+            background: transparent;
+            border: 2px dashed var(--primary);
+            color: var(--primary);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .add-species-btn:hover {
+            background: rgba(46, 125, 50, 0.1);
+        }
+        
+        /* رفع الصور */
+        .image-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .image-upload:hover {
+            border-color: var(--primary);
+            background: rgba(46, 125, 50, 0.05);
+        }
+        
+        .image-upload i {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+        }
+        
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .preview-item {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            height: 150px;
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-item .remove-image {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(244, 67, 54, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        /* أزرار الإرسال */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        /* أنماط التحميل */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(46, 125, 50, 0.2);
+            border-radius: 50%;
+            border-top: 5px solid var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* إشعارات */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .notification.error {
+            background: #f44336;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 80px 0 0;
+            margin-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            opacity: 0.05;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 60px;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-col p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            opacity: 0.9;
+            transition: var(--transition);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a i {
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            padding-right: 8px;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover i {
+            transform: translateX(-5px);
+        }
+        
+        .contact-info {
+            list-style: none;
+        }
+        
+        .contact-info li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .contact-info i {
+            color: var(--accent);
+            font-size: 1.2rem;
+            min-width: 20px;
+        }
+        
+        .team-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .team-member i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+            color: var(--dark);
+        }
+        
+        .newsletter {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .newsletter input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px 0 0 50px;
+            color: white;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: none;
+        }
+        
+        .newsletter input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .newsletter button {
+            padding: 0 25px;
+            background: linear-gradient(90deg, var(--accent), #ff9800);
+            border: none;
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .newsletter button:hover {
+            background: linear-gradient(90deg, #ffb300, #ff8f00);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 30px 0;
+            text-align: center;
+            opacity: 0.8;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .bg-leaf {
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .leaf-1 { top: 10%; left: 5%; transform: rotate(15deg); }
+        .leaf-2 { top: 15%; right: 10%; transform: rotate(-25deg); animation-delay: 2s; }
+        .leaf-3 { bottom: 10%; left: 15%; transform: rotate(40deg); animation-delay: 4s; }
+        .leaf-4 { bottom: 15%; right: 5%; transform: rotate(-15deg); animation-delay: 6s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotate, 0)); }
+            50% { transform: translateY(-20px) rotate(var(--rotate, 0)); }
+        }
+        
+        /* التصميم المتجاوب */
+        @media (max-width: 992px) {
+            .main-nav {
+                gap: 5px;
+            }
+            
+            .nav-item {
+                padding: 5px 10px;
+            }
+            
+            .nav-item i {
+                font-size: 1.2rem;
+            }
+            
+            .nav-item span {
+                font-size: 0.8rem;
+            }
+            
+            .page-title {
+                font-size: 2.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-nav {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .page-header {
+                padding: 140px 0 60px;
+            }
+            
+            .page-title {
+                font-size: 2.4rem;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-form {
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-col {
+                text-align: center;
+            }
+            
+            .footer-links a {
+                justify-content: center;
+            }
+            
+            .contact-info li {
+                justify-content: center;
+            }
+            
+            .team-section {
+                justify-content: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .newsletter {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .newsletter input {
+                border-radius: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .newsletter button {
+                border-radius: 50px;
+                padding: 14px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            
+            <div class="main-nav">
+                <a href="index.html" class="nav-item home">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="analysis.html" class="nav-item analysis">
+                    <i class="fas fa-camera"></i>
+                    <span>تحليل الصور</span>
+                </a>
+                <a href="probe-plant.html" class="nav-item plant">
+                    <i class="fas fa-leaf"></i>
+                    <span>مسبار النبات</span>
+                </a>
+                <a href="probe-soil.html" class="nav-item soil">
+                    <i class="fas fa-mountain"></i>
+                    <span>مسبار التربة</span>
+                </a>
+                <a href="simulation.html" class="nav-item simulation">
+                    <i class="fas fa-flask"></i>
+                    <span>المحاكاة</span>
+                </a>
+                <a href="ecosystems.html" class="nav-item ecosystems">
+                    <i class="fas fa-globe"></i>
+                    <span>النظم البيئية</span>
+                </a>
+                <a href="species.html" class="nav-item species">
+                    <i class="fas fa-paw"></i>
+                    <span>الأنواع</span>
+                </a>
+                <a href="upload-ecosystem.html" class="nav-item upload active">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>رفع النظام البيئي</span>
+                </a>
+            </div>  
+            
+            <div class="nav-actions">
+                <button class="action-btn" id="sidebarToggle" title="القائمة الجانبية">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- عنصر تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+                <a href="login.html" class="action-btn" id="loginBtn" title="تسجيل الدخول" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
+                
+                <!-- قائمة المستخدم (تظهر فقط عندما يكون المستخدم مسجلاً) -->
+                <div class="user-menu" id="userMenu">
+                    <button class="user-btn">
+                        <div class="user-avatar" id="userAvatar">م</div>
+                        <span id="userName">مستخدم</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                        <a href="login.html" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>القائمة الرئيسية</h3>
+            <p>استكشف جميع خدماتنا</p>
+        </div>
+        
+        <!-- معلومات المستخدم في الشريط الجانبي (تظهر فقط عند تسجيل الدخول) -->
+        <div class="sidebar-user-section" id="sidebarUserSection">
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="sidebar-user-details">
+                    <h4 id="sidebarUserName">اسم المستخدم</h4>
+                    <p id="sidebarUserRole">عضو في EcoPlant DZ</p>
+                </div>
+            </div>
+            <div class="sidebar-user-menu">
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="fas fa-user"></i>
+                    <span>الملف الشخصي</span>
+                </a>
+                <a href="#" class="sidebar-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+            <div class="sidebar-divider"></div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="questions.html" class="sidebar-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>الأسئلة</span>
+                </a>
+            </li>
+            <li>
+                <a href="messages.html" class="sidebar-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>الرسائل</span>
+                </a>
+            </li>
+            <li>
+                <a href="about.html" class="sidebar-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>من نحن</span>
+                </a>
+            </li>
+            <li>
+                <a href="contact.html" class="sidebar-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>التواصل و الدعم</span>
+                </a>
+            </li>
+        </ul>
+        
+        <!-- قسم تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+        <div class="sidebar-footer" id="sidebarLoginSection">
+            <p>لم تقم بتسجيل الدخول بعد؟</p>
+            <a href="login.html" class="btn btn-primary">تسجيل الدخول</a>
+        </div>
+    </div>
+    
+    <!-- قسم العنوان -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <span class="page-subtitle">ساهم في قاعدة بياناتنا البيئية</span>
+                <h1 class="page-title">رفع نظام بيئي جديد</h1>
+                <p class="page-text">
+                    ساعدنا في بناء قاعدة بيانات شاملة للنظم البيئية في الجزائر من خلال إضافة معلومات عن نظام بيئي جديد. 
+                    سيتم مراجعة البيانات قبل نشرها للتأكد من دقتها وفائدتها للمجتمع العلمي.
+                </p>
+                <div class="actions">
+                    <a href="#upload-form" class="btn btn-primary">
+                        <i class="fas fa-cloud-upload-alt"></i> ابدأ برفع النظام البيئي
+                    </a>
+                    <a href="ecosystems.html" class="btn btn-secondary">
+                        <i class="fas fa-globe"></i> استكشف النظم البيئية
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- قسم رفع النظام البيئي -->
+    <section class="upload-section" id="upload-form">
+        <div class="container">
+            <div class="section-title">
+                <h2>نموذج رفع النظام البيئي</h2>
+                <p>املأ المعلومات التالية حول النظام البيئي الذي تريد إضافته إلى قاعدة البيانات</p>
+            </div>
+            
+            <!-- نموذج رفع النظام البيئي -->
+            <form id="ecosystemUploadForm" class="upload-form">
+                <!-- معلومات أساسية -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> المعلومات الأساسية</h3>
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label for="ecosystemName">اسم النظام البيئي</label>
+                            <input type="text" id="ecosystemName" class="form-control" required>
+                        </div>
+                        <div class="form-group required">
+                            <label for="ecosystemType">نوع النظام البيئي</label>
+                            <select id="ecosystemType" class="form-control" required>
+                                <option value="">اختر نوع النظام البيئي</option>
+                                <option value="أراضي رطبة">أراضي رطبة</option>
+                                <option value="غابة صنوبرية">غابة صنوبرية</option>
+                                <option value="سبخة مالحة">سبخة مالحة</option>
+                                <option value="نظام بيئي ساحلي-بحري">ساحلي-بحري</option>
+                                <option value="نظام بيئي صحراوي جبلي">صحراوي جبلي</option>
+                                <option value="منطقة رطبة ساحلية">منطقة رطبة ساحلية</option>
+                                <option value="غابة متوسطية">غابة متوسطية</option>
+                                <option value="نظام بيئي جبلي">نظام بيئي جبلي</option>
+                                <option value="نظام بيئي صحراوي">نظام بيئي صحراوي</option>
+                                <option value="نظام بيئي سهبي">نظام بيئي سهبي</option>
+                            </select>
+                        </div>
+                        <div class="form-group required">
+                            <label for="ecosystemWilaya">الولاية</label>
+                            <select id="ecosystemWilaya" class="form-control" required>
+                                <option value="">اختر الولاية</option>
+                                <!-- سيتم ملء هذا من خلال جافاسكريبت -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ecosystemArea">المساحة (هكتار)</label>
+                            <input type="number" id="ecosystemArea" class="form-control" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="ecosystemAltitude">الارتفاع (متر فوق سطح البحر)</label>
+                            <input type="number" id="ecosystemAltitude" class="form-control" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="biodiversityIndex">مؤشر التنوع البيولوجي</label>
+                            <select id="biodiversityIndex" class="form-control">
+                                <option value="">اختر مستوى التنوع</option>
+                                <option value="عالٍ جداً">عالٍ جداً</option>
+                                <option value="عالٍ">عالٍ</option>
+                                <option value="متوسط">متوسط</option>
+                                <option value="منخفض">منخفض</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="conservationStatus">حالة الحفظ</label>
+                            <select id="conservationStatus" class="form-control">
+                                <option value="">اختر حالة الحفظ</option>
+                                <option value="محمي بشكل جيد">محمي بشكل جيد</option>
+                                <option value="محمي جزئياً">محمي جزئياً</option>
+                                <option value="غير محمي بشكل كاف">غير محمي بشكل كاف</option>
+                                <option value="غير محمي">غير محمي</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="protectionLevel">مستوى الحماية</label>
+                            <input type="text" id="protectionLevel" class="form-control" placeholder="مثل: محمية طبيعية، منتزه وطني...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- الوصف الجيومورفولوجي -->
+                <div class="form-section">
+                    <h3><i class="fas fa-mountain"></i> الوصف الجيومورفولوجي</h3>
+                    <div class="form-group">
+                        <label for="geomorphology">الوصف الجيومورفولوجي</label>
+                        <textarea id="geomorphology" class="form-control" placeholder="صف التضاريس والخصائص الجيومورفولوجية للمنطقة..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- التربة -->
+                <div class="form-section">
+                    <h3><i class="fas fa-mountain"></i> التربة</h3>
+                    <div class="form-group">
+                        <label for="soil">وصف التربة</label>
+                        <textarea id="soil" class="form-control" placeholder="صف نوع التربة وخصائصها..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- الهيدرولوجيا -->
+                <div class="form-section">
+                    <h3><i class="fas fa-water"></i> الهيدرولوجيا</h3>
+                    <div class="form-group">
+                        <label for="hydrology">وصف الهيدرولوجيا</label>
+                        <textarea id="hydrology" class="form-control" placeholder="صف مصادر المياه والأنهار والبحيرات..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- المناخ -->
+                <div class="form-section">
+                    <h3><i class="fas fa-cloud-sun"></i> المناخ</h3>
+                    <div class="form-group">
+                        <label for="climate">وصف المناخ</label>
+                        <textarea id="climate" class="form-control" placeholder="صف المناخ السائد في المنطقة..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- الأنواع النباتية -->
+                <div class="form-section">
+                    <h3><i class="fas fa-leaf"></i> الأنواع النباتية</h3>
+                    <div id="vegetationContainer">
+                        <!-- سيتم إضافة حقول الأنواع النباتية هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addVegetationBtn">
+                        <i class="fas fa-plus"></i> إضافة نوع نباتي
+                    </button>
+                </div>
+                
+                <!-- الطيور -->
+                <div class="form-section">
+                    <h3><i class="fas fa-dove"></i> الطيور</h3>
+                    <div id="birdsContainer">
+                        <!-- سيتم إضافة حقول الطيور هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addBirdBtn">
+                        <i class="fas fa-plus"></i> إضافة طائر
+                    </button>
+                </div>
+                
+                <!-- الحيوانات -->
+                <div class="form-section">
+                    <h3><i class="fas fa-paw"></i> الحيوانات</h3>
+                    <div id="faunaContainer">
+                        <!-- سيتم إضافة حقول الحيوانات هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addFaunaBtn">
+                        <i class="fas fa-plus"></i> إضافة حيوان
+                    </button>
+                </div>
+                
+                <!-- اللافقاريات -->
+                <div class="form-section">
+                    <h3><i class="fas fa-bug"></i> اللافقاريات</h3>
+                    <div id="invertebratesContainer">
+                        <!-- سيتم إضافة حقول اللافقاريات هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addInvertebrateBtn">
+                        <i class="fas fa-plus"></i> إضافة لافقاري
+                    </button>
+                </div>
+                
+                <!-- التهديدات -->
+                <div class="form-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> التهديدات</h3>
+                    <div id="threatsContainer">
+                        <!-- سيتم إضافة حقول التهديدات هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addThreatBtn">
+                        <i class="fas fa-plus"></i> إضافة تهديد
+                    </button>
+                </div>
+                
+                <!-- التوصيات -->
+                <div class="form-section">
+                    <h3><i class="fas fa-lightbulb"></i> التوصيات</h3>
+                    <div id="recommendationsContainer">
+                        <!-- سيتم إضافة حقول التوصيات هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addRecommendationBtn">
+                        <i class="fas fa-plus"></i> إضافة توصية
+                    </button>
+                </div>
+                
+                <!-- فرص البحث -->
+                <div class="form-section">
+                    <h3><i class="fas fa-flask"></i> فرص البحث</h3>
+                    <div id="researchOpportunitiesContainer">
+                        <!-- سيتم إضافة حقول فرص البحث هنا -->
+                    </div>
+                    <button type="button" class="add-species-btn" id="addResearchOpportunityBtn">
+                        <i class="fas fa-plus"></i> إضافة فرصة بحث
+                    </button>
+                </div>
+                
+                <!-- رفع الصور -->
+                <div class="form-section">
+                    <h3><i class="fas fa-images"></i> الصور</h3>
+                    <div class="image-upload" id="imageUploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>اسحب وأفلت الصور هنا أو انقر للاختيار</p>
+                        <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        <!-- سيتم عرض الصور المختارة هنا -->
+                    </div>
+                </div>
+                
+                <!-- أزرار الإرسال -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="resetForm">
+                        <i class="fas fa-redo"></i> إعادة تعيين
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitForm">
+                        <i class="fas fa-cloud-upload-alt"></i> رفع النظام البيئي
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <i class="fas fa-leaf bg-leaf leaf-1"></i>
+        <i class="fas fa-seedling bg-leaf leaf-2"></i>
+        <i class="fas fa-tree bg-leaf leaf-3"></i>
+        <i class="fas fa-spa bg-leaf leaf-4"></i>
+        
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>عن EcoPlant DZ</h3>
+                <p>منصة علمية تطبيقية لدراسة النباتات والتربة في الجزائر باستخدام أحدث التقنيات الذكية والذكاء الاصطناعي للحفاظ على التنوع البيئي.</p>
+                <div class="social-links">
+                    <a href="#" title="فيسبوك">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" title="تويتر">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" title="إنستغرام">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" title="لينكدإن">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="index.html" title="الصفحة الرئيسية">
+                            <i class="fas fa-home"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="analysis.html" title="تحليل الصور">
+                            <i class="fas fa-camera"></i>
+                            <span>تحليل الصور</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-plant.html" title="مسبار النبات">
+                            <i class="fas fa-leaf"></i>
+                            <span>مسبار النبات</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-soil.html" title="مسبار التربة">
+                            <i class="fas fa-mountain"></i>
+                            <span>مسبار التربة</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="ecosystems.html" title="النظم البيئية">
+                            <i class="fas fa-globe"></i>
+                            <span>النظم البيئية</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>فريق العمل</h3>
+                <p>تعرف على الفريق المبدع الذي يقف وراء المنصة:</p>
+                <div class="team-section">
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>قادري هيثم</span>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>هباز داليا</span>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">اتصل بنا</h3>
+                <ul class="contact-info">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>جامعة حمة لخضر - الوادي</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>0668840861</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>hkadri2003@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>النشرة الإخبارية</h3>
+                <p>اشترك ليصلك كل جديد عن أبحاثنا وتحديثات المنصة.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="بريدك الإلكتروني">
+                    <button>اشتراك</button>
+                </div>
+                
+                <h3 style="margin-top: 30px;">روابط مهمة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="#" onclick="openModal('privacyModal')" title="سياسة الخصوصية">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>سياسة الخصوصية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="openModal('termsModal')" title="شروط الاستخدام">
+                            <i class="fas fa-file-contract"></i>
+                            <span>شروط الاستخدام</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة | تم التطوير بواسطة فريق EcoPlant DZ</p>
+        </div>
+    </footer>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2><i class="fas fa-file-contract"></i> شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+        </div>
+    </div>
+    
+    <!-- Firebase التهيئة والتكوين -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVELN-Jca7q3xtS0uWk2ZrNnlqXJzsKpg",
+            authDomain: "ecoplant-dz-148bf.firebaseapp.com",
+            projectId: "ecoplant-dz-148bf",
+            databaseURL: "https://ecoplant-dz-148bf-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "ecoplant-dz-148bf.firebasestorage.app",
+            messagingSenderId: "233372376001",
+            appId: "1:233372376001:web:2c261f4bf161a65f726d40",
+            measurementId: "G-4PJZMLMKJE"
+        };
+        
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const storage = firebase.storage();
+        
+        // متغيرات التطبيق
+        let uploadedImages = [];
+        let speciesCounter = {
+            vegetation: 0,
+            birds: 0,
+            fauna: 0,
+            invertebrates: 0,
+            threats: 0,
+            recommendations: 0,
+            researchOpportunities: 0
+        };
+        
+        // قائمة الولايات الجزائرية
+        const wilayas = [
+            "أدرار", "الشلف", "الأغواط", "أم البواقي", "باتنة", "بجاية", "بسكرة", "بشار", "البليدة", "البويرة",
+            "تمنراست", "تبسة", "تلمسان", "تيارت", "تيزي وزو", "الجزائر", "الجلفة", "جيجل", "سطيف", "سعيدة",
+            "سكيكدة", "سيدي بلعباس", "عنابة", "قالمة", "قسنطينة", "المدية", "مستغانم", "المسيلة", "معسكر", "ورقلة",
+            "وهران", "البيض", "إليزي", "برج بوعريريج", "بومرداس", "الطارف", "تندوف", "تيسمسيلت", "الوادي", "خنشلة",
+            "سوق أهراس", "تيبازة", "ميلة", "عين الدفلى", "النعامة", "عين تموشنت", "غرداية", "غليزان", "تيميمون", "برج البحري",
+            "أولاد جلال", "بني عباس", "عين صالح", "عين قزام", "تقرت", "جانت", "المغير", "المنيعة"
+        ];
+        
+        // تهيئة الصفحة عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            setupEventListeners();
+            checkAuthState();
+        });
+        
+        // تهيئة الصفحة
+        function initializePage() {
+            // ملء قائمة الولايات
+            const wilayaSelect = document.getElementById('ecosystemWilaya');
+            wilayas.forEach(wilaya => {
+                const option = document.createElement('option');
+                option.value = wilaya;
+                option.textContent = wilaya;
+                wilayaSelect.appendChild(option);
+            });
+            
+            // إضافة حقول أولية للأنواع
+            addSpeciesField('vegetation');
+            addSpeciesField('birds');
+            addSpeciesField('fauna');
+            addSpeciesField('invertebrates');
+            addThreatField();
+            addRecommendationField();
+            addResearchOpportunityField();
+        }
+        
+        // إعداد مستمعي الأحداث
+        function setupEventListeners() {
+            // تبديل القائمة الجانبية
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            
+            // تبديل القائمة على الجوال
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.querySelector('.main-nav');
+            
+            menuToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('show');
+                
+                // تحريك الأيقونة عند النقر
+                const spans = menuToggle.querySelectorAll('span');
+                if (mainNav.classList.contains('show')) {
+                    spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                    spans[1].style.opacity = '0';
+                    spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+                } else {
+                    spans[0].style.transform = 'rotate(0) translate(0)';
+                    spans[1].style.opacity = '1';
+                    spans[2].style.transform = 'rotate(0) translate(0)';
+                }
+            });
+            
+            // تفعيل القائمة المنسدلة للمستخدم
+            if (document.querySelector('.user-btn')) {
+                document.querySelector('.user-btn').addEventListener('click', function() {
+                    document.getElementById('userDropdown').classList.toggle('show');
+                });
+            }
+            
+            // إغلاق القوائم عند النقر خارجها
+            window.addEventListener('click', function(e) {
+                // إغلاق القائمة المنسدلة للمستخدم
+                if (!e.target.matches('.user-btn') && !e.target.closest('.user-btn')) {
+                    const dropdown = document.getElementById('userDropdown');
+                    if (dropdown && dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+                
+                // إغلاق القائمة الجانبية عند النقر خارجها
+                if (!e.target.closest('.sidebar') && !e.target.closest('#sidebarToggle')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+            
+            // تأثيرات الشريط العلوي عند التمرير
+            window.addEventListener('scroll', function() {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+            
+            // إضافة حقول الأنواع
+            document.getElementById('addVegetationBtn').addEventListener('click', () => addSpeciesField('vegetation'));
+            document.getElementById('addBirdBtn').addEventListener('click', () => addSpeciesField('birds'));
+            document.getElementById('addFaunaBtn').addEventListener('click', () => addSpeciesField('fauna'));
+            document.getElementById('addInvertebrateBtn').addEventListener('click', () => addSpeciesField('invertebrates'));
+            document.getElementById('addThreatBtn').addEventListener('click', addThreatField);
+            document.getElementById('addRecommendationBtn').addEventListener('click', addRecommendationField);
+            document.getElementById('addResearchOpportunityBtn').addEventListener('click', addResearchOpportunityField);
+            
+            // رفع الصور
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            const imageInput = document.getElementById('imageInput');
+            
+            imageUploadArea.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleImageUpload);
+            
+            // إعادة تعيين النموذج
+            document.getElementById('resetForm').addEventListener('click', resetForm);
+            
+            // إرسال النموذج
+            document.getElementById('ecosystemUploadForm').addEventListener('submit', submitForm);
+        }
+        
+        // إضافة حقل نوع
+        function addSpeciesField(type) {
+            const container = document.getElementById(`${type}Container`);
+            const id = speciesCounter[type]++;
+            
+            const field = document.createElement('div');
+            field.className = 'species-field';
+            field.innerHTML = `
+                <div class="species-header">
+                    <h4>${getTypeLabel(type)} ${id + 1}</h4>
+                    <button type="button" class="remove-species" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="${type}Scientific${id}">الاسم العلمي</label>
+                        <input type="text" id="${type}Scientific${id}" class="form-control" placeholder="الاسم العلمي">
+                    </div>
+                    <div class="form-group">
+                        <label for="${type}Common${id}">الاسم الشائع</label>
+                        <input type="text" id="${type}Common${id}" class="form-control" placeholder="الاسم الشائع">
+                    </div>
+                    <div class="form-group">
+                        <label for="${type}Status${id}">الحالة</label>
+                        <select id="${type}Status${id}" class="form-control">
+                            <option value="">اختر الحالة</option>
+                            <option value="مستوطن">مستوطن</option>
+                            <option value="مهاجر">مهاجر</option>
+                            <option value="مهدد">مهدد</option>
+                            <option value="منقرض محلياً">منقرض محلياً</option>
+                            <option value="شائع">شائع</option>
+                            <option value="نادر">نادر</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(field);
+        }
+        
+        // إضافة حقل تهديد
+        function addThreatField() {
+            const container = document.getElementById('threatsContainer');
+            const id = speciesCounter.threats++;
+            
+            const field = document.createElement('div');
+            field.className = 'species-field';
+            field.innerHTML = `
+                <div class="species-header">
+                    <h4>تهديد ${id + 1}</h4>
+                    <button type="button" class="remove-species" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="threatName${id}">اسم التهديد</label>
+                        <input type="text" id="threatName${id}" class="form-control" placeholder="اسم التهديد">
+                    </div>
+                    <div class="form-group">
+                        <label for="threatSeverity${id}">شدة التهديد</label>
+                        <select id="threatSeverity${id}" class="form-control">
+                            <option value="">اختر الشدة</option>
+                            <option value="منخفض">منخفض</option>
+                            <option value="متوسط">متوسط</option>
+                            <option value="مرتفع">مرتفع</option>
+                            <option value="مرتفع جداً">مرتفع جداً</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="threatTrend${id}">اتجاه التهديد</label>
+                        <select id="threatTrend${id}" class="form-control">
+                            <option value="">اختر الاتجاه</option>
+                            <option value="مستقر">مستقر</option>
+                            <option value="في ازدياد">في ازدياد</option>
+                            <option value="في انخفاض">في انخفاض</option>
+                            <option value="غير معروف">غير معروف</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(field);
+        }
+        
+        // إضافة حقل توصية
+        function addRecommendationField() {
+            const container = document.getElementById('recommendationsContainer');
+            const id = speciesCounter.recommendations++;
+            
+            const field = document.createElement('div');
+            field.className = 'species-field';
+            field.innerHTML = `
+                <div class="species-header">
+                    <h4>توصية ${id + 1}</h4>
+                    <button type="button" class="remove-species" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="recommendation${id}">التوصية</label>
+                    <textarea id="recommendation${id}" class="form-control" placeholder="اكتب التوصية..."></textarea>
+                </div>
+            `;
+            
+            container.appendChild(field);
+        }
+        
+        // إضافة حقل فرصة بحث
+        function addResearchOpportunityField() {
+            const container = document.getElementById('researchOpportunitiesContainer');
+            const id = speciesCounter.researchOpportunities++;
+            
+            const field = document.createElement('div');
+            field.className = 'species-field';
+            field.innerHTML = `
+                <div class="species-header">
+                    <h4>فرصة بحث ${id + 1}</h4>
+                    <button type="button" class="remove-species" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="researchOpportunity${id}">فرصة البحث</label>
+                    <textarea id="researchOpportunity${id}" class="form-control" placeholder="اكفر فرصة البحث..."></textarea>
+                </div>
+            `;
+            
+            container.appendChild(field);
+        }
+        
+        // الحصول على تسمية النوع
+        function getTypeLabel(type) {
+            const labels = {
+                vegetation: 'نبات',
+                birds: 'طائر',
+                fauna: 'حيوان',
+                invertebrates: 'لافقاري'
+            };
+            return labels[type] || 'نوع';
+        }
+        
+        // معالجة رفع الصور
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('imagePreview');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // التحقق من نوع الملف
+                if (!file.type.match('image.*')) {
+                    showNotification('يرجى اختيار ملفات صور فقط', 'error');
+                    continue;
+                }
+                
+                // إنشاء معاينة للصورة
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="معاينة الصورة">
+                        <button type="button" class="remove-image" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    preview.appendChild(previewItem);
+                    
+                    // حفظ الصورة في المصفوفة
+                    uploadedImages.push({
+                        file: file,
+                        preview: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // إعادة تعيين حقل الإدخال للسماح باختيار نفس الملفات مرة أخرى
+            event.target.value = '';
+        }
+        
+        // إعادة تعيين النموذج
+        function resetForm() {
+            if (confirm('هل أنت متأكد من أنك تريد إعادة تعيين النموذج؟ سيتم فقدان جميع البيانات المدخلة.')) {
+                document.getElementById('ecosystemUploadForm').reset();
+                
+                // إعادة تعيين حاويات الأنواع
+                const containers = [
+                    'vegetationContainer', 'birdsContainer', 'faunaContainer', 
+                    'invertebratesContainer', 'threatsContainer', 
+                    'recommendationsContainer', 'researchOpportunitiesContainer'
+                ];
+                
+                containers.forEach(containerId => {
+                    document.getElementById(containerId).innerHTML = '';
+                });
+                
+                // إعادة تعيين عداد الأنواع
+                speciesCounter = {
+                    vegetation: 0,
+                    birds: 0,
+                    fauna: 0,
+                    invertebrates: 0,
+                    threats: 0,
+                    recommendations: 0,
+                    researchOpportunities: 0
+                };
+                
+                // إعادة تعيين الصور
+                uploadedImages = [];
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                // إضافة حقول أولية
+                addSpeciesField('vegetation');
+                addSpeciesField('birds');
+                addSpeciesField('fauna');
+                addSpeciesField('invertebrates');
+                addThreatField();
+                addRecommendationField();
+                addResearchOpportunityField();
+                
+                showNotification('تم إعادة تعيين النموذج بنجاح', 'success');
+            }
+        }
+        
+        // إرسال النموذج
+        function submitForm(event) {
+            event.preventDefault();
+            
+            // التحقق من صحة البيانات الأساسية
+            const name = document.getElementById('ecosystemName').value.trim();
+            const type = document.getElementById('ecosystemType').value;
+            const wilaya = document.getElementById('ecosystemWilaya').value;
+            
+            if (!name || !type || !wilaya) {
+                showNotification('يرجى ملء جميع الحقول الإلزامية', 'error');
+                return;
+            }
+            
+            // جمع البيانات
+            const ecosystemData = {
+                name: name,
+                type: type,
+                wilaya: wilaya,
+                area: document.getElementById('ecosystemArea').value,
+                altitude: document.getElementById('ecosystemAltitude').value,
+                biodiversity_index: document.getElementById('biodiversityIndex').value,
+                conservation_status: document.getElementById('conservationStatus').value,
+                protection_level: document.getElementById('protectionLevel').value,
+                geomorphology: document.getElementById('geomorphology').value,
+                soil: document.getElementById('soil').value,
+                hydrology: document.getElementById('hydrology').value,
+                climate: document.getElementById('climate').value,
+                vegetation: collectSpeciesData('vegetation'),
+                birds: collectSpeciesData('birds'),
+                fauna: collectSpeciesData('fauna'),
+                invertebrates: collectSpeciesData('invertebrates'),
+                threats: collectThreatsData(),
+                recommendations: collectRecommendationsData(),
+                research_opportunities: collectResearchOpportunitiesData(),
+                images: [],
+                created_by: getCurrentUser(),
+                created_at: new Date().toISOString(),
+                status: 'pending' // pending, approved, rejected
+            };
+            
+            // رفع الصور أولاً
+            uploadImages(ecosystemData);
+        }
+        
+        // جمع بيانات الأنواع
+        function collectSpeciesData(type) {
+            const data = [];
+            const count = speciesCounter[type];
+            
+            for (let i = 0; i < count; i++) {
+                const scientific = document.getElementById(`${type}Scientific${i}`);
+                const common = document.getElementById(`${type}Common${i}`);
+                const status = document.getElementById(`${type}Status${i}`);
+                
+                // التحقق من وجود العناصر (قد تكون قد أزيلت)
+                if (scientific && common && status) {
+                    const scientificValue = scientific.value.trim();
+                    const commonValue = common.value.trim();
+                    const statusValue = status.value;
+                    
+                    // إضافة فقط إذا كان هناك بيانات
+                    if (scientificValue || commonValue || statusValue) {
+                        data.push({
+                            scientific: scientificValue,
+                            common: commonValue,
+                            status: statusValue
+                        });
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // جمع بيانات التهديدات
+        function collectThreatsData() {
+            const data = [];
+            const count = speciesCounter.threats;
+            
+            for (let i = 0; i < count; i++) {
+                const name = document.getElementById(`threatName${i}`);
+                const severity = document.getElementById(`threatSeverity${i}`);
+                const trend = document.getElementById(`threatTrend${i}`);
+                
+                // التحقق من وجود العناصر (قد تكون قد أزيلت)
+                if (name && severity && trend) {
+                    const nameValue = name.value.trim();
+                    const severityValue = severity.value;
+                    const trendValue = trend.value;
+                    
+                    // إضافة فقط إذا كان هناك بيانات
+                    if (nameValue || severityValue || trendValue) {
+                        data.push({
+                            name: nameValue,
+                            severity: severityValue,
+                            trend: trendValue
+                        });
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // جمع بيانات التوصيات
+        function collectRecommendationsData() {
+            const data = [];
+            const count = speciesCounter.recommendations;
+            
+            for (let i = 0; i < count; i++) {
+                const recommendation = document.getElementById(`recommendation${i}`);
+                
+                // التحقق من وجود العنصر (قد يكون قد أزيل)
+                if (recommendation) {
+                    const value = recommendation.value.trim();
+                    
+                    // إضافة فقط إذا كان هناك بيانات
+                    if (value) {
+                        data.push(value);
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // جمع بيانات فرص البحث
+        function collectResearchOpportunitiesData() {
+            const data = [];
+            const count = speciesCounter.researchOpportunities;
+            
+            for (let i = 0; i < count; i++) {
+                const opportunity = document.getElementById(`researchOpportunity${i}`);
+                
+                // التحقق من وجود العنصر (قد يكون قد أزيل)
+                if (opportunity) {
+                    const value = opportunity.value.trim();
+                    
+                    // إضافة فقط إذا كان هناك بيانات
+                    if (value) {
+                        data.push(value);
+                    }
+                }
+            }
+            
+            return data;
+        }
+        
+        // رفع الصور إلى Firebase Storage
+        function uploadImages(ecosystemData) {
+            if (uploadedImages.length === 0) {
+                // لا توجد صور، حفظ البيانات مباشرة
+                saveEcosystemData(ecosystemData);
+                return;
+            }
+            
+            showNotification('جاري رفع الصور...', 'info');
+            
+            const uploadPromises = uploadedImages.map((image, index) => {
+                const fileName = `ecosystems/${Date.now()}_${index}_${image.file.name}`;
+                const storageRef = storage.ref().child(fileName);
+                
+                return storageRef.put(image.file)
+                    .then(snapshot => snapshot.ref.getDownloadURL())
+                    .then(url => {
+                        return url;
+                    })
+                    .catch(error => {
+                        console.error('Error uploading image:', error);
+                        return null;
+                    });
+            });
+            
+            // انتظار اكتمال جميع عمليات الرفع
+            Promise.all(uploadPromises)
+                .then(urls => {
+                    // تصفية الروابط الفارغة (في حالة حدوث خطأ)
+                    ecosystemData.images = urls.filter(url => url !== null);
+                    saveEcosystemData(ecosystemData);
+                })
+                .catch(error => {
+                    console.error('Error uploading images:', error);
+                    showNotification('حدث خطأ أثناء رفع الصور', 'error');
+                });
+        }
+        
+        // حفظ بيانات النظام البيئي في Firebase
+        function saveEcosystemData(ecosystemData) {
+            showNotification('جاري حفظ بيانات النظام البيئي...', 'info');
+            
+            const ecosystemsRef = db.ref('ecosystems/items');
+            const newEcosystemRef = ecosystemsRef.push();
+            
+            newEcosystemRef.set(ecosystemData)
+                .then(() => {
+                    showNotification('تم رفع النظام البيئي بنجاح! سيتم مراجعته قبل النشر.', 'success');
+                    resetForm();
+                })
+                .catch(error => {
+                    console.error('Error saving ecosystem data:', error);
+                    showNotification('حدث خطأ أثناء حفظ البيانات', 'error');
+                });
+        }
+        
+        // الحصول على المستخدم الحالي
+        function getCurrentUser() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                return {
+                    uid: user.uid,
+                    name: user.firstName ? `${user.firstName} ${user.lastName || ''}` : 'مستخدم',
+                    email: user.email
+                };
+            }
+            return {
+                uid: 'anonymous',
+                name: 'زائر',
+                email: ''
+            };
+        }
+        
+        // إظهار الإشعارات
+        function showNotification(message, type = 'info') {
+            // إنشاء عنصر الإشعار
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4caf50' : '#2196f3'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 600;
+                opacity: 0;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            // إضافة الإشعار إلى الصفحة
+            document.body.appendChild(notification);
+            
+            // إظهار الإشعار
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            // إخفاء الإشعار بعد 3 ثواني
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // وظائف التحقق من حالة المستخدم
+        function checkAuthState() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (user && user.email) {
+                // المستخدم مسجل
+                if (document.getElementById('loginBtn')) document.getElementById('loginBtn').style.display = 'none';
+                if (document.getElementById('userMenu')) document.getElementById('userMenu').style.display = 'flex';
+                if (document.getElementById('sidebarUserSection')) document.getElementById('sidebarUserSection').style.display = 'block';
+                if (document.getElementById('sidebarLoginSection')) document.getElementById('sidebarLoginSection').style.display = 'none';
+                
+                // تحديث معلومات المستخدم
+                if (document.getElementById('sidebarUserName')) {
+                    document.getElementById('sidebarUserName').textContent = user.firstName ? 
+                        `${user.firstName} ${user.lastName || ''}` : 'مستخدم EcoPlant';
+                }
+                if (document.getElementById('sidebarUserRole')) {
+                    document.getElementById('sidebarUserRole').textContent = user.role || 'عضو في EcoPlant DZ';
+                }
+                if (document.getElementById('userName')) {
+                    document.getElementById('userName').textContent = user.firstName ? 
+                        `${user.firstName} ${user.lastName || ''}` : 'مستخدم';
+                }
+                
+                // تحديث الصورة إذا كانت متاحة
+                if (user.photoURL && document.getElementById('sidebarUserAvatar')) {
+                    document.getElementById('sidebarUserAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                }
+                if (user.photoURL && document.getElementById('userAvatar')) {
+                    document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                } else if (user.firstName && document.getElementById('userAvatar')) {
+                    document.getElementById('userAvatar').textContent = user.firstName.charAt(0);
+                }
+            } else {
+                // المستخدم غير مسجل
+                if (document.getElementById('loginBtn')) document.getElementById('loginBtn').style.display = 'flex';
+                if (document.getElementById('userMenu')) document.getElementById('userMenu').style.display = 'none';
+                if (document.getElementById('sidebarUserSection')) document.getElementById('sidebarUserSection').style.display = 'none';
+                if (document.getElementById('sidebarLoginSection')) document.getElementById('sidebarLoginSection').style.display = 'block';
+            }
+        }
+        
+        // دالة تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('user');
+            checkAuthState();
+            window.location.href = 'login.html';
+        }
+        
+        // وظائف النوافذ المنبثقة
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoPlant DZ - منصة التحليل البيئي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --success: #4caf50;
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar.scrolled {
+            padding: 10px 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+            border-radius: 12px;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            opacity: 0.1;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .nav-item.home::before { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+        .nav-item.analysis::before { background: linear-gradient(135deg, #2196f3, #0d47a1); }
+        .nav-item.plant::before { background: linear-gradient(135deg, #8bc34a, #33691e); }
+        .nav-item.soil::before { background: linear-gradient(135deg, #795548, #3e2723); }
+        .nav-item.simulation::before { background: linear-gradient(135deg, #9c27b0, #4a148c); }
+        .nav-item.ecosystems::before { background: linear-gradient(135deg, #00bcd4, #006064); }
+        .nav-item.species::before { background: linear-gradient(135deg, #ff9800, #e65100); }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(93, 64, 55, 0.1);
+            color: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            border: none;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.35);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.45);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--dark);
+            border: 2px solid var(--gray);
+        }
+        
+        .btn-outline:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-icon {
+            padding: 12px;
+            width: 46px;
+            height: 46px;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            right: -280px;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            transition: var(--transition);
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(46, 125, 50, 0.05);
+            color: var(--primary);
+        }
+        
+        .sidebar-item i {
+            margin-left: 15px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-item span {
+            font-weight: 500;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .sidebar-footer p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-footer .btn {
+            width: 100%;
+        }
+        
+        /* أنماط قسم المستخدم في الشريط الجانبي */
+        .sidebar-user-section {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .sidebar-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(46, 125, 50, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-left: 15px;
+            overflow: hidden;
+        }
+        
+        .sidebar-user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .sidebar-user-details {
+            flex: 1;
+        }
+        
+        .sidebar-user-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .sidebar-user-details p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .sidebar-user-menu {
+            margin-bottom: 10px;
+        }
+        
+        /* User Menu Styles */
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+        
+        /* Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: var(--primary);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80') center/cover;
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            color: var(--dark);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-text {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: #555;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            min-width: 180px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-text {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        /* Services Section */
+        .services {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-title p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 20px auto 0;
+            color: #777;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            position: relative;
+            height: 250px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .service-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+        }
+        
+        .service-card:hover .service-bg {
+            transform: scale(1.05);
+        }
+        
+        .service-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+        }
+        
+        .service-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .service-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .service-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .service-btn {
+            align-self: flex-start;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        
+        .service-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        /* Service Card Specific Styles */
+        .service-card.dashboard .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.dashboard .service-icon {
+            background: rgba(0, 150, 136, 0.8);
+        }
+        
+        .service-card.ecosystems .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.ecosystems .service-icon {
+            background: rgba(2, 136, 209, 0.8);
+        }
+        
+        .service-card.messages .service-bg {
+            background-image: url('images/text-scaled-e1697483764414.jpeg');
+        }
+        
+        .service-card.messages .service-icon {
+            background: rgba(21, 101, 192, 0.8);
+        }
+        
+        .service-card.probe-plant .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80');
+        }
+        
+        .service-card.probe-plant .service-icon {
+            background: rgba(139, 195, 74, 0.8);
+        }
+        
+        .service-card.probe-soil .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.probe-soil .service-icon {
+            background: rgba(109, 76, 65, 0.8);
+        }
+        
+        .service-card.profile .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.profile .service-icon {
+            background: rgba(44, 56, 126, 0.8);
+        }
+        
+        .service-card.questions .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.questions .service-icon {
+            background: rgba(251, 140, 0, 0.8);
+        }
+        
+        .service-card.settings .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.settings .service-icon {
+            background: rgba(66, 66, 66, 0.8);
+        }
+        
+        .service-card.simulation .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.simulation .service-icon {
+            background: rgba(74, 20, 140, 0.8);
+        }
+        
+        .service-card.species .service-bg {
+            background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');
+        }
+        
+        .service-card.species .service-icon {
+            background: linear-gradient(135deg, rgba(56, 142, 60, 0.8), rgba(79, 195, 247, 0.8));
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 80px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            opacity: 0.05;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 60px;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-col p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            opacity: 0.9;
+            transition: var(--transition);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a i {
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            padding-right: 8px;
+            color: var(--accent);
+        }
+        
+        .footer-links a:hover i {
+            transform: translateX(-5px);
+        }
+        
+        .contact-info {
+            list-style: none;
+        }
+        
+        .contact-info li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+.contact-info i {
+    color: var(--accent);
+    font-size: 1.2rem;
+    min-width: 20px;
+}
+
+        
+        .team-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .team-member i {
+            color: var(--accent);
+            margin-left: 8px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+            color: var(--dark);
+        }
+        
+        .newsletter {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .newsletter input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50px 0 0 50px;
+            color: white;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: none;
+        }
+        
+        .newsletter input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .newsletter button {
+            padding: 0 25px;
+            background: linear-gradient(90deg, var(--accent), #ff9800);
+            border: none;
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .newsletter button:hover {
+            background: linear-gradient(90deg, #ffb300, #ff8f00);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 30px 0;
+            text-align: center;
+            opacity: 0.8;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .bg-leaf {
+            position: absolute;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .leaf-1 { top: 10%; left: 5%; transform: rotate(15deg); }
+        .leaf-2 { top: 15%; right: 10%; transform: rotate(-25deg); animation-delay: 2s; }
+        .leaf-3 { bottom: 10%; left: 15%; transform: rotate(40deg); animation-delay: 4s; }
+        .leaf-4 { bottom: 15%; right: 5%; transform: rotate(-15deg); animation-delay: 6s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--rotate, 0)); }
+            50% { transform: translateY(-20px) rotate(var(--rotate, 0)); }
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 3000;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .notification-success {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .notification-error {
+            background: #C62828;
+            color: white;
+        }
+        
+        .notification-warning {
+            background: #F57C00;
+            color: white;
+        }
+        
+        .notification-info {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: #C62828;
+        }
+        
+        .modal-body {
+            margin-bottom: 30px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .main-nav {
+                gap: 5px;
+            }
+            
+            .nav-item {
+                padding: 5px 10px;
+            }
+            
+            .nav-item i {
+                font-size: 1.2rem;
+            }
+            
+            .nav-item span {
+                font-size: 0.8rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero {
+                padding: 140px 0 60px;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-col {
+                text-align: center;
+            }
+            
+            .footer-links a {
+                justify-content: center;
+            }
+            
+            .contact-info li {
+                justify-content: center;
+            }
+            
+            .team-section {
+                justify-content: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .newsletter {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .newsletter input {
+                border-radius: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            
+            .newsletter button {
+                border-radius: 50px;
+                padding: 14px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .stats {
+                gap: 20px;
+            }
+            
+            .stat-item {
+                min-width: 120px;
+                padding: 10px;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+        .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden; /* مهم */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* يخلي الصورة تتناسب داخل الدائرة */
+    display: block;
+}
+
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            
+            <div class="main-nav">
+                <a href="index.html" class="nav-item home active">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="analysis.html" class="nav-item analysis">
+                    <i class="fas fa-camera"></i>
+                    <span>تحليل الصور</span>
+                </a>
+                <a href="probe-plant.html" class="nav-item plant">
+                    <i class="fas fa-leaf"></i>
+                    <span>مسبار النبات</span>
+                </a>
+                <a href="probe-soil.html" class="nav-item soil">
+                    <i class="fas fa-mountain"></i>
+                    <span>مسبار التربة</span>
+                </a>
+                <a href="simulation.html" class="nav-item simulation">
+                    <i class="fas fa-flask"></i>
+                    <span>المحاكاة</span>
+                </a>
+                <a href="ecosystems.html" class="nav-item ecosystems">
+                    <i class="fas fa-globe"></i>
+                    <span>النظم البيئية</span>
+                </a>
+                <a href="species.html" class="nav-item species">
+                    <i class="fas fa-paw"></i>
+                    <span>الأنواع</span>
+                </a>
+            </div>  
+            
+            <div class="nav-actions">
+                <button class="action-btn" id="sidebarToggle" title="القائمة الجانبية">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- عنصر تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+                <a href="login.html" class="action-btn" id="loginBtn" title="تسجيل الدخول" style="display: none;">
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
+                
+                <!-- قائمة المستخدم (تظهر فقط عندما يكون المستخدم مسجلاً) -->
+                <div class="user-menu" id="userMenu">
+                    <button class="user-btn">
+                        <div class="user-avatar" id="userAvatar">م</div>
+                        <span id="userName">مستخدم</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>القائمة الرئيسية</h3>
+            <p>استكشف جميع خدماتنا</p>
+        </div>
+        
+        <!-- معلومات المستخدم في الشريط الجانبي (تظهر فقط عند تسجيل الدخول) -->
+        <div class="sidebar-user-section" id="sidebarUserSection">
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="sidebar-user-details">
+                    <h4 id="sidebarUserName">اسم المستخدم</h4>
+                    <p id="sidebarUserRole">عضو في EcoPlant DZ</p>
+                </div>
+            </div>
+            <div class="sidebar-user-menu">
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="fas fa-user"></i>
+                    <span>الملف الشخصي</span>
+                </a>
+                <a href="#" class="sidebar-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+            <div class="sidebar-divider"></div>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html" class="sidebar-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="questions.html" class="sidebar-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>الأسئلة</span>
+                </a>
+            </li>
+            <li>
+                <a href="messages.html" class="sidebar-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>الرسائل</span>
+                </a>
+            </li>
+            <li>
+                <a href="about.html" class="sidebar-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>من نحن</span>
+                </a>
+            </li>
+            <li>
+                <a href="contact.html" class="sidebar-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>التواصل و الدعم</span>
+                </a>
+            </li>
+        </ul>
+        
+        <!-- قسم تسجيل الدخول (يظهر فقط عندما لا يكون المستخدم مسجلاً) -->
+        <div class="sidebar-footer" id="sidebarLoginSection">
+            <p>لم تقم بتسجيل الدخول بعد؟</p>
+            <a href="login.html" class="btn btn-primary">تسجيل الدخول</a>
+        </div>
+    </div>
+    
+    <!-- قسم البطل -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-subtitle">اكتشف الثروة البيئية للجزائر</span>
+            <h1 class="hero-title">منصة EcoPlant DZ للبحث البيئي</h1>
+            <p class="hero-text">أدوات متقدمة لتحليل النباتات ورسم الخرائط البيئية والبحث البيئي. منصة متكاملة تجمع بين التكنولوجيا الحديثة والمعرفة العلمية لخدمة البيئة الجزائرية.</p>
+            
+            <div class="hero-buttons">
+                <a href="#services" class="btn btn-primary">اكتشف الخدمات</a>
+                <a href="analysis.html" class="btn btn-secondary">بدء التحليل</a>
+            </div>
+            
+            <div class="stats" id="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number" id="plants-count">+150</div>
+                    <div class="stat-text">نوع نباتي</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="ecosystems-count">42</div>
+                    <div class="stat-text">نظام بيئي</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="users-count">5K</div>
+                    <div class="stat-text">مستخدم نشط</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- قسم الخدمات -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>خدماتنا المتكاملة</h2>
+                <p>اكتشف مجموعة الخدمات المتقدمة التي نقدمها لتحليل النباتات والتربة بطرق علمية دقيقة</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- لوحة التحكم -->
+                <div class="service-card dashboard">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3 class="service-title">لوحة التحكم</h3>
+                        <p class="service-description">تابع إحصاءاتك وتحكم بجميع أدواتك في مكان واحد.</p>
+                        <a href="dashboard.html" class="service-btn">اذهب إلى لوحتك</a>
+                    </div>
+                </div>
+                
+                <!-- النظم البيئية -->
+                <div class="service-card ecosystems">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3 class="service-title">النظم البيئية</h3>
+                        <p class="service-description">استكشف النظم البيئية في الجزائر وتعرف على تنوعها الغني.</p>
+                        <a href="ecosystems.html" class="service-btn">استكشاف النظم</a>
+                    </div>
+                </div>
+                
+                <!-- الرسائل -->
+                <div class="service-card messages">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3 class="service-title">الرسائل</h3>
+                        <p class="service-description">تواصل مع الباحثين والمستخدمين وتابع رسائلك بسهولة.</p>
+                        <a href="messages.html" class="service-btn">عرض الرسائل</a>
+                    </div>
+                </div>
+                
+                <!-- مسبار النبات -->
+                <div class="service-card probe-plant">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3 class="service-title">مسبار النبات</h3>
+                        <p class="service-description">حلّل صحة نباتك بدقة عبر أداة المسبار الذكي.</p>
+                        <a href="probe-plant.html" class="service-btn">ابدأ القياس</a>
+                    </div>
+                </div>
+                
+                <!-- مسبار التربة -->
+                <div class="service-card probe-soil">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <h3 class="service-title">مسبار التربة</h3>
+                        <p class="service-description">افحص خصائص التربة لتختار أفضل طرق الزراعة.</p>
+                        <a href="probe-soil.html" class="service-btn">ابدأ التحليل</a>
+                    </div>
+                </div>
+                
+                <!-- الملف الشخصي -->
+                <div class="service-card profile">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="service-title">الملف الشخصي</h3>
+                        <p class="service-description">اعرض معلوماتك، نشاطاتك، وعدّل إعداداتك بسهولة.</p>
+                        <a href="profile.html" class="service-btn">عرض ملفي</a>
+                    </div>
+                </div>
+                
+                <!-- الأسئلة -->
+                <div class="service-card questions">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3 class="service-title">الأسئلة</h3>
+                        <p class="service-description">اطرح أسئلتك أو ساعد الآخرين بإجاباتك.</p>
+                        <a href="questions.html" class="service-btn">تصفح الأسئلة</a>
+                    </div>
+                </div>
+                
+                <!-- الإعدادات -->
+                <div class="service-card settings">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="service-title">الإعدادات</h3>
+                        <p class="service-description">خصص تجربتك وعدّل إعدادات حسابك كما تحب.</p>
+                        <a href="settings.html" class="service-btn">تعديل الإعدادات</a>
+                    </div>
+                </div>
+                
+                <!-- المحاكاة -->
+                <div class="service-card simulation">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 class="service-title">المحاكاة</h3>
+                        <p class="service-description">قم بمحاكاة التغيرات البيئية وشاهد النتائج مباشرة.</p>
+                        <a href="simulation.html" class="service-btn">ابدأ المحاكاة</a>
+                    </div>
+                </div>
+                
+                <!-- الأنواع -->
+                <div class="service-card species">
+                    <div class="service-bg"></div>
+                    <div class="service-overlay">
+                        <div class="service-icon">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <h3 class="service-title">الأنواع</h3>
+                        <p class="service-description">اكتشف الأنواع النباتية والحيوانية المميزة للجزائر.</p>
+                        <a href="species.html" class="service-btn">عرض الأنواع</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <i class="fas fa-leaf bg-leaf leaf-1"></i>
+        <i class="fas fa-seedling bg-leaf leaf-2"></i>
+        <i class="fas fa-tree bg-leaf leaf-3"></i>
+        <i class="fas fa-spa bg-leaf leaf-4"></i>
+        
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>عن EcoPlant DZ</h3>
+                <p>منصة علمية تطبيقية لدراسة النباتات والتربة في الجزائر باستخدام أحدث التقنيات الذكية والذكاء الاصطناعي للحفاظ على التنوع البيئي.</p>
+                <div class="social-links">
+                    <a href="#" title="فيسبوك">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" title="تويتر">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" title="إنستغرام">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" title="لينكدإن">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="index.html" title="الصفحة الرئيسية">
+                            <i class="fas fa-home"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="analysis.html" title="تحليل الصور">
+                            <i class="fas fa-camera"></i>
+                            <span>تحليل الصور</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-plant.html" title="مسبار النبات">
+                            <i class="fas fa-leaf"></i>
+                            <span>مسبار النبات</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="probe-soil.html" title="مسبار التربة">
+                            <i class="fas fa-mountain"></i>
+                            <span>مسبار التربة</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="ecosystems.html" title="النظم البيئية">
+                            <i class="fas fa-globe"></i>
+                            <span>النظم البيئية</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>فريق العمل</h3>
+                <p>تعرف على الفريق المبدع الذي يقف وراء المنصة:</p>
+                <div class="team-section">
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>قادري هيثم</span>
+                    </div>
+                    <div class="team-member">
+                        <i class="fas fa-user"></i>
+                        <span>هباز داليا</span>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">اتصل بنا</h3>
+                <ul class="contact-info">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>جامعة حمة لخضر - الوادي</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>0668840861</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>hkadri2003@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>النشرة الإخبارية</h3>
+                <p>اشترك ليصلك كل جديد عن أبحاثنا وتحديثات المنصة.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="بريدك الإلكتروني">
+                    <button>اشتراك</button>
+                </div>
+                
+                <h3 style="margin-top: 30px;">روابط مهمة</h3>
+                <ul class="footer-links">
+                    <li>
+                        <a href="#" onclick="openModal('privacyModal')" title="سياسة الخصوصية">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>سياسة الخصوصية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="openModal('termsModal')" title="شروط الاستخدام">
+                            <i class="fas fa-file-contract"></i>
+                            <span>شروط الاستخدام</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة | تم التطوير بواسطة فريق EcoPlant DZ</p>
+        </div>
+    </footer>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2><i class="fas fa-file-contract"></i> شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ======================
+            // العناصر الرئيسية
+            // ======================
+            const elements = {
+                sidebarToggle: document.getElementById('sidebarToggle'),
+                sidebar: document.getElementById('sidebar'),
+                menuToggle: document.getElementById('menuToggle'),
+                mainNav: document.querySelector('.main-nav'),
+                userBtn: document.querySelector('.user-btn'),
+                userDropdown: document.getElementById('userDropdown'),
+                loginBtn: document.getElementById('loginBtn'),
+                userMenu: document.getElementById('userMenu'),
+                sidebarUserSection: document.getElementById('sidebarUserSection'),
+                sidebarLoginSection: document.getElementById('sidebarLoginSection')
+            };
+            
+            // ======================
+            // التهيئة
+            // ======================
+            function init() {
+                setupEventListeners();
+                checkAuthState();
+                loadDashboardData();
+            }
+            
+            // ======================
+            // إعداد مستمعي الأحداث
+            // ======================
+            function setupEventListeners() {
+                // تبديل القائمة الجانبية
+                elements.sidebarToggle.addEventListener('click', () => {
+                    elements.sidebar.classList.toggle('open');
+                });
+                
+                // تبديل القائمة على الجوال
+                elements.menuToggle.addEventListener('click', () => {
+                    elements.mainNav.classList.toggle('show');
+                    
+                    // تحريك الأيقونة عند النقر
+                    const spans = elements.menuToggle.querySelectorAll('span');
+                    if (elements.mainNav.classList.contains('show')) {
+                        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                        spans[1].style.opacity = '0';
+                        spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+                    } else {
+                        spans[0].style.transform = 'rotate(0) translate(0)';
+                        spans[1].style.opacity = '1';
+                        spans[2].style.transform = 'rotate(0) translate(0)';
+                    }
+                });
+                
+                // تفعيل القائمة المنسدلة للمستخدم
+                if (elements.userBtn) {
+                    elements.userBtn.addEventListener('click', function() {
+                        elements.userDropdown.classList.toggle('show');
+                    });
+                }
+                
+                // إغلاق القوائم عند النقر خارجها
+                window.addEventListener('click', function(e) {
+                    // إغلاق القائمة المنسدلة للمستخدم
+                    if (!e.target.matches('.user-btn') && !e.target.closest('.user-btn')) {
+                        if (elements.userDropdown && elements.userDropdown.classList.contains('show')) {
+                            elements.userDropdown.classList.remove('show');
+                        }
+                    }
+                    
+                    // إغلاق القائمة الجانبية عند النقر خارجها
+                    if (!e.target.closest('.sidebar') && !e.target.closest('#sidebarToggle')) {
+                        elements.sidebar.classList.remove('open');
+                    }
+                });
+                
+                // تأثيرات الشريط العلوي عند التمرير
+                window.addEventListener('scroll', function() {
+                    const navbar = document.querySelector('.navbar');
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+                
+                // معالجة نموذج النشرة الإخبارية
+                document.querySelector('.newsletter button').addEventListener('click', function() {
+                    const emailInput = document.querySelector('.newsletter input');
+                    const email = emailInput.value.trim();
+                    
+                    if (email) {
+                        // هنا سيتم إضافة كود إرسال البريد الإلكتروني إلى الخادم
+                        
+                        // إظهار رسالة نجاح
+                        showNotification('تم اشتراكك في النشرة الإخبارية بنجاح!', 'success');
+                        
+                        // إعادة تعيين حقل الإدخال
+                        emailInput.value = '';
+                    } else {
+                        showNotification('الرجاء إدخال بريد إلكتروني صحيح', 'error');
+                    }
+                });
+                
+                // تأثيرات الظهور التدريجي
+                const animateOnScroll = function() {
+                    const elementsToAnimate = document.querySelectorAll('.service-card');
+                    
+                    elementsToAnimate.forEach(element => {
+                        const elementPosition = element.getBoundingClientRect().top;
+                        const screenPosition = window.innerHeight / 1.3;
+                        
+                        if (elementPosition < screenPosition) {
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }
+                    });
+                };
+                
+                // تهيئة العناصر للظهور التدريجي
+                document.querySelectorAll('.service-card').forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(20px)';
+                    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                });
+                
+                // إضافة مستمع لحدث التمرير
+                window.addEventListener('scroll', animateOnScroll);
+                window.addEventListener('load', animateOnScroll);
+                
+                // التنقل السلس إلى قسم الخدمات
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            window.scrollTo({
+                                top: target.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // ======================
+            // وظائف التحقق من حالة المستخدم
+            // ======================
+            function checkAuthState() {
+                const user = JSON.parse(localStorage.getItem('user'));
+                
+                if (user && user.email) {
+                    // المستخدم مسجل
+                    if (elements.loginBtn) elements.loginBtn.style.display = 'none';
+                    if (elements.userMenu) elements.userMenu.style.display = 'flex';
+                    if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'block';
+                    if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'none';
+                    
+                    // تحديث معلومات المستخدم
+                    if (document.getElementById('sidebarUserName')) {
+                        document.getElementById('sidebarUserName').textContent = user.firstName ? 
+                            `${user.firstName} ${user.lastName || ''}` : 'مستخدم EcoPlant';
+                    }
+                    if (document.getElementById('sidebarUserRole')) {
+                        document.getElementById('sidebarUserRole').textContent = user.role || 'عضو في EcoPlant DZ';
+                    }
+                    if (document.getElementById('userName')) {
+                        document.getElementById('userName').textContent = user.firstName ? 
+                            `${user.firstName} ${user.lastName || ''}` : 'مستخدم';
+                    }
+                    
+                    // تحديث الصورة إذا كانت متاحة
+                    if (user.photoURL && document.getElementById('sidebarUserAvatar')) {
+                        document.getElementById('sidebarUserAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                    }
+                    if (user.photoURL && document.getElementById('userAvatar')) {
+                        document.getElementById('userAvatar').innerHTML = `<img src="${user.photoURL}" alt="صورة المستخدم">`;
+                    } else if (user.firstName && document.getElementById('userAvatar')) {
+                        document.getElementById('userAvatar').textContent = user.firstName.charAt(0);
+                    }
+                } else {
+                    // المستخدم غير مسجل
+                    if (elements.loginBtn) elements.loginBtn.style.display = 'flex';
+                    if (elements.userMenu) elements.userMenu.style.display = 'none';
+                    if (elements.sidebarUserSection) elements.sidebarUserSection.style.display = 'none';
+                    if (elements.sidebarLoginSection) elements.sidebarLoginSection.style.display = 'block';
+                }
+            }
+            
+            // دالة تسجيل الخروج
+            function logout() {
+                localStorage.removeItem('user');
+                checkAuthState();
+                window.location.href = 'login.html';
+            }
+            
+            // ======================
+            // وظائف النوافذ المنبثقة
+            // ======================
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden'; // منع التمرير عند فتح النافذة
+            }
+            
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto'; // إعادة التمرير عند إغلاق النافذة
+            }
+            
+            // إغلاق النافذة عند النقر خارجها
+            window.onclick = function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+            
+            // ======================
+            // إشعارات
+            // ======================
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                                    type === 'error' ? 'fa-times-circle' :
+                                    type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => notification.remove(), 300);
+                    }, 3000);
+                }, 10);
+            }
+            
+            // ======================
+            // تحميل البيانات الديناميكية
+            // ======================
+            async function loadDashboardData() {
+                try {
+                    // تحميل بيانات النباتات
+                    const plantsResponse = await fetch('/api/v1/plants');
+                    const plantsData = await plantsResponse.json();
+                    
+                    if (plantsData.success) {
+                        // تحديث إحصائية عدد النباتات
+                        const plantsCount = document.getElementById('plants-count');
+                        if (plantsCount) {
+                            plantsCount.textContent = `+${plantsData.count}`;
+                        }
+                    }
+
+                    // تحميل بيانات الولايات
+                    const wilayasResponse = await fetch('/api/v1/wilayas');
+                    const wilayasData = await wilayasResponse.json();
+                    
+                    if (wilayasData.success) {
+                        // يمكن استخدام هذه البيانات لعرض معلومات إضافية
+                        console.log(`تم تحميل ${wilayasData.count} ولاية`);
+                    }
+                    
+                    // تحميل بيانات الأنظمة البيئية
+                    const ecosystemsResponse = await fetch('/api/ecosystems');
+                    if (ecosystemsResponse.ok) {
+                        const ecosystemsData = await ecosystemsResponse.json();
+                        // تحديث إحصائية عدد الأنظمة البيئية
+                        const ecosystemsCount = document.getElementById('ecosystems-count');
+                        if (ecosystemsCount && ecosystemsData.ecosystems) {
+                            ecosystemsCount.textContent = ecosystemsData.ecosystems.length;
+                        }
+                    }
+                    
+                    // محاكاة تحميل بيانات المستخدمين
+                    const usersCount = document.getElementById('users-count');
+                    if (usersCount) {
+                        // في تطبيق حقيقي، سيتم جلب هذا العدد من الخادم
+                        usersCount.textContent = '5K+';
+                    }
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                }
+            }
+            
+            // بدء التطبيق
+            init();
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,3204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام المحاكاة الزراعية الذكي | EcoPlant DZ</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #4caf50;
+            --accent-color: #ff9800;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1b5e20;
+            --card-bg: #ffffff;
+            --text-dark: #2e3a30;
+            --text-light: #5a6b5f;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* شريط التنقل */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent-color);
+        }
+        
+        .main-nav {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .nav-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-color);
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+            border-radius: 12px;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            opacity: 0.1;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .nav-item span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .nav-item.simulation::before {
+            background: linear-gradient(135deg, #9c27b0, #4a148c);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(46, 125, 50, 0.1);
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            border: none;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* الشريط الجانبي */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 80px);
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 900;
+            transition: var(--transition);
+            overflow-y: auto;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark-bg);
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-color);
+            transform: scaleY(0);
+            transition: var(--transition);
+        }
+        
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(46, 125, 50, 0.05);
+            color: var(--primary-color);
+        }
+        
+        .sidebar-item i {
+            margin-left: 15px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            margin: 15px 20px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        /* رأس الصفحة */
+        .page-header {
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.9), rgba(27, 94, 32, 0.9));
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-bottom-right-radius: 30px;
+            border-bottom-left-radius: 30px;
+        }
+        
+        .page-header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .page-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        /* محتوى المحاكاة */
+        .simulation-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 992px) {
+            .simulation-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .simulation-form {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .simulation-form:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .simulation-results {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(46, 125, 50, 0.1);
+        }
+        
+        .section-title i {
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+        
+        .form-control, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            outline: none;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group .form-control {
+            flex: 1;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(108, 117, 125, 0.4);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 152, 0, 0.4);
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        /* مؤشرات الأداء */
+        .kpis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        /* الرسوم البيانية */
+        .chart-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* التوصيات */
+        .recommendations {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 8px;
+            border-right: 3px solid var(--secondary-color);
+        }
+        
+        .recommendation-item.warning {
+            background: rgba(255, 152, 0, 0.05);
+            border-right-color: var(--accent-color);
+        }
+        
+        .recommendation-item i {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+        
+        .recommendation-item.warning i {
+            color: var(--accent-color);
+        }
+        
+        /* شاشة التحميل */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(46, 125, 50, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* التذييل */
+        .footer {
+            background: linear-gradient(135deg, var(--dark-bg), var(--primary-color));
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 94, 32, 0.05);
+            opacity: 0.05;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 40px;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent-color);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            opacity: 0.9;
+            transition: var(--transition);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            padding-right: 8px;
+            color: var(--accent-color);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            color: white;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+            color: var(--dark-bg);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 25px 0;
+            text-align: center;
+            opacity: 0.8;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* التجاوب */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .nav-actions {
+                gap: 10px;
+            }
+            
+            .kpis-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
+            
+            .simulation-form, .simulation-results {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .kpis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        /* تخصيصات Bootstrap */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background: rgba(33, 150, 243, 0.1);
+            color: #0d47a1;
+            border-right: 3px solid #2196f3;
+        }
+        
+        /* تنسيقات إضافية */
+        .simulation-id {
+            background: rgba(46, 125, 50, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .actions-row {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .economic-summary {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* الأنماط الجديدة */
+        .auto-save-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        
+        .performance-monitor {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 250px;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        
+        .performance-monitor.hidden {
+            transform: translateX(300px);
+        }
+        
+        .monitor-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .monitor-body {
+            padding: 15px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .status-online { color: #2ecc71; }
+        .status-offline { color: #e74c3c; }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .kpi-info {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        
+        .kpi-info:hover {
+            opacity: 1;
+        }
+        
+        .kpi-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .kpi-trend {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .trend-up { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .trend-down { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .summary-item.highlight {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .priority-badge {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .priority-high { background: #f8d7da; color: #721c24; }
+        .priority-medium { background: #fff3cd; color: #856404; }
+        .priority-low { background: #d4edda; color: #155724; }
+        
+        .smart-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .overall-rating {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .summary-score {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .score-value {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .summary-details {
+            margin: 20px 0;
+        }
+        
+        .detail-item {
+            margin: 10px 0;
+        }
+        
+        .summary-actions {
+            text-align: center;
+        }
+        
+        .loading-content {
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .loading-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .loading-steps .step {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            border-bottom: 3px solid #dee2e6;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .loading-steps .step.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        .loading-steps .step.completed {
+            border-bottom-color: #28a745;
+            color: #28a745;
+        }
+        
+        .additional-actions {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+        
+        .comparison-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .comparison-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .simulation-preview {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .saved-simulation-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .saved-simulation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .saved-simulation-preview {
+            display: flex;
+            gap: 15px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .saved-simulation-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .share-option {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .share-option:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .share-option i {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .option-description {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            
+            <div class="main-nav">
+                <a href="index.html" class="nav-item home">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="analysis.html" class="nav-item analysis">
+                    <i class="fas fa-camera"></i>
+                    <span>تحليل الصور</span>
+                </a>
+                <a href="probe-plant.html" class="nav-item plant">
+                    <i class="fas fa-leaf"></i>
+                    <span>مسبار النبات</span>
+                </a>
+                <a href="probe-soil.html" class="nav-item soil">
+                    <i class="fas fa-mountain"></i>
+                    <span>مسبار التربة</span>
+                </a>
+                <a href="simulation.html" class="nav-item simulation active">
+                    <i class="fas fa-flask"></i>
+                    <span>المحاكاة</span>
+                </a>
+                <a href="ecosystems.html" class="nav-item ecosystems">
+                    <i class="fas fa-globe"></i>
+                    <span>النظم البيئية</span>
+                </a>
+                <a href="species.html" class="nav-item species">
+                    <i class="fas fa-paw"></i>
+                    <span>الأنواع</span>
+                </a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="action-btn" id="sidebarToggle" title="القائمة الجانبية" type="button">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- قائمة المستخدم -->
+                <div class="user-menu" id="userMenu" style="display: none;">
+                    <button class="user-btn" id="userDropdownBtn" type="button">
+                        <div class="user-avatar" id="userAvatar">م</div>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown" style="display: none; position: absolute; left: 0; top: 100%; background: white; box-shadow: var(--shadow); border-radius: 8px; padding: 10px 0; min-width: 200px; z-index: 1000;">
+                        <a href="dashboard.html" class="dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-dark); text-decoration: none; transition: var(--transition);">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="profile.html" class="dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-dark); text-decoration: none; transition: var(--transition);">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="login.html" class="dropdown-item" style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-dark); text-decoration: none; transition: var(--transition);">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- زر تسجيل الدخول -->
+                <a href="login.html" class="action-btn" id="loginBtn" title="تسجيل الدخول">
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>القائمة الرئيسية</h3>
+            <p>استكشف جميع خدماتنا</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="dashboard.html" class="sidebar-item"><i class="fas fa-tachometer-alt"></i><span>لوحة التحكم</span></a></li>
+            <li><a href="questions.html" class="sidebar-item"><i class="fas fa-question-circle"></i><span>الأسئلة</span></a></li>
+            <li><a href="messages.html" class="sidebar-item"><i class="fas fa-envelope"></i><span>الرسائل</span></a></li>
+            <li><a href="about.html" class="sidebar-item"><i class="fas fa-info-circle"></i><span>من نحن</span></a></li>
+            <li><a href="contact.html" class="sidebar-item"><i class="fas fa-phone-alt"></i><span>التواصل والدعم</span></a></li>
+        </ul>
+        
+        <div class="sidebar-divider"></div>
+        
+        <div class="sidebar-footer">
+            <p>لم تقم بتسجيل الدخول بعد؟</p>
+            <a href="login.html" class="btn btn-primary" style="width: 100%;">تسجيل الدخول</a>
+        </div>
+    </div>
+    
+    <!-- شاشة التحميل -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <h3>جاري إجراء المحاكاة...</h3>
+        <p>يتم تحليل البيانات وتقدير النتائج</p>
+    </div>
+    
+    <!-- رأس الصفحة -->
+    <header class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-title"><i class="fas fa-flask me-2"></i>نظام المحاكاة الزراعية الذكي</h1>
+                <p class="page-text">أدخل البيانات الأساسية للحصول على تحليل شامل وتوقعات دقيقة لمشروعك الزراعي بناءً على بيانات علمية حقيقية</p>
+            </div>
+        </div>
+    </header>
+    
+    <!-- المحتوى الرئيسي -->
+    <main class="container">
+        <div class="simulation-container">
+            <!-- نموذج المحاكاة -->
+            <section class="simulation-form" id="simulationFormSection">
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-sliders-h"></i>إعدادات المحاكاة</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">اسم السيناريو</label>
+                        <input type="text" class="form-control" id="scenario_name" value="سيناريو زراعي جديد" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">المحصول</label>
+                        <select class="form-select" id="plant_id" required>
+                            <option value="" disabled selected>جاري تحميل البيانات...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">الموقع (الولاية)</label>
+                        <select class="form-select" id="wilaya_id" required>
+                            <option value="" disabled selected>جاري تحميل البيانات...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-mountain"></i>خصائص التربة</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">نوع التربة</label>
+                        <select class="form-select" id="soil_type" required>
+                            <option value="" disabled selected>جاري تحميل البيانات...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">نظام الري</label>
+                        <select class="form-select" id="irrigation_system" required>
+                            <option value="" disabled selected>جاري تحميل البيانات...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">نوع السماد الأساسي</label>
+                        <select class="form-select" id="fertilizer_type" required>
+                            <option value="" disabled selected>جاري تحميل البيانات...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="section-title"><i class="fas fa-chart-line"></i>المعايير الكمية</h3>
+                    
+                    <div class="input-group">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">المساحة (هكتار)</label>
+                            <input type="number" class="form-control" id="area_ha" value="10" min="0.1" step="0.1" required>
+                        </div>
+                        
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">المدة (سنوات)</label>
+                            <input type="number" class="form-control" id="duration_years" value="3" min="1" max="30" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">كمية الري (م³/هكتار/سنة)</label>
+                        <input type="number" class="form-control" id="irrigation_amount" value="5000" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">معدل التسميد (كغ/هكتار)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" placeholder="N نيتروجين" id="nitrogen" value="120" min="0">
+                            <input type="number" class="form-control" placeholder="P فوسفور" id="phosphorus" value="60" min="0">
+                            <input type="number" class="form-control" placeholder="K بوتاسيوم" id="potassium" value="80" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <button class="btn btn-primary btn-full" id="simulateBtn" type="button">
+                        <i class="fas fa-play me-2"></i>بدء المحاكاة العلمية
+                    </button>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        جميع البيانات تستند إلى قواعد بيانات علمية حقيقية في الجزائر
+                    </div>
+                </div>
+                
+                <!-- المحاكاة المحفوظة -->
+                <div class="form-section" id="savedSimulationsSection" style="display: none;">
+                    <h3 class="section-title"><i class="fas fa-history me-2"></i>المحاكاة السابقة</h3>
+                    <div id="savedSimulationsList"></div>
+                </div>
+            </section>
+            
+            <!-- نتائج المحاكاة -->
+            <section class="simulation-results" id="simulationResults">
+                <div id="reportContent">
+                    <div class="results-header">
+                        <h3 class="results-title"><i class="fas fa-chart-bar me-2"></i>نتائج المحاكاة العلمية</h3>
+                        <div class="additional-actions" id="additionalActions"></div>
+                    </div>
+                    
+                    <!-- الملخص الذكي -->
+                    <div id="smartSummary"></div>
+                    
+                    <!-- مؤشرات الأداء -->
+                    <div class="kpis-grid" id="kpisContainer">
+                        <!-- سيتم تعبئتها ديناميكياً -->
+                    </div>
+                    
+                    <!-- التحليل الاقتصادي -->
+                    <div class="economic-summary" id="economicSummary">
+                        <!-- سيتم تعبئتها ديناميكياً -->
+                    </div>
+                    
+                    <!-- الرسوم البيانية -->
+                    <div class="chart-container">
+                        <h4 class="chart-title"><i class="fas fa-chart-pie me-2"></i>توزيع التكاليف</h4>
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h4 class="chart-title"><i class="fas fa-chart-line me-2"></i>العوائد السنوية المتوقعة</h4>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h4 class="chart-title"><i class="fas fa-chart-radar me-2"></i>أداء المشروع الشامل</h4>
+                        <canvas id="performanceChart" height="300"></canvas>
+                    </div>
+                    
+                    <!-- التوصيات -->
+                    <div class="recommendations">
+                        <h4 class="chart-title"><i class="fas fa-lightbulb me-2"></i>التوصيات الذكية</h4>
+                        <div id="recommendationsContainer">
+                            <!-- سيتم تعبئتها ديناميكياً -->
+                        </div>
+                    </div>
+                    
+                    <!-- معرّف المحاكاة -->
+                    <div class="simulation-id" id="simulationId">
+                        معرف المحاكاة: <span id="simulationIdValue">-</span> | 
+                        تاريخ المحاكاة: <span id="simulationDate">-</span>
+                    </div>
+                    
+                    <div class="actions-row">
+                        <button class="btn btn-secondary" id="newSimulationBtn" type="button">
+                            <i class="fas fa-redo me-2"></i>محاكاة جديدة
+                        </button>
+                        <button class="btn btn-primary" id="saveResultsBtn" type="button">
+                            <i class="fas fa-save me-2"></i>حفظ النتائج
+                        </button>
+                        <button class="btn btn-download" id="downloadReportBtn" type="button">
+                            <i class="fas fa-download me-2"></i>تنزيل التقرير العلمي
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>عن EcoPlant DZ</h3>
+                <p>منصة علمية تطبيقية لدراسة النباتات والتربة في الجزائر باستخدام أحدث التقنيات الذكية والذكاء الاصطناعي.</p>
+                <div class="social-links">
+                    <a href="#" title="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="إنستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="لينكدإن"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fas fa-home"></i><span>الرئيسية</span></a></li>
+                    <li><a href="analysis.html"><i class="fas fa-camera"></i><span>تحليل الصور</span></a></li>
+                    <li><a href="simulation.html"><i class="fas fa-flask"></i><span>المحاكاة</span></a></li>
+                    <li><a href="ecosystems.html"><i class="fas fa-globe"></i><span>النظم البيئية</span></a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>فريق العمل</h3>
+                <p>قادري هيثم - هباز داليا</p>
+                <h3 style="margin-top: 20px;">اتصل بنا</h3>
+                <ul class="footer-links">
+                    <li><a href="tel:0668840861"><i class="fas fa-phone"></i><span>0668840861</span></a></li>
+                    <li><a href="mailto:hkadri2003@gmail.com"><i class="fas fa-envelope"></i><span>hkadri2003@gmail.com</span></a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i><span>جامعة حمة لخضر - الوادي</span></a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>النشرة الإخبارية</h3>
+                <p>اشترك ليصلك كل جديد عن أبحاثنا وتحديثات المنصة.</p>
+                <div style="display: flex; margin-top: 15px;">
+                    <input type="email" placeholder="بريدك الإلكتروني" style="flex: 1; padding: 12px; border: none; border-radius: 4px 0 0 4px;">
+                    <button style="background: var(--accent-color); color: white; border: none; padding: 0 20px; border-radius: 0 4px 4px 0; cursor: pointer;">اشتراك</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+<script>
+    // الكائنات العالمية
+    let costChart = null;
+    let revenueChart = null;
+    let performanceChart = null; // أضيف هذا السطر
+    let currentSimulationData = null;
+    let currentYears = 3;
+    let savedSimulations = JSON.parse(localStorage.getItem('savedSimulations')) || [];
+    let calculationWorker = null;
+    
+    // دالة لتدمير جميع المخططات
+    function destroyAllCharts() {
+        if (costChart) {
+            costChart.destroy();
+            costChart = null;
+        }
+        
+        if (revenueChart) {
+            revenueChart.destroy();
+            revenueChart = null;
+        }
+        
+        if (performanceChart) {
+            performanceChart.destroy();
+            performanceChart = null;
+        }
+    }
+    
+    // عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        initializePage();
+        loadFormData();
+        setupEventListeners();
+        checkAuthState();
+        loadSavedSimulations();
+        
+        // تحديث عدد السنوات عند التغيير
+        document.getElementById('duration_years').addEventListener('change', function() {
+            currentYears = parseInt(this.value) || 3;
+        });
+        
+        // تعطيل Worker للعمليات الثقيلة (لعدم وجود الملف)
+        calculationWorker = null;
+    });
+    
+    // تهيئة الصفحة
+    function initializePage() {
+        // تأثيرات الظهور
+        const elements = document.querySelectorAll('.simulation-form, .simulation-results');
+        elements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 300);
+        });
+        
+        // إضافة تأثير التمرير للشريط العلوي
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.padding = '10px 0';
+                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.padding = '15px 0';
+                navbar.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.1)';
+            }
+        });
+        
+        // تهيئة مراقب الأداء
+        initializePerformanceMonitor();
+    }
+    
+    // تهيئة مراقب الأداء
+    function initializePerformanceMonitor() {
+        const monitor = document.createElement('div');
+        monitor.id = 'performanceMonitor';
+        monitor.className = 'performance-monitor';
+        monitor.innerHTML = `
+            <div class="monitor-header">
+                <i class="fas fa-chart-line me-2"></i>
+                <span>مراقبة الأداء</span>
+                <button class="close-monitor" onclick="togglePerformanceMonitor()" style="background: none; border: none; color: white; cursor: pointer;" type="button">&times;</button>
+            </div>
+            <div class="monitor-body">
+                <div class="metric">
+                    <span>استخدام الذاكرة:</span>
+                    <span id="memoryUsage">0 MB</span>
+                </div>
+                <div class="metric">
+                    <span>الاستجابة:</span>
+                    <span id="responseTime">0ms</span>
+                </div>
+                <div class="metric">
+                    <span>حالة الاتصال:</span>
+                    <span id="connectionStatus" class="status-online">●</span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(monitor);
+        
+        // تحديث مؤشرات الأداء
+        setInterval(updatePerformanceMetrics, 5000);
+    }
+    
+    // تحديث مؤشرات الأداء
+    function updatePerformanceMetrics() {
+        if (window.performance && window.performance.memory) {
+            const memory = window.performance.memory;
+            const usedMB = Math.round(memory.usedJSHeapSize / 1048576);
+            document.getElementById('memoryUsage').textContent = `${usedMB} MB`;
+        }
+        
+        // تحديث حالة الاتصال
+        const isOnline = navigator.onLine;
+        const statusElement = document.getElementById('connectionStatus');
+        statusElement.className = isOnline ? 'status-online' : 'status-offline';
+        statusElement.title = isOnline ? 'متصل' : 'غير متصل';
+    }
+    
+    // تبديل عرض مراقب الأداء
+    function togglePerformanceMonitor() {
+        const monitor = document.getElementById('performanceMonitor');
+        monitor.classList.toggle('hidden');
+    }
+    
+    // إعداد مستمعي الأحداث
+    function setupEventListeners() {
+        // زر المحاكاة
+        document.getElementById('simulateBtn').addEventListener('click', runSimulation);
+        
+        // زر تنزيل التقرير
+        document.getElementById('downloadReportBtn').addEventListener('click', downloadReport);
+        
+        // زر محاكاة جديدة
+        document.getElementById('newSimulationBtn').addEventListener('click', function() {
+            document.getElementById('simulationResults').style.display = 'none';
+            document.getElementById('simulationFormSection').style.opacity = '1';
+            document.getElementById('simulationFormSection').style.transform = 'translateY(0)';
+        });
+        
+        // زر حفظ النتائج
+        document.getElementById('saveResultsBtn').addEventListener('click', saveResults);
+        
+        // زر القائمة الجانبية
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+        
+        // زر قائمة المستخدم
+        const userDropdownBtn = document.getElementById('userDropdownBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userDropdownBtn) {
+            userDropdownBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.style.display = userDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // إغلاق القائمة عند النقر خارجها
+            document.addEventListener('click', function() {
+                userDropdown.style.display = 'none';
+            });
+        }
+        
+        // إغلاق الشريط الجانبي عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // إعداد الحفظ التلقائي
+        setupAutoSave();
+    }
+    
+    // إعداد الحفظ التلقائي
+    function setupAutoSave() {
+        const formElements = document.querySelectorAll('#simulationFormSection input, #simulationFormSection select, #simulationFormSection textarea');
+        formElements.forEach(element => {
+            element.addEventListener('change', function() {
+                saveFormDraft();
+            });
+        });
+    }
+    
+    // حفظ المسودة تلقائياً
+    function saveFormDraft() {
+        const formData = {
+            scenario_name: document.getElementById('scenario_name').value,
+            plant_id: document.getElementById('plant_id').value,
+            wilaya_id: document.getElementById('wilaya_id').value,
+            soil_type: document.getElementById('soil_type').value,
+            irrigation_system: document.getElementById('irrigation_system').value,
+            fertilizer_type: document.getElementById('fertilizer_type').value,
+            area_ha: document.getElementById('area_ha').value,
+            duration_years: document.getElementById('duration_years').value,
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('simulationDraft', JSON.stringify(formData));
+        showAutoSaveIndicator();
+    }
+    
+    // تحميل المسودة المحفوظة
+    function loadFormDraft() {
+        const draft = localStorage.getItem('simulationDraft');
+        if (draft) {
+            const formData = JSON.parse(draft);
+            Object.keys(formData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element && formData[key]) {
+                    element.value = formData[key];
+                }
+            });
+        }
+    }
+    
+    // إظهار مؤشر الحفظ التلقائي
+    function showAutoSaveIndicator() {
+        let indicator = document.getElementById('autoSaveIndicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'autoSaveIndicator';
+            indicator.className = 'auto-save-indicator';
+            document.querySelector('.simulation-form').appendChild(indicator);
+        }
+        
+        indicator.textContent = 'تم الحفظ تلقائياً ' + new Date().toLocaleTimeString();
+        indicator.style.opacity = '1';
+        
+        setTimeout(() => {
+            indicator.style.opacity = '0';
+        }, 2000);
+    }
+    
+    // تحميل بيانات النموذج من السيرفر
+    async function loadFormData() {
+        try {
+            // محاولة تحميل المسودة أولاً
+            loadFormDraft();
+            
+            // استخدام المسارات الصحيحة مع معالجة الأخطاء
+            const [plantsRes, wilayasRes, soilsRes, waterSystemsRes, fertilizersRes] = await Promise.all([
+                fetch('/api/plants').catch(() => null),
+                fetch('/api/wilayas').catch(() => null),
+                fetch('/api/soils').catch(() => null),
+                fetch('/api/water-systems').catch(() => null),
+                fetch('/api/fertilizers').catch(() => null)
+            ]);
+            
+            // التحقق من الاستجابات
+            let plants = [], wilayas = [], soils = [], waterSystems = [], fertilizers = [];
+            
+            if (plantsRes && plantsRes.ok) plants = await plantsRes.json();
+            if (wilayasRes && wilayasRes.ok) wilayas = await wilayasRes.json();
+            if (soilsRes && soilsRes.ok) soils = await soilsRes.json();
+            if (waterSystemsRes && waterSystemsRes.ok) waterSystems = await waterSystemsRes.json();
+            if (fertilizersRes && fertilizersRes.ok) fertilizers = await fertilizersRes.json();
+            
+            // تعبئة القوائم المنسدلة
+            populateSelect('plant_id', plants.data || plants, 'name');
+            populateSelect('wilaya_id', wilayas.data || wilayas, 'name');
+            populateSelect('soil_type', soils.data || soils, 'name');
+            populateSelect('irrigation_system', waterSystems.data || waterSystems, 'name');
+            populateSelect('fertilizer_type', fertilizers.data || fertilizers, 'name');
+            
+        } catch (error) {
+            console.error('خطأ في تحميل البيانات:', error);
+            showError('تعذر تحميل البيانات. تأكد من اتصال السيرفر.');
+            
+            // استخدام بيانات حقيقية للاختبار
+            loadRealData();
+        }
+    }
+    
+    // تعبئة القائمة المنسدلة
+    function populateSelect(selectId, data, labelField) {
+        const select = document.getElementById(selectId);
+        if (!select || !data) return;
+        
+        select.innerHTML = '<option value="" selected>اختر...</option>';
+        
+        if (Array.isArray(data)) {
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id || item._id;
+                option.textContent = item[labelField] || item.name || 'غير معروف';
+                
+                // إضافة وصف إضافي إن وجد
+                if (item.description) {
+                    option.setAttribute('data-description', item.description);
+                }
+                
+                select.appendChild(option);
+            });
+        } else if (typeof data === 'object') {
+            Object.entries(data).forEach(([key, value]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                select.appendChild(option);
+            });
+        }
+        
+        // تحديد أول قيمة افتراضياً
+        if (select.options.length > 1) {
+            select.selectedIndex = 1;
+        }
+        
+        // إضافة مستمع للخيارات
+        select.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            showOptionDescription(selectId, selectedOption);
+        });
+    }
+    
+    // عرض وصف الخيار المحدد
+    function showOptionDescription(selectId, option) {
+        const description = option.getAttribute('data-description');
+        if (description) {
+            // إزالة الوصف القديم
+            const oldDesc = document.getElementById(`${selectId}_desc`);
+            if (oldDesc) oldDesc.remove();
+            
+            // إضافة وصف جديد
+            const descDiv = document.createElement('div');
+            descDiv.id = `${selectId}_desc`;
+            descDiv.className = 'option-description';
+            descDiv.textContent = description;
+            
+            const select = document.getElementById(selectId);
+            select.parentNode.appendChild(descDiv);
+        }
+    }
+    
+    // تحميل بيانات حقيقية
+    function loadRealData() {
+        const realPlants = [
+            { id: 1, name: 'القمح الشتوي', description: 'محصول شتوي يحتاج 400-600 ملم مطر' },
+            { id: 2, name: 'القمح الربيعي', description: 'محصول ربيعي ينمو في المناطق المعتدلة' },
+            { id: 3, name: 'الشعير', description: 'محصول يتحمل الجفاف نسبياً' },
+            { id: 4, name: 'الطماطم', description: 'محصول صيفي يحتاج ري منتظم' },
+            { id: 5, name: 'البطاطس', description: 'محصول يحتاج تربة جيدة التصريف' },
+            { id: 6, name: 'الزيتون', description: 'شجرة معمرة تتحمل الجفاف' },
+            { id: 7, name: 'النخيل', description: 'ينمو في المناطق الصحراوية' },
+            { id: 8, name: 'العنب', description: 'ينمو في المناطق المعتدلة' }
+        ];
+        
+        const realWilayas = [
+            { id: 1, name: 'الوادي' },
+            { id: 2, name: 'بسكرة' },
+            { id: 3, name: 'الجلفة' },
+            { id: 4, name: 'تيارت' },
+            { id: 5, name: 'الشلف' },
+            { id: 6, name: 'غرداية' },
+            { id: 7, name: 'أدرار' },
+            { id: 8, name: 'تلمسان' }
+        ];
+        
+        const realSoils = [
+            { id: 1, name: 'تربة طينية' },
+            { id: 2, name: 'تربة رملية' },
+            { id: 3, name: 'تربة طميية' },
+            { id: 4, name: 'تربة جيرية' },
+            { id: 5, name: 'تربة ملحية' }
+        ];
+        
+        const realWaterSystems = [
+            { id: 1, name: 'ري بالتنقيط' },
+            { id: 2, name: 'ري بالرش' },
+            { id: 3, name: 'ري سطحي' },
+            { id: 4, name: 'ري محوري' }
+        ];
+        
+        const realFertilizers = [
+            { id: 1, name: 'سماد عضوي' },
+            { id: 2, name: 'يوريا' },
+            { id: 3, name: 'سوبر فوسفات' },
+            { id: 4, name: 'كلوريد البوتاسيوم' },
+            { id: 5, name: 'سماد مركب NPK' }
+        ];
+        
+        populateSelect('plant_id', realPlants, 'name');
+        populateSelect('wilaya_id', realWilayas, 'name');
+        populateSelect('soil_type', realSoils, 'name');
+        populateSelect('irrigation_system', realWaterSystems, 'name');
+        populateSelect('fertilizer_type', realFertilizers, 'name');
+    }
+    
+    // تشغيل المحاكاة
+    async function runSimulation() {
+        // التحقق من صحة النموذج
+        if (!validateForm()) {
+            return;
+        }
+        
+        // إظهار شاشة التحميل
+        showEnhancedLoading();
+        
+        // تجميع بيانات النموذج (استخدام أسماء الحقول المتوافقة مع السيرفر)
+        const simulationData = {
+            scenario_name: document.getElementById('scenario_name').value,
+            plant_id: parseInt(document.getElementById('plant_id').value),
+            wilaya_id: parseInt(document.getElementById('wilaya_id').value),
+            soil: parseInt(document.getElementById('soil_type').value),
+            water: parseInt(document.getElementById('irrigation_system').value),
+            fertilizer: parseInt(document.getElementById('fertilizer_type').value),
+            area_ha: parseFloat(document.getElementById('area_ha').value),
+            years: parseInt(document.getElementById('duration_years').value),
+            irrigation_amount: parseInt(document.getElementById('irrigation_amount').value),
+            nitrogen: parseInt(document.getElementById('nitrogen').value) || 0,
+            phosphorus: parseInt(document.getElementById('phosphorus').value) || 0,
+            potassium: parseInt(document.getElementById('potassium').value) || 0,
+            water_quality: "جيد",
+            farming_type: "تقليدي",
+            climate_scenario: "current",
+            delta_temp_c: 0,
+            delta_rain_pct: 0
+        };
+        
+        try {
+            const response = await fetch('/api/simulate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(simulationData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`خطأ في السيرفر: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            handleSimulationResult(result);
+            
+        } catch (error) {
+            console.error('خطأ في المحاكاة:', error);
+            showError('فشلت المحاكاة: ' + error.message);
+            
+            // استخدام المحاكاة المحلية
+            runLocalSimulation(simulationData);
+            
+        } finally {
+            // إخفاء شاشة التحميل
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }, 1000);
+        }
+    }
+    
+    // المحاكاة المحلية
+    function runLocalSimulation(simulationData) {
+        // محاكاة علمية حقيقية
+        const area = simulationData.area_ha;
+        const years = simulationData.years;
+        
+        // حسابات علمية حقيقية
+        const baseYield = calculateBaseYield(simulationData);
+        const waterEfficiency = calculateWaterEfficiency(simulationData);
+        const fertilizerEfficiency = calculateFertilizerEfficiency(simulationData);
+        const climateFactor = calculateClimateFactor(simulationData);
+        
+        // النتائج
+        const annualYield = baseYield * waterEfficiency * fertilizerEfficiency * climateFactor * area;
+        const annualCost = calculateAnnualCost(simulationData, area);
+        const annualRevenue = annualYield * getMarketPrice(simulationData.plant_id);
+        const annualProfit = annualRevenue - annualCost;
+        const sustainabilityIndex = calculateSustainabilityIndex(simulationData);
+        const waterStress = calculateWaterStress(simulationData);
+        const heatStress = calculateHeatStress(simulationData);
+        
+        const result = {
+            success: true,
+            simulation_id: 'SIM-' + Date.now(),
+            input_data: simulationData,
+            kpis_summary: {
+                sustainability_index: Math.round(sustainabilityIndex),
+                profitability: Math.round((annualProfit / annualCost) * 100),
+                water_stress: Math.round(waterStress),
+                heat_stress: Math.round(heatStress),
+                annual_yield: Math.round(annualYield)
+            },
+            economic_summary: {
+                annual_yield: Math.round(annualYield),
+                annual_cost: Math.round(annualCost),
+                annual_revenue: Math.round(annualRevenue),
+                annual_profit: Math.round(annualProfit),
+                break_even_years: Math.round((annualCost * 2) / annualProfit)
+            },
+            full_results: {
+                recommendations: generateScientificRecommendations(simulationData)
+            }
+        };
+        
+        handleSimulationResult(result);
+    }
+    
+    // الحسابات العلمية
+    function calculateBaseYield(simulationData) {
+        const yields = {
+            '1': 4.5, // القمح الشتوي
+            '2': 3.8, // القمح الربيعي
+            '3': 3.5, // الشعير
+            '4': 40,  // الطماطم
+            '5': 25,  // البطاطس
+            '6': 8,   // الزيتون
+            '7': 12,  // النخيل
+            '8': 15   // العنب
+        };
+        return yields[simulationData.plant_id] || 5;
+    }
+    
+    function calculateWaterEfficiency(simulationData) {
+        const efficiencies = {
+            '1': 0.95, // تنقيط
+            '2': 0.80, // رش
+            '3': 0.55, // سطحي
+            '4': 0.85  // محوري
+        };
+        return efficiencies[simulationData.water] || 0.7;
+    }
+    
+    function calculateFertilizerEfficiency(simulationData) {
+        const nitrogen = simulationData.nitrogen || 0;
+        const phosphorus = simulationData.phosphorus || 0;
+        const potassium = simulationData.potassium || 0;
+        
+        // حساب الكفاءة بناءً على التوازن
+        const total = nitrogen + phosphorus + potassium;
+        if (total === 0) return 0.5;
+        
+        const idealRatio = { N: 0.4, P: 0.3, K: 0.3 };
+        const actualRatio = {
+            N: nitrogen / total,
+            P: phosphorus / total,
+            K: potassium / total
+        };
+        
+        const deviation = Math.abs(idealRatio.N - actualRatio.N) +
+                        Math.abs(idealRatio.P - actualRatio.P) +
+                        Math.abs(idealRatio.K - actualRatio.K);
+        
+        return 1 - (deviation / 2);
+    }
+    
+    function calculateClimateFactor(simulationData) {
+        const climateFactors = {
+            '1': 0.9,  // الوادي - صحراوي
+            '2': 0.95, // بسكرة - معتدل
+            '3': 0.85, // الجلفة - بارد
+            '4': 1.0,  // تيارت - مثالي
+            '5': 0.95, // الشلف - ساحلي
+            '6': 0.8,  // غرداية - صحراوي
+            '7': 0.75, // أدرار - صحراوي شديد
+            '8': 0.9   // تلمسان - ساحلي
+        };
+        return climateFactors[simulationData.wilaya_id] || 0.85;
+    }
+    
+    function calculateAnnualCost(simulationData, area) {
+        // تكاليف حقيقية بالدينار الجزائري
+        const waterCost = simulationData.irrigation_amount * 15; // 15 دج/م³
+        const fertilizerCost = (simulationData.nitrogen * 100) + 
+                             (simulationData.phosphorus * 120) + 
+                             (simulationData.potassium * 80);
+        const laborCost = 500000 * area; // 500,000 دج/هكتار
+        const seedCost = 200000 * area; // 200,000 دج/هكتار
+        const maintenanceCost = 100000 * area; // 100,000 دج/هكتار
+        
+        return (waterCost + fertilizerCost + laborCost + seedCost + maintenanceCost) * area;
+    }
+    
+    function getMarketPrice(plantId) {
+        const prices = {
+            '1': 35000, // القمح
+            '2': 32000, // القمح الربيعي
+            '3': 28000, // الشعير
+            '4': 20000, // الطماطم
+            '5': 25000, // البطاطس
+            '6': 80000, // الزيتون
+            '7': 120000, // النخيل
+            '8': 60000  // العنب
+        };
+        return prices[plantId] || 30000;
+    }
+    
+    function calculateSustainabilityIndex(simulationData) {
+        // حساب مؤشر الاستدامة
+        let index = 70; // نقطة البداية
+        
+        // إضافة نقاط للإيجابيات
+        if (simulationData.water === 1) index += 15; // تنقيط
+        if (simulationData.fertilizer === 1) index += 10; // عضوي
+        if (simulationData.soil === 3) index += 5; // طميية
+        
+        // خصم نقاط للسلبيات
+        if (simulationData.irrigation_amount > 8000) index -= 10;
+        if (simulationData.nitrogen > 150) index -= 5;
+        
+        return Math.min(100, Math.max(30, index));
+    }
+    
+    function calculateWaterStress(simulationData) {
+        // حساب الإجهاد المائي
+        const idealWater = 6000; // م³/هكتار/سنة مثالي
+        const actualWater = simulationData.irrigation_amount;
+        
+        if (actualWater <= idealWater * 0.7) return 40; // نقص مائي
+        if (actualWater >= idealWater * 1.3) return 60; // إفراط في الري
+        return 20; // مثالي
+    }
+    
+    function calculateHeatStress(simulationData) {
+        // حساب الإجهاد الحراري
+        const wilayaHeat = {
+            '1': 40, '6': 35, '7': 45, // صحراوية
+            '2': 25, '4': 20, '5': 22, // معتدلة
+            '3': 15, '8': 18 // باردة
+        };
+        
+        return wilayaHeat[simulationData.wilaya_id] || 25;
+    }
+    
+    function generateScientificRecommendations(simulationData) {
+        const recommendations = [];
+        const plantName = document.getElementById('plant_id').options[simulationData.plant_id - 1]?.text || 'المحصول';
+        
+        // توصيات علمية حقيقية
+        if (simulationData.water !== 1) {
+            recommendations.push({
+                category: 'الري',
+                message: `نوصي بتحويل نظام الري إلى التنقيط لتحسين الكفاءة بنسبة 30%`,
+                priority: 'high',
+                impact: 'توفير 25% من المياه'
+            });
+        }
+        
+        if (simulationData.nitrogen < 100) {
+            recommendations.push({
+                category: 'التسميد',
+                message: `زيادة كمية النيتروجين إلى 120 كغ/هكتار لتحسين الإنتاجية`,
+                priority: 'medium',
+                impact: 'زيادة الإنتاج بنسبة 15%'
+            });
+        }
+        
+        if (simulationData.soil === 4 || simulationData.soil === 5) {
+            recommendations.push({
+                category: 'التربة',
+                message: `إضافة المواد العضوية لتحسين خصائص التربة`,
+                priority: 'high',
+                impact: 'تحسين خصوبة التربة'
+            });
+        }
+        
+        return recommendations;
+    }
+    
+    // معالجة نتيجة المحاكاة
+    function handleSimulationResult(result) {
+        if (result.success) {
+            // حفظ بيانات المحاكاة
+            currentSimulationData = result;
+            
+            // عرض النتائج
+            displayResults(result);
+            
+            // إظهار قسم النتائج
+            document.getElementById('simulationResults').style.display = 'block';
+            
+            // التمرير إلى النتائج
+            document.getElementById('simulationResults').scrollIntoView({ behavior: 'smooth' });
+            
+            // تسجيل التحليلات
+            logSimulationAnalytics();
+            
+        } else {
+            throw new Error(result.message || 'فشلت المحاكاة');
+        }
+    }
+    
+    // إظهار شاشة تحميل محسنة
+    function showEnhancedLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.innerHTML = `
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h4 class="mt-3">جاري معالجة المحاكاة العلمية</h4>
+                <div class="progress mt-3" style="height: 10px; width: 300px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 0%" id="simulationProgress"></div>
+                </div>
+                <p class="mt-3" id="loadingStatus">جمع البيانات...</p>
+                <div class="loading-steps mt-3">
+                    <div class="step active">جمع البيانات</div>
+                    <div class="step">تحليل المناخ</div>
+                    <div class="step">حساب التكاليف</div>
+                    <div class="step">توليد النتائج</div>
+                </div>
+            </div>
+        `;
+        overlay.style.display = 'flex';
+        
+        // محاكاة تقدم المحاكاة
+        simulateProgress();
+    }
+    
+    // محاكاة شريط التقدم
+    function simulateProgress() {
+        const steps = ['جمع البيانات', 'تحليل المناخ', 'حساب التكاليف', 'توليد النتائج'];
+        let currentStep = 0;
+        
+        const interval = setInterval(() => {
+            const progressBar = document.getElementById('simulationProgress');
+            const statusText = document.getElementById('loadingStatus');
+            
+            if (currentStep < steps.length) {
+                const progress = (currentStep + 1) * 25;
+                progressBar.style.width = `${progress}%`;
+                statusText.textContent = steps[currentStep];
+                
+                // تحديث الخطوات
+                const stepElements = document.querySelectorAll('.loading-steps .step');
+                stepElements.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index === currentStep) {
+                        step.classList.add('active');
+                    } else if (index < currentStep) {
+                        step.classList.add('completed');
+                    }
+                });
+                
+                currentStep++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 800);
+    }
+    
+    // التحقق من صحة النموذج
+    function validateForm() {
+        const requiredFields = [
+            'scenario_name', 'plant_id', 'wilaya_id', 'soil_type', 
+            'irrigation_system', 'fertilizer_type', 'area_ha', 'duration_years'
+        ];
+        
+        for (const fieldId of requiredFields) {
+            const field = document.getElementById(fieldId);
+            if (!field.value || field.value === '') {
+                showError(`الرجاء ملء حقل ${field.previousElementSibling?.textContent || fieldId}`);
+                field.classList.add('is-invalid');
+                field.focus();
+                return false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        }
+        
+        const areaField = document.getElementById('area_ha');
+        if (parseFloat(areaField.value) <= 0) {
+            showError('المساحة يجب أن تكون أكبر من صفر');
+            areaField.classList.add('is-invalid');
+            areaField.focus();
+            return false;
+        } else {
+            areaField.classList.remove('is-invalid');
+        }
+        
+        return true;
+    }
+    
+    // عرض النتائج
+    function displayResults(data) {
+        // حفظ بيانات المحاكاة
+        currentSimulationData = data;
+        
+        // عرض مؤشرات الأداء
+        displayKPIs(data.kpis_summary || data);
+        
+        // عرض التحليل الاقتصادي
+        displayEconomicSummary(data.economic_summary || data);
+        
+        // عرض الرسوم البيانية
+        drawCharts(data.economic_summary || data);
+        
+        // عرض التوصيات
+        displayRecommendations(data.full_results?.recommendations || []);
+        
+        // عرض معرف المحاكاة
+        document.getElementById('simulationIdValue').textContent = 
+            data.simulation_id || data.id || 'SIM-' + Date.now();
+        
+        document.getElementById('simulationDate').textContent = 
+            new Date().toLocaleDateString('ar-EG');
+        
+        // إضافة خيارات إضافية
+        addAdditionalOptions();
+        
+        // توليد ملخص ذكي
+        generateSmartSummary(data);
+    }
+    
+    // عرض مؤشرات الأداء
+    function displayKPIs(kpis) {
+        const container = document.getElementById('kpisContainer');
+        container.innerHTML = '';
+        
+        const area = parseFloat(document.getElementById('area_ha').value) || 10;
+        
+        const kpiData = [
+            {
+                title: 'مؤشر الاستدامة',
+                value: (kpis.sustainability_index || 75) + '%',
+                color: '#2ecc71',
+                icon: 'fas fa-leaf',
+                trend: kpis.sustainability_index >= 70 ? 'up' : 'down',
+                description: 'يقيس الاستدامة البيئية والاقتصادية'
+            },
+            {
+                title: 'الربحية (ROI)',
+                value: (kpis.profitability || 25) + '%',
+                color: '#3498db',
+                icon: 'fas fa-chart-line',
+                trend: kpis.profitability >= 20 ? 'up' : 'down',
+                description: 'عائد الاستثمار السنوي'
+            },
+            {
+                title: 'الإجهاد المائي',
+                value: (kpis.water_stress || 30) + '%',
+                color: kpis.water_stress > 40 ? '#e74c3c' : '#f39c12',
+                icon: 'fas fa-tint',
+                trend: kpis.water_stress <= 40 ? 'down' : 'up',
+                description: 'نسبة الاستخدام الفعلي للمياه'
+            },
+            {
+                title: 'الإجهاد الحراري',
+                value: (kpis.heat_stress || 20) + '%',
+                color: kpis.heat_stress > 30 ? '#e74c3c' : '#f39c12',
+                icon: 'fas fa-thermometer-half',
+                trend: kpis.heat_stress <= 30 ? 'down' : 'up',
+                description: 'تأثير الحرارة على المحصول'
+            },
+            {
+                title: 'الإنتاج السنوي',
+                value: Math.round((kpis.annual_yield || area * 800)).toLocaleString() + ' طن',
+                color: '#9b59b6',
+                icon: 'fas fa-weight-hanging',
+                trend: 'up',
+                description: 'إجمالي الإنتاج المتوقع'
+            },
+            {
+                title: 'الكفاءة المائية',
+                value: (100 - (kpis.water_stress || 30)) + '%',
+                color: '#1abc9c',
+                icon: 'fas fa-tint-slash',
+                trend: (100 - (kpis.water_stress || 30)) >= 60 ? 'up' : 'down',
+                description: 'كفاءة استخدام المياه'
+            }
+        ];
+        
+        kpiData.forEach(kpi => {
+            const card = document.createElement('div');
+            card.className = 'kpi-card';
+            card.innerHTML = `
+                <div class="kpi-header">
+                    <div class="kpi-label">${kpi.title}</div>
+                    <i class="fas fa-info-circle kpi-info" 
+                       title="${kpi.description}"
+                       onclick="showKpiDetails('${kpi.title}', '${kpi.description}')"></i>
+                </div>
+                <div class="kpi-value" style="color: ${kpi.color}">${kpi.value}</div>
+                <div class="kpi-footer">
+                    <i class="${kpi.icon}" style="color: ${kpi.color}"></i>
+                    <span class="kpi-trend trend-${kpi.trend}">
+                        <i class="fas fa-arrow-${kpi.trend === 'up' ? 'up' : 'down'}"></i>
+                    </span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+    
+    // عرض تفاصيل KPI
+    function showKpiDetails(kpiName, description) {
+        alert(`${kpiName}:\n${description}`);
+    }
+    
+    // عرض التحليل الاقتصادي
+    function displayEconomicSummary(economicData) {
+        const container = document.getElementById('economicSummary');
+        const area = parseFloat(document.getElementById('area_ha').value) || 10;
+        const years = currentYears;
+        
+        const annualYield = economicData.annual_yield || area * 800;
+        const annualCost = economicData.annual_cost || area * 60000;
+        const annualRevenue = economicData.annual_revenue || annualYield * 2500;
+        const annualProfit = economicData.annual_profit || annualRevenue - annualCost;
+        const breakEvenYears = economicData.break_even_years || Math.round((annualCost * 2) / annualProfit);
+        const totalProfit = annualProfit * years;
+        
+        container.innerHTML = `
+            <h4 class="chart-title"><i class="fas fa-calculator me-2"></i>التحليل الاقتصادي المتقدم</h4>
+            <div class="summary-grid">
+                <div class="summary-item highlight">
+                    <span>الإنتاج السنوي:</span>
+                    <strong>${Math.round(annualYield).toLocaleString()} طن</strong>
+                </div>
+                <div class="summary-item">
+                    <span>التكلفة السنوية:</span>
+                    <strong class="text-danger">${Math.round(annualCost).toLocaleString()} د.ج</strong>
+                </div>
+                <div class="summary-item">
+                    <span>العائد السنوي:</span>
+                    <strong class="text-success">${Math.round(annualRevenue).toLocaleString()} د.ج</strong>
+                </div>
+                <div class="summary-item highlight">
+                    <span>صافي الربح السنوي:</span>
+                    <strong class="text-success">${Math.round(annualProfit).toLocaleString()} د.ج</strong>
+                </div>
+                <div class="summary-item">
+                    <span>الربح الإجمالي (${years} سنوات):</span>
+                    <strong class="text-success">${Math.round(totalProfit).toLocaleString()} د.ج</strong>
+                </div>
+                <div class="summary-item">
+                    <span>فترة استرداد رأس المال:</span>
+                    <strong>${breakEvenYears} سنوات</strong>
+                </div>
+            </div>
+        `;
+        
+        // حفظ البيانات للاستخدام لاحقاً
+        currentSimulationData.economic_summary = {
+            annual_yield: annualYield,
+            annual_cost: annualCost,
+            annual_revenue: annualRevenue,
+            annual_profit: annualProfit,
+            total_profit: totalProfit,
+            break_even_years: breakEvenYears,
+            total_years: years
+        };
+    }
+    
+    // رسم الرسوم البيانية
+    function drawCharts(economicData) {
+        // تدمير المخططات القديمة أولاً
+        destroyAllCharts();
+        
+        // توزيع التكاليف
+        drawCostDistributionChart();
+        
+        // العوائد السنوية
+        drawRevenueChart(economicData);
+        
+        // رسم بياني إضافي للأداء
+        drawPerformanceChart();
+    }
+    
+    // رسم مخطط توزيع التكاليف
+    function drawCostDistributionChart() {
+        const costCtx = document.getElementById('costChart').getContext('2d');
+        
+        const costBreakdown = {
+            'الأسمدة': 25,
+            'الري': 30,
+            'اليد العاملة': 20,
+            'البذور': 15,
+            'الصيانة': 10
+        };
+        
+        costChart = new Chart(costCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(costBreakdown),
+                datasets: [{
+                    data: Object.values(costBreakdown),
+                    backgroundColor: [
+                        '#2ecc71', '#3498db', '#f39c12', '#e74c3c', '#9b59b6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        rtl: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // رسم مخطط العوائد
+    function drawRevenueChart(economicData) {
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        
+        const years = currentYears;
+        const yearLabels = Array.from({length: years}, (_, i) => `السنة ${i + 1}`);
+        
+        // توليد بيانات عوائد واقعية
+        const baseProfit = economicData.annual_profit || 1200000;
+        const revenues = [];
+        const cumulativeProfits = [];
+        let cumulativeProfit = 0;
+        
+        for (let i = 0; i < years; i++) {
+            const growthFactor = 1 + (i * 0.15);
+            const randomFactor = 0.8 + Math.random() * 0.4;
+            const yearlyProfit = Math.round(baseProfit * growthFactor * randomFactor);
+            cumulativeProfit += yearlyProfit;
+            revenues.push(yearlyProfit);
+            cumulativeProfits.push(cumulativeProfit);
+        }
+        
+        revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: yearLabels,
+                datasets: [
+                    {
+                        label: 'الأرباح السنوية (د.ج)',
+                        data: revenues,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'الأرباح التراكمية (د.ج)',
+                        data: cumulativeProfits,
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        rtl: true
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'الأرباح السنوية'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' د.ج';
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'الأرباح التراكمية'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' د.ج';
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+    
+    // رسم مخطط أداء إضافي
+    function drawPerformanceChart() {
+        const performanceCanvas = document.getElementById('performanceChart');
+        if (!performanceCanvas) return;
+        
+        const ctx = performanceCanvas.getContext('2d');
+        
+        const performanceData = {
+            labels: ['الربحية', 'الاستدامة', 'كفاءة المياه', 'إدارة التكاليف', 'جودة الإنتاج', 'إدارة المخاطر'],
+            datasets: [{
+                label: 'أداء المشروع',
+                data: [
+                    currentSimulationData?.kpis_summary?.profitability || 25,
+                    currentSimulationData?.kpis_summary?.sustainability_index || 75,
+                    100 - (currentSimulationData?.kpis_summary?.water_stress || 30),
+                    80, // افتراضية - إدارة التكاليف
+                    85, // افتراضية - جودة الإنتاج
+                    70  // افتراضية - إدارة المخاطر
+                ],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+            }]
+        };
+        
+        performanceChart = new Chart(ctx, {
+            type: 'radar',
+            data: performanceData,
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // عرض التوصيات
+    function displayRecommendations(recommendations) {
+        const container = document.getElementById('recommendationsContainer');
+        container.innerHTML = '';
+        
+        // إذا لم توجد توصيات، إنشاء توصيات ذكية
+        if (recommendations.length === 0) {
+            recommendations = generateSmartRecommendations(currentSimulationData);
+        }
+        
+        recommendations.forEach(rec => {
+            const item = document.createElement('div');
+            item.className = `recommendation-item ${rec.priority === 'high' ? 'warning' : ''}`;
+            item.innerHTML = `
+                <div class="recommendation-icon">
+                    <i class="fas ${rec.priority === 'high' ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
+                </div>
+                <div class="recommendation-content">
+                    <div class="recommendation-header">
+                        <strong>${rec.category}:</strong>
+                        <span class="priority-badge priority-${rec.priority}">${rec.priority === 'high' ? 'عالي' : rec.priority === 'medium' ? 'متوسط' : 'منخفض'}</span>
+                    </div>
+                    <p class="recommendation-message">${rec.message}</p>
+                    ${rec.impact ? `<div class="recommendation-impact"><strong>التأثير المتوقع:</strong> ${rec.impact}</div>` : ''}
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+    
+    // توليد ملخص ذكي
+    function generateSmartSummary(data) {
+        const container = document.getElementById('smartSummary');
+        if (!container) return;
+        
+        const profitability = data.kpis_summary?.profitability || 25;
+        const sustainability = data.kpis_summary?.sustainability_index || 75;
+        const waterStress = data.kpis_summary?.water_stress || 30;
+        
+        let overallScore = (profitability + sustainability + (100 - waterStress)) / 3;
+        let rating = '';
+        let ratingClass = '';
+        
+        if (overallScore >= 80) {
+            rating = 'ممتاز';
+            ratingClass = 'excellent';
+        } else if (overallScore >= 60) {
+            rating = 'جيد جداً';
+            ratingClass = 'good';
+        } else if (overallScore >= 40) {
+            rating = 'متوسط';
+            ratingClass = 'average';
+        } else {
+            rating = 'بحاجة للتحسين';
+            ratingClass = 'poor';
+        }
+        
+        container.innerHTML = `
+            <div class="smart-summary ${ratingClass}">
+                <div class="summary-header">
+                    <h5><i class="fas fa-brain me-2"></i>التحليل الذكي للمشروع</h5>
+                    <div class="overall-rating">${rating}</div>
+                </div>
+                <div class="summary-score">
+                    <div class="score-value">${Math.round(overallScore)}%</div>
+                    <div class="score-label">التقييم العام</div>
+                </div>
+                <div class="summary-details">
+                    <div class="detail-item">
+                        <span>الربحية:</span>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: ${profitability}%">${profitability}%</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span>الاستدامة:</span>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" style="width: ${sustainability}%">${sustainability}%</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span>كفاءة المياه:</span>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" style="width: ${100 - waterStress}%">${100 - waterStress}%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-actions">
+                    <button class="btn btn-sm btn-outline-light" onclick="showDetailedAnalysis()" type="button">
+                        <i class="fas fa-chart-bar me-1"></i>تحليل مفصل
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // توليد التوصيات الذكية
+    function generateSmartRecommendations(data) {
+        const recommendations = [];
+        
+        if (!data) return recommendations;
+        
+        const kpis = data.kpis_summary || {};
+        const input = data.input_data || {};
+        
+        // توصيات بناءً على تحليل البيانات
+        if (kpis.water_stress > 40) {
+            recommendations.push({
+                category: 'الري',
+                message: 'مستوى الإجهاد المائي مرتفع. يوصى بتحسين كفاءة الري أو استخدام أصناف تتحمل الجفاف.',
+                priority: 'high',
+                impact: 'تخفيض استهلاك المياه بنسبة 20-30%'
+            });
+        }
+        
+        if (kpis.heat_stress > 30) {
+            recommendations.push({
+                category: 'المناخ',
+                message: 'الإجهاد الحراري قد يؤثر على المحصول. نوصي بتعديل مواعيد الزراعة أو استخدام تقنيات التظليل.',
+                priority: 'medium',
+                impact: 'تقليل الخسائر الناتجة عن الحرارة'
+            });
+        }
+        
+        if (kpis.sustainability_index < 60) {
+            recommendations.push({
+                category: 'الاستدامة',
+                message: 'مؤشر الاستدامة أقل من المستوى الأمثل. يوصى بتحسين الممارسات الزراعية.',
+                priority: 'medium',
+                impact: 'رفع مؤشر الاستدامة إلى 70%'
+            });
+        }
+        
+        if (input.nitrogen && input.nitrogen > 150) {
+            recommendations.push({
+                category: 'التسميد',
+                message: 'كمية النيتروجين مرتفعة. يوصى بتخفيضها لتجنب تلوث المياه الجوفية.',
+                priority: 'high',
+                impact: 'تقليل التكاليف وحماية البيئة'
+            });
+        }
+        
+        return recommendations;
+    }
+    
+    // إضافة خيارات إضافية
+    function addAdditionalOptions() {
+        const actionsContainer = document.getElementById('additionalActions');
+        if (!actionsContainer) return;
+        
+        actionsContainer.innerHTML = `
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" onclick="shareSimulationLink()" title="مشاركة النتائج">
+                    <i class="fas fa-share-alt me-1"></i>مشاركة
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="exportSimulationData()" title="تصدير البيانات">
+                    <i class="fas fa-download me-1"></i>تصدير
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="compareWithPrevious()" title="مقارنة مع النتائج السابقة">
+                    <i class="fas fa-balance-scale me-1"></i>مقارنة
+                </button>
+                <button type="button" class="btn btn-outline-primary" onclick="scheduleSimulation()" title="جدولة محاكاة">
+                    <i class="fas fa-calendar-alt me-1"></i>جدولة
+                </button>
+            </div>
+        `;
+    }
+    
+    // عرض تحليل مفصل
+    function showDetailedAnalysis() {
+        if (!currentSimulationData) {
+            showError('لا توجد بيانات لعرض التحليل');
+            return;
+        }
+        
+        const analysis = generateDetailedAnalysis(currentSimulationData);
+        alert(analysis);
+    }
+    
+    // توليد تحليل مفصل
+    function generateDetailedAnalysis(data) {
+        const kpis = data.kpis_summary || {};
+        const economic = data.economic_summary || {};
+        const input = data.input_data || {};
+        
+        return `التحليل التفصيلي للمحاكاة:
+        
+اسم السيناريو: ${input.scenario_name || 'غير محدد'}
+المحصول: ${document.getElementById('plant_id').options[input.plant_id - 1]?.text || 'غير محدد'}
+المساحة: ${input.area_ha || 0} هكتار
+المدة: ${input.years || 0} سنوات
+
+مؤشرات الأداء:
+- الربحية: ${kpis.profitability || 0}%
+- الاستدامة: ${kpis.sustainability_index || 0}%
+- الإجهاد المائي: ${kpis.water_stress || 0}%
+- الإجهاد الحراري: ${kpis.heat_stress || 0}%
+
+التحليل الاقتصادي:
+- الإنتاج السنوي: ${economic.annual_yield ? Math.round(economic.annual_yield).toLocaleString() : 0} طن
+- التكلفة السنوية: ${economic.annual_cost ? Math.round(economic.annual_cost).toLocaleString() : 0} د.ج
+- الربح السنوي: ${economic.annual_profit ? Math.round(economic.annual_profit).toLocaleString() : 0} د.ج
+- فترة الاسترداد: ${economic.break_even_years || 0} سنوات
+
+التوصيات:
+1. مراجعة نظام الري لتحسين الكفاءة
+2. تحسين برنامج التسميد
+3. مراقبة مؤشرات الأداء بانتظام`;
+    }
+    
+    // مشاركة رابط المحاكاة
+    function shareSimulationLink() {
+        if (!currentSimulationData) {
+            showError('لا توجد بيانات للمشاركة');
+            return;
+        }
+        
+        const simulationId = currentSimulationData.simulation_id || Date.now();
+        const shareUrl = `${window.location.origin}/simulation/share/${simulationId}`;
+        const scenarioName = currentSimulationData.input_data?.scenario_name || 'محاكاة زراعية';
+        
+        // نسخ الرابط للحافظة
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    showSuccess('تم نسخ رابط المشاركة إلى الحافظة');
+                })
+                .catch(() => {
+                    fallbackCopyText(shareUrl);
+                });
+        } else {
+            fallbackCopyText(shareUrl);
+        }
+    }
+    
+    function fallbackCopyText(text) {
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showSuccess('تم نسخ رابط المشاركة');
+    }
+    
+    // تصدير بيانات المحاكاة
+    function exportSimulationData() {
+        if (!currentSimulationData) {
+            showError('لا توجد بيانات للتصدير');
+            return;
+        }
+        
+        const exportType = prompt('اختر نوع التصدير:\n1. JSON\n2. CSV\n3. نص', '1');
+        
+        if (!exportType) return;
+        
+        switch(exportType) {
+            case '1':
+                exportAsJSON();
+                break;
+            case '2':
+                exportAsCSV();
+                break;
+            case '3':
+                exportAsText();
+                break;
+            default:
+                showError('نوع التصدير غير صحيح');
+        }
+    }
+    
+    // تصدير كـ JSON
+    function exportAsJSON() {
+        const dataStr = JSON.stringify(currentSimulationData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        downloadFile(dataBlob, `simulation_${currentSimulationData.simulation_id || Date.now()}.json`);
+    }
+    
+    // تصدير كـ CSV
+    function exportAsCSV() {
+        const headers = ['المؤشر', 'القيمة', 'الوحدة'];
+        const data = [
+            ['مؤشر الاستدامة', currentSimulationData.kpis_summary?.sustainability_index || 0, '%'],
+            ['الربحية', currentSimulationData.kpis_summary?.profitability || 0, '%'],
+            ['الإجهاد المائي', currentSimulationData.kpis_summary?.water_stress || 0, '%'],
+            ['الإجهاد الحراري', currentSimulationData.kpis_summary?.heat_stress || 0, '%'],
+            ['الإنتاج السنوي', currentSimulationData.economic_summary?.annual_yield || 0, 'طن'],
+            ['التكلفة السنوية', currentSimulationData.economic_summary?.annual_cost || 0, 'د.ج'],
+            ['صافي الربح', currentSimulationData.economic_summary?.annual_profit || 0, 'د.ج']
+        ];
+        
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => row.join(','))
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        downloadFile(blob, `simulation_data_${Date.now()}.csv`);
+    }
+    
+    // تصدير كنص
+    function exportAsText() {
+        const text = generateDetailedAnalysis(currentSimulationData);
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        downloadFile(blob, `simulation_report_${Date.now()}.txt`);
+    }
+    
+    // تحميل الملف
+    function downloadFile(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showSuccess(`تم تصدير ${filename}`);
+    }
+    
+    // مقارنة مع المحاكاة السابقة
+    function compareWithPrevious() {
+        if (savedSimulations.length === 0) {
+            showInfo('لا توجد محاكاة سابقة للمقارنة');
+            return;
+        }
+        
+        showComparisonModal();
+    }
+    
+    // عرض مودال المقارنة
+    function showComparisonModal() {
+        const modalContent = savedSimulations.map((sim, index) => `
+            <div class="comparison-item">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" 
+                           id="compareSim${index}" value="${index}">
+                    <label class="form-check-label" for="compareSim${index}">
+                        ${sim.input_data?.scenario_name || 'محاكاة ' + (index + 1)}
+                        <small class="text-muted">(${new Date(sim.timestamp).toLocaleDateString()})</small>
+                    </label>
+                </div>
+                <div class="simulation-preview">
+                    الربحية: ${sim.kpis_summary?.profitability || 0}% |
+                    الإنتاج: ${sim.economic_summary?.annual_yield || 0} طن
+                </div>
+            </div>
+        `).join('');
+        
+        const modal = `
+            <div class="modal fade" id="comparisonModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">مقارنة السيناريوهات</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="comparison-list">
+                                ${modalContent}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="performComparison()">
+                                <i class="fas fa-balance-scale me-1"></i>إجراء المقارنة
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modal);
+        
+        // إضافة Bootstrap JS إذا لم يكن موجوداً
+        if (typeof bootstrap !== 'undefined') {
+            const bsModal = new bootstrap.Modal(document.getElementById('comparisonModal'));
+            bsModal.show();
+        } else {
+            document.getElementById('comparisonModal').style.display = 'block';
+        }
+    }
+    
+    // تنزيل التقرير PDF
+    async function downloadReport() {
+        if (!currentSimulationData) {
+            showError('لا توجد بيانات لإنشاء تقرير');
+            return;
+        }
+
+        try {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            // محاولة استخدام API لتوليد PDF
+            const response = await fetch('/api/generate-pdf', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    simulation_id: currentSimulationData.simulation_id || Date.now(),
+                    data: currentSimulationData
+                })
+            });
+
+            if (response.ok) {
+                // تحميل الملف
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `تقرير_المحاكاة_${currentSimulationData.simulation_id || Date.now()}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                showSuccess('تم تنزيل التقرير العلمي بنجاح');
+            } else {
+                throw new Error('خطأ في توليد PDF');
+            }
+
+        } catch (error) {
+            console.error('خطأ في إنشاء التقرير:', error);
+            showInfo('استخدم خيار التصدير النصي بدلاً من PDF');
+            
+            // استخدام طريقة بديلة
+            exportAsText();
+            
+        } finally {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    }
+    
+    // حفظ النتائج
+    async function saveResults() {
+        if (!currentSimulationData) {
+            showError('لا توجد بيانات للحفظ');
+            return;
+        }
+        
+        try {
+            // إظهار شاشة التحميل
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // حفظ محلي فقط
+            saveToLocalStorage();
+            showSuccess('تم حفظ النتائج بنجاح محلياً');
+            
+        } catch (error) {
+            console.error('خطأ في حفظ النتائج:', error);
+            saveToLocalStorage();
+            
+        } finally {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    }
+    
+    // حفظ محلي
+    function saveToLocalStorage() {
+        const saveData = {
+            ...currentSimulationData,
+            saveDate: new Date().toISOString(),
+            user: getUserId()
+        };
+        
+        savedSimulations.unshift(saveData);
+        // الاحتفاظ بأحدث 20 محاكاة فقط
+        savedSimulations = savedSimulations.slice(0, 20);
+        localStorage.setItem('savedSimulations', JSON.stringify(savedSimulations));
+        
+        // تحديث القائمة
+        loadSavedSimulations();
+        
+        showSuccess('تم حفظ نسخة احتياطية محلياً');
+    }
+    
+    // تحميل المحاكاة المحفوظة
+    function loadSavedSimulations() {
+        const savedSection = document.getElementById('savedSimulationsSection');
+        const savedList = document.getElementById('savedSimulationsList');
+        
+        if (!savedSection || !savedList) return;
+        
+        if (savedSimulations.length === 0) {
+            savedSection.style.display = 'none';
+            return;
+        }
+        
+        savedSection.style.display = 'block';
+        savedList.innerHTML = savedSimulations.map((sim, index) => `
+            <div class="saved-simulation-item">
+                <div class="saved-simulation-header">
+                    <strong>${sim.input_data?.scenario_name || 'محاكاة غير مسمى'}</strong>
+                    <small class="text-muted">${new Date(sim.saveDate).toLocaleDateString()}</small>
+                </div>
+                <div class="saved-simulation-preview">
+                    <span>الربحية: ${sim.kpis_summary?.profitability || 0}%</span>
+                    <span>الإنتاج: ${sim.economic_summary?.annual_yield || 0} طن</span>
+                </div>
+                <div class="saved-simulation-actions">
+                    <button class="btn btn-sm btn-outline-primary" onclick="loadSimulation(${index})" title="عرض" type="button">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteSimulation(${index})" title="حذف" type="button">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // تحميل محاكاة محفوظة
+    function loadSimulation(index) {
+        if (index < 0 || index >= savedSimulations.length) {
+            showError('المحاكاة غير موجودة');
+            return;
+        }
+        
+        const sim = savedSimulations[index];
+        currentSimulationData = sim;
+        displayResults(sim);
+        document.getElementById('simulationResults').style.display = 'block';
+        showSuccess('تم تحميل المحاكاة المحفوظة');
+    }
+    
+    // حذف محاكاة محفوظة
+    function deleteSimulation(index) {
+        if (confirm('هل أنت متأكد من حذف هذه المحاكاة؟')) {
+            savedSimulations.splice(index, 1);
+            localStorage.setItem('savedSimulations', JSON.stringify(savedSimulations));
+            loadSavedSimulations();
+            showSuccess('تم حذف المحاكاة');
+        }
+    }
+    
+    // جدولة محاكاة
+    function scheduleSimulation() {
+        const date = prompt('أدخل تاريخ الجدولة (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+        if (!date) return;
+        
+        const scheduledSimulations = JSON.parse(localStorage.getItem('scheduledSimulations') || '[]');
+        scheduledSimulations.push({
+            simulation: currentSimulationData,
+            scheduledDate: date,
+            createdAt: new Date().toISOString()
+        });
+        
+        localStorage.setItem('scheduledSimulations', JSON.stringify(scheduledSimulations));
+        showSuccess(`تم جدولة المحاكاة للتاريخ ${date}`);
+    }
+    
+    // تسجيل تحليلات المحاكاة
+    function logSimulationAnalytics() {
+        if (!currentSimulationData) return;
+        
+        const analyticsData = {
+            event: 'simulation_completed',
+            simulation_id: currentSimulationData.simulation_id,
+            plant_id: currentSimulationData.input_data?.plant_id,
+            area: currentSimulationData.input_data?.area_ha,
+            duration: currentSimulationData.input_data?.years,
+            timestamp: new Date().toISOString(),
+            user_id: getUserId()
+        };
+        
+        // حفظ في localStorage للتحليل اللاحق
+        let analyticsLog = JSON.parse(localStorage.getItem('simulationAnalytics') || '[]');
+        analyticsLog.push(analyticsData);
+        localStorage.setItem('simulationAnalytics', JSON.stringify(analyticsLog));
+    }
+    
+    // التحقق من حالة المصادقة
+    function checkAuthState() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        if (user && user.email) {
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('userMenu').style.display = 'flex';
+            
+            const userName = user.firstName || user.email.split('@')[0];
+            document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+        } else {
+            document.getElementById('loginBtn').style.display = 'flex';
+            document.getElementById('userMenu').style.display = 'none';
+        }
+    }
+    
+    // الحصول على معرف المستخدم
+    function getUserId() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        return user ? user.id || user.email : 'guest';
+    }
+    
+    // عرض رسائل الخطأ
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+        errorDiv.style.position = 'fixed';
+        errorDiv.style.top = '100px';
+        errorDiv.style.right = '20px';
+        errorDiv.style.zIndex = '9999';
+        errorDiv.style.minWidth = '300px';
+        
+        document.body.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+    
+    // عرض رسائل النجاح
+    function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success';
+        successDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+        successDiv.style.position = 'fixed';
+        successDiv.style.top = '100px';
+        successDiv.style.right = '20px';
+        successDiv.style.zIndex = '9999';
+        successDiv.style.minWidth = '300px';
+        
+        document.body.appendChild(successDiv);
+        
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
+    }
+    
+    // عرض رسائل المعلومات
+    function showInfo(message) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'alert alert-info';
+        infoDiv.innerHTML = `<i class="fas fa-info-circle me-2"></i>${message}`;
+        infoDiv.style.position = 'fixed';
+        infoDiv.style.top = '100px';
+        infoDiv.style.right = '20px';
+        infoDiv.style.zIndex = '9999';
+        infoDiv.style.minWidth = '300px';
+        
+        document.body.appendChild(infoDiv);
+        
+        setTimeout(() => {
+            infoDiv.remove();
+        }, 3000);
+    }
+    
+    // الدوال المساعدة
+    window.togglePerformanceMonitor = togglePerformanceMonitor;
+    window.showKpiDetails = showKpiDetails;
+    window.showDetailedAnalysis = showDetailedAnalysis;
+    window.shareSimulationLink = shareSimulationLink;
+    window.exportSimulationData = exportSimulationData;
+    window.compareWithPrevious = compareWithPrevious;
+    window.scheduleSimulation = scheduleSimulation;
+    window.loadSimulation = loadSimulation;
+    window.deleteSimulation = deleteSimulation;
+</script>
+</body>
+</html>

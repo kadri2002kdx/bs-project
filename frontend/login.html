@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - EcoPlant DZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #8bc34a;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .login-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-header {
+            margin-bottom: 30px;
+        }
+        
+        .login-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            gap: 10px;
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+        }
+        
+        .login-links {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .login-links a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .login-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: right;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* أنماط النوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.4s;
+            text-align: center;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 15px;
+        }
+        
+        .close:hover {
+            color: var(--primary-dark);
+        }
+        
+        .modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding-right: 30px;
+        }
+        
+        .modal p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            <div class="nav-links">
+                <a href="register.html">إنشاء حساب</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- محتوى تسجيل الدخول -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h1 class="login-title">تسجيل الدخول</h1>
+                <p class="login-subtitle">أدخل بياناتك للوصول إلى حسابك</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="email" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" class="form-control" id="password" required>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+                
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="login-links">
+                    <a href="register.html">ليس لديك حساب؟ أنشئ حساب جديد</a>
+                    <a href="#" onclick="openModal('forgotPasswordModal')">نسيت كلمة المرور؟</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('aboutModal')">من نحن</a>
+                <a href="#" onclick="openModal('contactModal')">اتصل بنا</a>
+                <a href="#" onclick="openModal('privacyModal')">سياسة الخصوصية</a>
+                <a href="#" onclick="openModal('termsModal')">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- نافذة نسيت كلمة المرور -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('forgotPasswordModal')">&times;</span>
+            <h2>استعادة كلمة المرور</h2>
+            <p>أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور الخاصة بك.</p>
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="resetEmail">البريد الإلكتروني</label>
+                    <input type="email" class="form-control" id="resetEmail" required>
+                    <div class="error-message" id="resetEmailError"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">إرسال رابط الاستعادة</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- نافذة الترحيب بعد تسجيل الدخول الناجح -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('welcomeModal')">&times;</span>
+            <h2>مرحباً بك في EcoPlant DZ!</h2>
+            <p>تم تسجيل دخولك بنجاح. نرحب بك في منصتنا البيئية المتخصصة.</p>
+            <button class="btn btn-primary" onclick="redirectToDashboard()">انتقال إلى لوحة التحكم</button>
+        </div>
+    </div>
+    
+    <!-- نافذة التوجيه لإنشاء حساب -->
+    <div id="createAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createAccountModal')">&times;</span>
+            <h2>الحساب غير موجود</h2>
+            <p>البريد الإلكتروني الذي أدخلته غير مسجل في نظامنا. يرجى إنشاء حساب جديد للاستفادة من خدمات منصة EcoPlant DZ.</p>
+            <button class="btn btn-primary" onclick="redirectToRegister()">إنشاء حساب جديد</button>
+        </div>
+    </div>
+    
+    <!-- نافذة البريد غير مفعل -->
+    <div id="emailNotVerifiedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('emailNotVerifiedModal')">&times;</span>
+            <h2>البريد الإلكتروني غير مفعل</h2>
+            <p>يرجى تفعيل بريدك الإلكتروني قبل تسجيل الدخول. تم إرسال رابط التفعيل إلى بريدك الإلكتروني.</p>
+            <button class="btn btn-primary" onclick="closeModal('emailNotVerifiedModal')">موافق</button>
+        </div>
+    </div>
+    
+    <!-- نافذة من نحن -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+            <h2>من نحن</h2>
+            <p>مرحباً بكم في منصة EcoPlant DZ، المنصة البيئية الرائدة في الجزائر التي تهدف إلى نشر الوعي البيئي وتعزيز المعرفة حول التنوع البيولوجي في بلادنا.</p>
+            <p>تأسست منصتنا على يد فريق من الباحثين والمهتمين بالبيئة الجزائرية، ونسعى جاهدين لتوفير مصدر موثوق للمعلومات حول النباتات والحيوانات والأنظمة البيئية في الجزائر.</p>
+            <p>رؤيتنا هي بناء مجتمع بيئي نشط ومتعلم، يساهم في الحفاظ على ثرواتنا الطبيعية للأجيال القادمة.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة اتصل بنا -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('contactModal')">&times;</span>
+            <h2>اتصل بنا</h2>
+            <p>نحن نرحب بجميع استفساراتكم واقتراحاتكم. لا تتردد في التواصل معنا عبر أي من الوسائل التالية:</p>
+            <p><i class="fas fa-envelope"></i> البريد الإلكتروني: <a href="mailto:contact@ecoplant-dz.dz">contact@ecoplant-dz.dz</a></p>
+            <p><i class="fas fa-phone"></i> الهاتف: +213 123 456 789</p>
+            <p><i class="fas fa-map-marker-alt"></i>العنوان : جامعة حمه لخضر بالوادي </p>
+            <p>سنتواصل معك في أقرب وقت ممكن للرد على استفساراتكم.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+            <p>نتخذ إجراءات أمنية مناسبة لحماية بياناتك من الوصول غير المصرح به أو التعديل أو الكشف أو التدمير.</p>
+            <p>للاستفسارات حول سياسة الخصوصية، يرجى التواصل معنا على: contact@ecoplant-dz.dz</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2>شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+            <p>يحظر عليك نشر أو مشاركة أي محتوى غير قانوني أو مسيء أو تشهيري أو مخل بالآداب العامة، أو انتهاك حقوق الملكية الفكرية للآخرين.</p>
+            <p>نحن نحتفظ بالحق في حذف أي محتوى ينتهك هذه الشروط أو إيقاف حسابك دون إشعار مسبق.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // استدعاء Firebase v10
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+        
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVELN-Jca7q3xtS0uWk2ZrNnlqXJzsKpg",
+            authDomain: "ecoplant-dz-148bf.firebaseapp.com",
+            databaseURL: "https://ecoplant-dz-148bf-default-rtdb.europe-west1.firebasedatabase.com",
+            projectId: "ecoplant-dz-148bf",
+            storageBucket: "ecoplant-dz-148bf.appspot.com",
+            messagingSenderId: "233372376001",
+            appId: "1:233372376001:web:2c261f4bf161a65f726d40",
+            measurementId: "G-4PJZMLMKJE"
+        };
+        
+        // تهيئة Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        
+        // التحقق من حالة المستخدم عند تحميل الصفحة
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // التحقق من تفعيل البريد الإلكتروني
+                if (user.emailVerified) {
+                    // حفظ بيانات المستخدم في localStorage
+                    localStorage.setItem("user", JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL
+                    }));
+                    
+                    // توجيه المستخدم إلى لوحة التحكم
+                    window.location.href = "dashboard.html";
+                }
+            }
+        });
+        
+        // تهيئة واجهة المستخدم عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById("loginForm");
+            if (loginForm) {
+                loginForm.addEventListener("submit", handleLogin);
+            }
+            
+            const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener("submit", handleForgotPassword);
+            }
+        });
+        
+        // معالجة تسجيل الدخول
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const submitBtn = document.getElementById("submitBtn");
+            
+            // تعطيل الزر أثناء المعالجة
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // التحقق من تفعيل البريد الإلكتروني
+                if (!user.emailVerified) {
+                    // إعادة إرسال رابط التفعيل
+                    await sendEmailVerification(user);
+                    
+                    // تسجيل الخروج
+                    await signOut(auth);
+                    
+                    // عرض رسالة للمستخدم
+                    openModal('emailNotVerifiedModal');
+                    
+                    // إعادة تمكين الزر
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                    return;
+                }
+                
+                // الحصول على بيانات المستخدم من قاعدة البيانات
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    // تحديث حالة البريد الإلكتروني في قاعدة البيانات إذا لزم الأمر
+                    if (!userData.emailVerified) {
+                        await update(userRef, {
+                            emailVerified: true
+                        });
+                    }
+                    
+                    // حفظ بيانات المستخدم في localStorage
+                    localStorage.setItem("user", JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName || `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
+                        photoURL: user.photoURL || userData.photoURL,
+                        role: userData.role,
+                        state: userData.state
+                    }));
+                    
+                    // عرض نافذة ترحيب
+                    openModal('welcomeModal');
+                    
+                    // توجيه المستخدم إلى لوحة التحكم بعد فترة قصيرة
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 2000);
+                } else {
+                    // إذا لم يتم العثور على بيانات المستخدم في قاعدة البيانات
+                    throw new Error("بيانات المستخدم غير موجودة في قاعدة البيانات");
+                }
+            } catch (error) {
+                console.error("خطأ التسجيل:", error);
+                
+                // إعادة تمكين الزر
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+                
+                // عرض رسالة الخطأ المناسبة
+                let errorMessage = "حدث خطأ أثناء تسجيل الدخول";
+                
+                switch(error.code) {
+                    case "auth/invalid-credential":
+                    case "auth/wrong-password":
+                    case "auth/user-not-found":
+                        errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+                        break;
+                    case "auth/invalid-email":
+                        errorMessage = "صيغة البريد الإلكتروني غير صحيحة";
+                        break;
+                    case "auth/user-disabled":
+                        errorMessage = "هذا الحساب تم تعطيله";
+                        break;
+                    case "auth/too-many-requests":
+                        errorMessage = "عدد محاولات تسجيل الدخول أكثر من المسموح، يرجى المحاولة لاحقاً";
+                        break;
+                }
+                
+                alert(errorMessage);
+            }
+        }
+        
+        // معالجة استعادة كلمة المرور
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            
+            const resetEmail = document.getElementById("resetEmail").value.trim();
+            
+            try {
+                await sendPasswordResetEmail(auth, resetEmail);
+                alert("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.");
+                closeModal('forgotPasswordModal');
+            } catch (error) {
+                console.error("خطأ إعادة التعيين:", error);
+                let errorMessage = "حدث خطأ أثناء إرسال رابط الاستعادة";
+                
+                if (error.code === "auth/user-not-found") {
+                    errorMessage = "البريد الإلكتروني غير مسجل في النظام";
+                } else if (error.code === "auth/invalid-email") {
+                    errorMessage = "صيغة البريد الإلكتروني غير صحيحة";
+                }
+                
+                alert(errorMessage);
+            }
+        }
+        
+        // وظائف إدارة النوافذ المنبثقة
+        window.openModal = function(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+        
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        window.redirectToDashboard = function() {
+            window.location.href = "dashboard.html";
+        }
+        
+        window.redirectToRegister = function() {
+            window.location.href = "register.html";
+        }
+        
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

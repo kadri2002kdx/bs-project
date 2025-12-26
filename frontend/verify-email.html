@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفعيل البريد الإلكتروني - EcoPlant DZ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f9e9 0%, #d8f3dc 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: background-color 0.5s ease;
+    }
+    
+    body.error {
+      background: linear-gradient(135deg, #ffeaea 0%, #ffcdcd 100%);
+    }
+    
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+    }
+    
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      background-color: #2e7d32;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 50px;
+    }
+    
+    h1 {
+      color: #2e7d32;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+    
+    .status-box {
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+    
+    .status-box.error {
+      background-color: #fff5f5;
+      border-color: #ffcccc;
+      color: #d32f2f;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    .user-welcome {
+      margin: 25px 0;
+      padding: 15px;
+      background-color: #e8f5e9;
+      border-radius: 10px;
+      color: #2e7d32;
+      font-size: 18px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+    
+    .user-welcome.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .choices {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn-primary {
+      background-color: #2e7d32;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1b5e20;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      color: #2e7d32;
+      border: 2px solid #2e7d32;
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(46, 125, 50, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    /* أنيميشن الكونفيتي */
+    .confetti {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      border-radius: 2px;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    @keyframes fall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+      }
+    }
+    
+    /* أنيميشن جزيئات الخطأ */
+    .error-particle {
+      position: fixed;
+      top: -10px;
+      width: 6px;
+      height: 6px;
+      opacity: 0;
+      background-color: #d32f2f;
+      border-radius: 50%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    @keyframes error-fall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) translateX(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(20px);
+      }
+    }
+    
+    /* أنيميشن الاهتزاز للخطأ */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+    
+    .error-shake {
+      animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    /* التكيف مع الشاشات الصغيرة */
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .status {
+        font-size: 16px;
+      }
+      
+      .btn {
+        padding: 12px 24px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <i class="fas fa-leaf"></i>
+    </div>
+    
+    <h1>تفعيل البريد الإلكتروني</h1>
+    
+    <div id="statusBox" class="status-box">
+      <div id="status" class="status">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>جاري التحقق من رابط التفعيل...</span>
+      </div>
+    </div>
+    
+    <div id="userWelcome" class="user-welcome"></div>
+    
+    <div id="choices" class="choices">
+      <!-- الرابط إلى الصفحة الرئيسية -->
+      <a href="./index.html" class="btn btn-primary">
+        <i class="fas fa-home"></i> الانتقال إلى الصفحة الرئيسية
+      </a>
+      <!-- الرابط إلى صفحة تسجيل الدخول -->
+      <a href="./login.html" class="btn btn-secondary">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول إلى حسابك
+      </a>
+    </div>
+  </div>
+  
+  <script type="module">
+    // استدعاء Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { 
+      getAuth, 
+      applyActionCode, 
+      checkActionCode,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      get, 
+      update 
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    // إعدادات Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVELN-Jca7q3xtS0uWk2ZrNnlqXJzsKpg",
+      authDomain: "ecoplant-dz-148bf.firebaseapp.com",
+      databaseURL: "https://ecoplant-dz-148bf-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ecoplant-dz-148bf",
+      storageBucket: "ecoplant-dz-148bf.appspot.com",
+      messagingSenderId: "233372376001",
+      appId: "1:233372376001:web:2c261f4bf161a65f726d40",
+      measurementId: "G-4PJZMLMKJE"
+    };
+    // تهيئة Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    // العناصر في DOM
+    const statusElement = document.getElementById("status");
+    const statusBoxElement = document.getElementById("statusBox");
+    const userWelcomeElement = document.getElementById("userWelcome");
+    const choicesElement = document.getElementById("choices");
+    const bodyElement = document.body;
+    let userEmail = null;
+    // إنشاء عناصر الكونفيتي للنجاح
+    function createConfetti() {
+      const colors = ['#2e7d32', '#4caf50', '#8bc34a', '#ffc107', '#ffffff'];
+      
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.width = Math.floor(Math.random() * 15 + 5) + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+        document.body.appendChild(confetti);
+        
+        // إزالة الكونفيتي بعد انتهاء الرسوم المتحركة
+        setTimeout(() => {
+          confetti.remove();
+        }, 5000);
+      }
+    }
+    // إنشاء جزيئات الخطأ
+    function createErrorParticles() {
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'error-particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.width = Math.floor(Math.random() * 10 + 2) + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animation = `error-fall ${Math.random() * 2 + 1}s linear forwards`;
+        document.body.appendChild(particle);
+        
+        // إزالة الجزيئات بعد انتهاء الرسوم المتحركة
+        setTimeout(() => {
+          particle.remove();
+        }, 3000);
+      }
+    }
+    // التحقق من الكود القادم من رابط البريد
+    window.addEventListener("DOMContentLoaded", async () => {
+      const params = new URLSearchParams(window.location.search);
+      const oobCode = params.get("oobCode");
+      const mode = params.get("mode");
+      if (!oobCode || mode !== "verifyEmail") {
+        showError("❌ رابط غير صالح! يبدو أن رابط التفعيل غير مكتمل أو غير صحيح.");
+        return;
+      }
+      try {
+        // التحقق من صحة الرمز
+        const info = await checkActionCode(auth, oobCode);
+        userEmail = info.data.email;
+        
+        // تطبيق الرمز لتفعيل البريد الإلكتروني
+        await applyActionCode(auth, oobCode);
+        
+        // البحث عن المستخدم في قاعدة البيانات باستخدام البريد الإلكتروني
+        const usersRef = ref(db, 'users');
+        const snapshot = await get(usersRef);
+        
+        if (snapshot.exists()) {
+          let userData = null;
+          let userId = null;
+          
+          snapshot.forEach((childSnapshot) => {
+            const user = childSnapshot.val();
+            if (user.email === userEmail) {
+              userData = user;
+              userId = childSnapshot.key;
+            }
+          });
+          
+          if (userData && userId) {
+            // تحديث حالة البريد الإلكتروني في قاعدة البيانات
+            await update(ref(db, 'users/' + userId), {
+              emailVerified: true
+            });
+            
+            // عرض رسالة النجاح مع اسم المستخدم
+            showSuccess(`✅ تم تفعيل بريدك الإلكتروني بنجاح!`, userData);
+          } else {
+            showSuccess(`✅ تم تفعيل بريدك الإلكتروني بنجاح!`);
+          }
+        } else {
+          showSuccess(`✅ تم تفعيل بريدك الإلكتروني بنجاح!`);
+        }
+      } catch (err) {
+        console.error("تفاصيل الخطأ:", err);
+        let errorMessage = "❌ الرابط غير صالح أو منتهي الصلاحية!";
+        
+        if (err.code === "auth/invalid-action-code") {
+          errorMessage = "❌ رابط التفعيل غير صالح أو مستخدم مسبقًا.";
+        } else if (err.code === "auth/expired-action-code") {
+          errorMessage = "❌ رابط التفعيل منتهي الصلاحية. يرجى طلب رابط جديد.";
+        }
+        
+        showError(errorMessage, userEmail);
+      }
+    });
+    // عرض حالة النجاح
+    function showSuccess(message, userData = null) {
+      statusElement.innerHTML = `<i class="fas fa-check-circle"></i><span>${message}</span>`;
+      statusBoxElement.classList.remove('error');
+      
+      if (userData) {
+        const userName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+        userWelcomeElement.textContent = `مرحباً ${userName} بك في مجتمع EcoPlant DZ`;
+        userWelcomeElement.classList.add('show');
+      }
+      
+      choicesElement.innerHTML = `
+        <a href="./index.html" class="btn btn-primary">
+          <i class="fas fa-home"></i> الانتقال إلى الصفحة الرئيسية
+        </a>
+        <a href="./login.html" class="btn btn-secondary">
+          <i class="fas fa-sign-in-alt"></i> تسجيل الدخول إلى حسابك
+        </a>
+      `;
+      choicesElement.style.display = 'flex';
+      createConfetti();
+    }
+    // عرض حالة الخطأ
+    function showError(message, email = null) {
+      statusElement.innerHTML = `<i class="fas fa-exclamation-circle"></i><span>${message}</span>`;
+      statusBoxElement.classList.add('error');
+      bodyElement.classList.add('error');
+      bodyElement.classList.add('error-shake');
+      createErrorParticles();
+      
+      let buttonsHTML = '';
+      if (email) {
+        buttonsHTML = `
+          <a href="./login.html?email=${encodeURIComponent(email)}" class="btn btn-primary">
+            <i class="fas fa-redo"></i> تسجيل الدخول وإعادة الإرسال
+          </a>
+        `;
+      } else {
+        buttonsHTML = `
+          <a href="./login.html" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+          </a>
+        `;
+      }
+      
+      buttonsHTML += `
+        <a href="./index.html" class="btn btn-secondary">
+          <i class="fas fa-home"></i> العودة إلى الصفحة الرئيسية
+        </a>
+      `;
+      
+      choicesElement.innerHTML = buttonsHTML;
+      choicesElement.style.display = 'flex';
+      
+      // إزالة class الاهتزاز بعد انتهاء الرسوم المتحركة
+      setTimeout(() => {
+        bodyElement.classList.remove('error-shake');
+      }, 500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+	"geolocation": {
+		"data": {
+			"country": {
+				"code": "DZ",
+				"name": "Algeria"
+			},
+			"timezone": "Africa/Algiers",
+			"latitude": 36.7642,
+			"longitude": 3.1468
+		},
+		"timestamp": 1759491790164
+	}
+}

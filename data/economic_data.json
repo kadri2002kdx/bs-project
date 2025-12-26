@@ -1,0 +1,206 @@
+{
+  "crop_prices": {
+    "قمح": 45000,
+    "طماطم": 60000,
+    "شعير": 40000,
+    "ذرة": 50000,
+    "بطاطس": 55000,
+    "فول": 48000,
+    "حمضيات": 70000,
+    "نخيل": 80000,
+    "تفاح": 65000,
+    "كرز": 85000,
+    "عنب": 75000,
+    "زيتون": 90000,
+    "خضراوات متنوعة": 45000,
+    "فلفل": 55000,
+    "بصل": 40000,
+    "ثوم": 70000,
+    "جزر": 35000,
+    "ملفوف": 30000
+  },
+  "costs": {
+    "labor_per_hectare": 150000,
+    "seed_per_hectare": 80000,
+    "equipment_per_hectare": 120000,
+    "maintenance_per_hectare": 50000,
+    "water_per_cubic_meter": 0.5,
+    "fertilizer_per_kg": 45,
+    "pesticide_per_hectare": 30000,
+    "transport_per_ton": 5000,
+    "electricity_per_kwh": 6.5,
+    "fuel_per_liter": 50,
+    "packaging_per_ton": 8000,
+    "storage_per_ton_month": 2000,
+    "insurance_per_hectare": 15000,
+    "administration_per_hectare": 10000
+  },
+  "subsidies": {
+    "water_rate_reduction": 0.3,
+    "fertilizer_subsidy": 0.25,
+    "seed_subsidy": 0.2,
+    "equipment_subsidy": 0.15,
+    "export_subsidy": 0.1,
+    "irrigation_subsidy": 0.4,
+    "organic_farming_subsidy": 0.3,
+    "young_farmer_subsidy": 0.25
+  },
+  "taxes": {
+    "vat_percent": 7,
+    "income_tax_percent": 10,
+    "land_tax_per_hectare": 5000,
+    "social_security_percent": 12,
+    "export_tax_percent": 5,
+    "municipal_tax_per_hectare": 3000
+  },
+  "market_factors": {
+    "price_fluctuation_summer": 0.15,
+    "price_fluctuation_winter": 0.25,
+    "export_premium": 0.2,
+    "local_market_discount": 0.1,
+    "quality_premium_excellent": 0.3,
+    "quality_premium_good": 0.15,
+    "organic_premium": 0.4
+  },
+  "regional_variations": {
+    "north": {
+      "labor_cost_factor": 1.0,
+      "transport_cost_factor": 1.0,
+      "market_access_factor": 1.2
+    },
+    "south": {
+      "labor_cost_factor": 0.8,
+      "transport_cost_factor": 1.3,
+      "market_access_factor": 0.7
+    },
+    "highlands": {
+      "labor_cost_factor": 0.9,
+      "transport_cost_factor": 1.2,
+      "market_access_factor": 0.9
+    }
+  },
+  "seasonal_factors": {
+    "spring": {
+      "labor_cost_factor": 1.1,
+      "water_cost_factor": 1.2,
+      "yield_factor": 1.15
+    },
+    "summer": {
+      "labor_cost_factor": 1.3,
+      "water_cost_factor": 1.5,
+      "yield_factor": 0.9
+    },
+    "autumn": {
+      "labor_cost_factor": 1.0,
+      "water_cost_factor": 1.0,
+      "yield_factor": 1.1
+    },
+    "winter": {
+      "labor_cost_factor": 0.8,
+      "water_cost_factor": 0.7,
+      "yield_factor": 0.8
+    }
+  },
+  "crop_specific_costs": {
+    "قمح": {
+      "seed_cost_per_hectare": 60000,
+      "fertilizer_cost_per_hectare": 80000,
+      "harvest_cost_per_hectare": 40000,
+      "processing_cost_per_ton": 3000
+    },
+    "طماطم": {
+      "seed_cost_per_hectare": 120000,
+      "fertilizer_cost_per_hectare": 150000,
+      "harvest_cost_per_hectare": 80000,
+      "processing_cost_per_ton": 5000,
+      "packaging_cost_per_ton": 10000
+    },
+    "نخيل": {
+      "seed_cost_per_hectare": 200000,
+      "fertilizer_cost_per_hectare": 100000,
+      "harvest_cost_per_hectare": 120000,
+      "processing_cost_per_ton": 8000,
+      "establishment_years": 5
+    },
+    "حمضيات": {
+      "seed_cost_per_hectare": 150000,
+      "fertilizer_cost_per_hectare": 120000,
+      "harvest_cost_per_hectare": 90000,
+      "processing_cost_per_ton": 6000,
+      "establishment_years": 3
+    }
+  },
+  "energy_costs": {
+    "diesel_generator_kwh": 25,
+    "solar_panel_kwh": 8,
+    "grid_electricity_kwh": 6.5,
+    "pump_efficiency": 0.7,
+    "irrigation_pump_kwh_per_ha": 200
+  },
+  "water_costs_regional": {
+    "north": {
+      "surface_water_da_m3": 0.4,
+      "groundwater_da_m3": 0.8,
+      "treated_water_da_m3": 1.2
+    },
+    "south": {
+      "surface_water_da_m3": 0.6,
+      "groundwater_da_m3": 1.5,
+      "treated_water_da_m3": 2.0
+    },
+    "saharan": {
+      "surface_water_da_m3": 1.0,
+      "groundwater_da_m3": 2.5,
+      "treated_water_da_m3": 3.0,
+      "desalinated_water_da_m3": 4.0
+    }
+  },
+  "yield_factors": {
+    "optimal_conditions": 1.0,
+    "good_conditions": 0.85,
+    "average_conditions": 0.7,
+    "poor_conditions": 0.5,
+    "drought_conditions": 0.3,
+    "flood_conditions": 0.4
+  },
+  "economic_indicators": {
+    "inflation_rate": 0.08,
+    "interest_rate_agricultural": 0.06,
+    "exchange_rate_usd_dzd": 135,
+    "exchange_rate_eur_dzd": 145,
+    "gdp_growth_agriculture": 0.04,
+    "unemployment_rate_rural": 0.12
+  },
+  "government_support": {
+    "credit_guarantee": 0.7,
+    "training_subsidy": 50000,
+    "research_support": 0.15,
+    "infrastructure_support": 0.2,
+    "export_financing": 0.08,
+    "crop_insurance_subsidy": 0.4
+  },
+  "environmental_costs": {
+    "carbon_tax_per_ton_co2": 1000,
+    "water_pollution_fine_per_m3": 500,
+    "soil_degradation_cost_per_ha": 20000,
+    "biodiversity_offset_per_ha": 15000
+  },
+  "quality_premiums": {
+    "organic_certification": 0.3,
+    "global_gap_certification": 0.2,
+    "halal_certification": 0.1,
+    "traceability_system": 0.15,
+    "premium_packaging": 0.25
+  },
+  "notes": {
+    "last_updated": "2024-01-15",
+    "source": "وزارة الفلاحة والتنمية الريفية الجزائرية",
+    "currency": "دينار جزائري (دج)",
+    "area_unit": "هكتار",
+    "weight_unit": "طن",
+    "volume_unit": "متر مكعب",
+    "update_frequency": "ربع سنوي",
+    "validity_period": "2024",
+    "regional_applicability": "تنطبق الأسعار على السوق المحلي الجزائري"
+  }
+}

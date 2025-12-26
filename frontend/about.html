@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>من نحن | EcoPlant DZ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #27ae60;
+            --primary-dark: #219653;
+            --primary-light: #2ecc71;
+            --secondary: #8bc34a;
+            --accent: #f39c12;
+            --accent-dark: #e67e22;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar.scrolled {
+            padding: 10px 0;
+            background: rgba(255, 255, 255, 0.98);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo i {
+            font-size: 1.5em;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+        
+        .logo:hover i {
+            transform: rotate(15deg);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+        
+        .nav-links a {
+            font-weight: 600;
+            position: relative;
+            padding: 8px 0;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .notification-icon, .messages-icon {
+            position: relative;
+            color: var(--dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .notification-icon:hover, .messages-icon:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .user-btn:hover {
+            color: var(--primary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+        
+        .user-btn:hover .user-avatar {
+            transform: scale(1.1);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: var(--shadow);
+            border-radius: 12px;
+            padding: 10px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--primary);
+            padding-right: 25px;
+        }
+        
+        /* محتوى الصفحة */
+        .page-container {
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                      url('images/annie-spratt-QckxruozjRg-unsplash.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .about-section {
+            margin-bottom: 50px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+        
+        .about-section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .about-section h2 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 2rem;
+        }
+        
+        .about-section h2 i {
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+        
+        .about-section p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        
+        .mission-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .card h3 i {
+            color: var(--accent);
+            font-size: 1.4rem;
+        }
+        
+        .card ul {
+            padding-right: 20px;
+            margin-top: 20px;
+        }
+        
+        .card li {
+            margin-bottom: 15px;
+            position: relative;
+            line-height: 1.6;
+            padding-right: 25px;
+            transition: var(--transition);
+        }
+        
+        .card li:hover {
+            color: var(--primary);
+            padding-right: 30px;
+        }
+        
+        .card li::before {
+            content: '•';
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            right: 0;
+            top: -3px;
+        }
+        
+        .team-section {
+            margin: 60px 0;
+        }
+        
+        .team-section h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .team-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .team-member {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .team-img {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: var(--transition);
+        }
+        
+        .team-member:hover .team-img {
+            transform: scale(1.05);
+        }
+        
+        .team-img::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));
+        }
+        
+        .team-info {
+            padding: 30px;
+            position: relative;
+        }
+        
+        .team-info h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .team-info p {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .team-info .position {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            color: var(--primary);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        .english-version {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(139, 195, 74, 0.1));
+            border-right: 4px solid var(--primary);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+            transition: var(--transition);
+        }
+        
+        .english-version:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .english-version h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .english-version h3 i {
+            color: var(--accent);
+        }
+        
+        .english-version h4 {
+            color: var(--primary-dark);
+            margin: 20px 0 15px;
+            font-size: 1.3rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .english-version h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .english-version p, .english-version li {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .english-version ul {
+            padding-right: 20px;
+        }
+        
+        .english-version li {
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .english-version li::before {
+            content: '•';
+            color: var(--accent);
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+        
+        /* التذييل */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 60px 0 30px;
+            text-align: center;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+            opacity: 0.1;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        /* النوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalopen 0.4s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            transition: var(--transition);
+        }
+        
+        .close:hover {
+            color: var(--primary-dark);
+            transform: rotate(90deg);
+        }
+        
+        .modal h2 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            padding-right: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .modal p, .modal li {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .modal ul {
+            padding-right: 20px;
+        }
+        
+        .modal li {
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .modal li::before {
+            content: '•';
+            color: var(--accent);
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 992px) {
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-links a {
+                font-size: 0.9rem;
+            }
+            
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            header p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-container {
+                margin-top: 80px;
+            }
+            
+            header {
+                padding: 70px 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .about-section {
+                padding: 25px;
+            }
+            
+            .about-section h2 {
+                font-size: 1.6rem;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .card h3 {
+                font-size: 1.4rem;
+            }
+            
+            .team-info {
+                padding: 25px;
+            }
+            
+            .team-info h3 {
+                font-size: 1.3rem;
+            }
+            
+            .mission-vision {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-actions {
+                gap: 10px;
+            }
+            
+            .user-btn span {
+                display: none;
+            }
+            
+            .page-container {
+                padding: 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .about-section, .card {
+                padding: 20px;
+            }
+            
+            .about-section h2 {
+                font-size: 1.4rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/frontend/index.html" class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>EcoPlant DZ</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="/frontend/index.html">الرئيسية</a>
+                <a href="dashboard.html">لوحة التحكم</a>
+                <a href="/frontend/questions.html">الأسئلة</a>
+                <a href="/frontend/messages.html">الرسائل</a>
+                <a href="about.html" class="active">من نحن</a>
+                <a href="contact.html">التواصل و الدعم</a>
+            </div>
+            
+            <div class="nav-actions">
+                <div class="notification-icon" onclick="openModal('notificationsModal')">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">0</span>
+                </div>
+                
+                <div class="messages-icon" onclick="window.location.href='/frontend/messages.html'">
+                    <i class="fas fa-envelope"></i>
+                    <span class="badge">0</span>
+                </div>
+                
+                <div class="user-menu">
+                    <button class="user-btn">
+                        <div class="user-avatar">م</div>
+                        <span>مستخدم</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="/frontend/dashboard.html" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                        <a href="#" class="dropdown-item" onclick="openModal('profileModal')">
+                            <i class="fas fa-user"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        <a href="#" class="dropdown-item" onclick="openModal('settingsModal')">
+                            <i class="fas fa-cog"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                        <a href="/frontend/login.html" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- محتوى الصفحة -->
+    <div class="page-container">
+        <header>
+            <h1>من نحن</h1>
+            <p>تعرف على رسالتنا، رؤيتنا، والفريق الذي يقف وراء EcoPlant DZ</p>
+        </header>
+        
+        <section class="about-section">
+            <h2><i class="fas fa-user-graduate"></i> عن الفريق</h2>
+            <p>نحن قادري هيثم و هباز داليا، طلبة السنة الثانية ماستر – تخصص التنوع الحيوي والمحيط – جامعة الشهيد حمه لخضر بالوادي.</p>
+            <p>انطلقنا من شغفنا بالبيئة وإيماننا بأن المعرفة البيئية والتكنولوجيا الحديثة يمكن أن تشكلا معًا أداة قوية لحماية الطبيعة في الجزائر.</p>
+            <p>مشروعنا EcoPlant DZ يهدف إلى تقديم منصة علمية وتفاعلية تساعد الطلبة، الفلاحين، والباحثين في دراسة النباتات، التربة، والأنظمة البيئية بطريقة حديثة قائمة على التحليل الذكي والمحاكاة البيئية.</p>
+        </section>
+        
+        <section class="mission-vision">
+            <div class="card">
+                <h3><i class="fas fa-bullseye"></i> رسالتنا</h3>
+                <ul>
+                    <li>نشر المعرفة البيئية بأسلوب مبسط وعملي</li>
+                    <li>تشجيع مبادرات التشجير والمحافظة على الغطاء النباتي</li>
+                    <li>حماية التنوع البيولوجي من الأخطار والتدهور</li>
+                    <li>دمج البحث الأكاديمي بالتطبيقات العملية لخدمة المجتمع والبيئة</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-eye"></i> رؤيتنا</h3>
+                <ul>
+                    <li>بناء مجتمع واعٍ بالبيئة يرى في الاستدامة أساسًا للتنمية</li>
+                    <li>تطوير أدوات رقمية ذكية تسهم في التحليل البيئي الحديث</li>
+                    <li>جعل الجزائر نموذجًا رائدًا في حماية البيئة والتنوع البيولوجي</li>
+                    <li>ضمان بيئة صحية ومتوازنة للأجيال القادمة</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="about-section">
+            <div class="english-version">
+                <h3><i class="fas fa-globe"></i> English Version</h3>
+                <h4>About Us</h4>
+                <p>We are Kadri Haitham and Hebbaz Dalia, Master's students in Biodiversity and Environment – University of El Oued, Algeria.</p>
+                <p>Driven by our passion for nature and our belief that environmental knowledge combined with modern technology can become a powerful tool to protect ecosystems, we launched EcoPlant DZ.</p>
+                
+                <h4>Our Mission</h4>
+                <ul>
+                    <li>Promote environmental awareness in an accessible way</li>
+                    <li>Encourage reforestation initiatives</li>
+                    <li>Protect biodiversity from threats</li>
+                    <li>Bridge academic research with practical applications</li>
+                </ul>
+                
+                <h4>Our Vision</h4>
+                <ul>
+                    <li>Build an environmentally conscious community</li>
+                    <li>Develop smart digital tools for environmental analysis</li>
+                    <li>Position Algeria as a leader in biodiversity conservation</li>
+                    <li>Ensure a healthy environment for future generations</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="team-section">
+            <h2><i class="fas fa-users"></i> فريقنا</h2>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-img" style="background-image: url('images/photo_2024-11-15_23-19-26.jpg');"></div>
+                    <div class="team-info">
+                        <h3>قادري هيثم</h3>
+                        <p class="position">خبير بيئي ومؤسس المنصة</p>
+                        <p>طالب ماستر في التنوع الحيوي والمحيط</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="team-img" style="background-image: url('images/images.jpg');"></div>
+                    <div class="team-info">
+                        <h3>هباز داليا</h3>
+                        <p class="position">خبيرة نباتات وتنوع بيولوجي</p>
+                        <p>طالبة ماستر في التنوع الحيوي والمحيط</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- التذييل -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2025 EcoPlant DZ. جميع الحقوق محفوظة</p>
+            <div class="footer-links">
+                <a href="#" onclick="openModal('privacyModal')">سياسة الخصوصية</a>
+                <a href="#" onclick="openModal('termsModal')">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- نافذة الإشعارات -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('notificationsModal')">&times;</span>
+            <h2>الإشعارات</h2>
+            <p>لا توجد إشعارات جديدة حالياً. ستحصل على إشعارات عندما:</p>
+            <ul>
+                <li>يتم الرد على أسئلتك</li>
+                <li>يتم تقييم إجاباتك</li>
+                <li>تحصل على شارات جديدة</li>
+                <li>يتم إرسال رسالة جديدة لك</li>
+                <li>يتم نشر محتوى جديد يهمك</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- نافذة الملف الشخصي -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('profileModal')">&times;</span>
+            <h2>الملف الشخصي</h2>
+            <p>سيتم عرض معلوماتك الشخصية هنا بعد تسجيل الدخول. يمكنك تحديث معلوماتك وإعداداتك من لوحة التحكم.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة الإعدادات -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('settingsModal')">&times;</span>
+            <h2>الإعدادات</h2>
+            <p>من هنا يمكنك تحديث معلوماتك الشخصية وتفضيلاتك في المنصة.</p>
+            <p>الميزات التي ستتوفر قريباً:</p>
+            <ul>
+                <li>تحديث المعلومات الشخصية</li>
+                <li>تغيير كلمة المرور</li>
+                <li>تفضيلات الإشعارات</li>
+                <li>إعدادات الخصوصية</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>سياسة الخصوصية</h2>
+            <p>في EcoPlant DZ، نحن نلتزم بحماية خصوصيتك وبياناتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك عند استخدامك لمنصتنا.</p>
+            <p>نحن لا نبيع أو نؤجر أو نتاجر في معلوماتك الشخصية لأطراف ثالثة. يتم استخدام بياناتك فقط لتحسين تجربتك على منصتنا وتقديم الخدمات التي طلبتها.</p>
+        </div>
+    </div>
+    
+    <!-- نافذة شروط الاستخدام -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2>شروط الاستخدام</h2>
+            <p>باستخدامك لمنصة EcoPlant DZ، فإنك توافق على الالتزام بالشروط والأحكام التالية.</p>
+            <p>يجب عليك استخدام هذه المنصة للأغراض المشروعة فقط. يحق لك الوصول إلى المعلومات المتاحة على المنصة للاستخدام الشخصي أو التعليمي، والمشاركة في المناقشات وطرح الأسئلة وتقديم الإجابات.</p>
+        </div>
+    </div>
+    
+    <script>
+        // تفعيل القائمة المنسدلة للمستخدم
+        document.querySelector('.user-btn').addEventListener('click', function() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        });
+        
+        // إغلاق القائمة عند النقر خارجها
+        window.addEventListener('click', function(e) {
+            if (!e.target.matches('.user-btn') && !e.target.closest('.user-btn')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+        
+        // وظائف النوافذ المنبثقة
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // تأثير التمرير على الشريط العلوي
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // تأثيرات للعناصر عند التمرير
+        function checkScroll() {
+            const elements = document.querySelectorAll('.about-section, .card, .team-member');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (elementPosition < screenPosition) {
+                    element.style.opacity = 1;
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        }
+        
+        // تهيئة تأثيرات التمرير
+        document.querySelectorAll('.about-section, .card, .team-member').forEach(element => {
+            element.style.opacity = 0;
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+        
+        window.addEventListener('scroll', checkScroll);
+        window.addEventListener('load', checkScroll);
+    </script>
+</body>
+</html>

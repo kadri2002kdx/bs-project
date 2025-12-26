@@ -1,0 +1,86 @@
+[
+  {
+    "plant_id": 1,
+    "plant_name": "قمح",
+    "growth_stages": [
+      {
+        "stage": "الإنبات والتأسيس",
+        "duration_days": 25,
+        "kc_initial": 0.35,
+        "root_depth_m": 0.3,
+        "water_requirement_mm_day": 2.5,
+        "temperature_optimum_c": 18
+      },
+      {
+        "stage": "النمو الخضري",
+        "duration_days": 40,
+        "kc_mid": 1.15,
+        "root_depth_m": 0.8,
+        "water_requirement_mm_day": 6.5,
+        "temperature_optimum_c": 20
+      },
+      {
+        "stage": "التزهير",
+        "duration_days": 25,
+        "kc_mid": 1.15,
+        "root_depth_m": 1.2,
+        "water_requirement_mm_day": 7.0,
+        "temperature_optimum_c": 22
+      },
+      {
+        "stage": "النضج والحصاد",
+        "duration_days": 30,
+        "kc_end": 0.40,
+        "root_depth_m": 1.2,
+        "water_requirement_mm_day": 3.0,
+        "temperature_optimum_c": 25
+      }
+    ],
+    "total_water_requirement_mm": 450,
+    "yield_response_factor_ky": 1.15,
+    "sensitivity_drought": "متوسطة",
+    "sensitivity_heat": "مرتفعة"
+  },
+  {
+    "plant_id": 2,
+    "plant_name": "طماطم",
+    "growth_stages": [
+      {
+        "stage": "الإنبات والشتلة",
+        "duration_days": 20,
+        "kc_initial": 0.60,
+        "root_depth_m": 0.2,
+        "water_requirement_mm_day": 3.0,
+        "temperature_optimum_c": 25
+      },
+      {
+        "stage": "النمو الخضري",
+        "duration_days": 30,
+        "kc_mid": 1.20,
+        "root_depth_m": 0.5,
+        "water_requirement_mm_day": 8.0,
+        "temperature_optimum_c": 28
+      },
+      {
+        "stage": "التزهير والعقد",
+        "duration_days": 25,
+        "kc_mid": 1.20,
+        "root_depth_m": 0.8,
+        "water_requirement_mm_day": 9.0,
+        "temperature_optimum_c": 30
+      },
+      {
+        "stage": "النضج والحصاد",
+        "duration_days": 15,
+        "kc_end": 0.80,
+        "root_depth_m": 0.8,
+        "water_requirement_mm_day": 5.0,
+        "temperature_optimum_c": 30
+      }
+    ],
+    "total_water_requirement_mm": 600,
+    "yield_response_factor_ky": 1.25,
+    "sensitivity_drought": "مرتفعة",
+    "sensitivity_heat": "متوسطة"
+  }
+]
