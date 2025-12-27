@@ -12,7 +12,6 @@ const app = express();
 /* ===============================
    Middlewares (إعدادات الحماية والبيانات)
 ================================ */
-// إعدادات Helmet مع CSP أكثر مرونة
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -21,38 +20,23 @@ app.use(helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "fonts.googleapis.com", "cdnjs.cloudflare.com"],
             fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "data:"],
             imgSrc: ["'self'", "data:", "blob:"],
-            connectSrc: ["'self'", "https://stunning-sprite-197909.netlify.app", "https://bs-project-zi1d.onrender.com"]
+            connectSrc: ["'self'", "https://stunning-sprite-197909.netlify.app"] // رابط Netlify الجديد
         },
     },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
+    crossOriginEmbedderPolicy: false
 }));
 
-// CORS: السماح بجميع المصادر أو تحديد المصادر المسموح بها
+// CORS - السماح للروابط المطلوبة فقط
 app.use(cors({
-    origin: function(origin, callback) {
-        // السماح بطلبات بدون أصل (مثل Postman) أو من المصادر المسموح بها
-        const allowedOrigins = [
-            'https://stunning-sprite-197909.netlify.app',
-            'https://stirring-cactus-373c6c.netlify.app',
-            'http://localhost:3000',
-            'http://localhost:5500',
-            'http://127.0.0.1:5500'
-        ];
-        
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: [
+        'https://stunning-sprite-197909.netlify.app', // الرابط الجديد
+        'https://stirring-cactus-373c6c.netlify.app', // الرابط القديم
+        'http://localhost:3000', // للتطوير المحلي
+        'http://localhost:5173'  // للتطوير المحلي مع Vite
+    ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
-
-// معالجة طلبات OPTIONS مسبقاً
-app.options('*', cors());
 
 app.use(compression());
 app.use(morgan('combined'));
@@ -62,7 +46,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 /* ===============================
    Frontend (الملفات الثابتة)
 ================================ */
+// استخدم المسار الأصلي 'frontend' إذا كان موجوداً، وإلا فاستخدم 'public'
 app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 /* ===============================
    Health check endpoint (لمنع نوم السيرفر)
@@ -71,9 +57,7 @@ app.get("/health", (req, res) => {
     res.status(200).json({ 
         status: "OK", 
         timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        message: "Server is running",
-        frontendUrl: "https://stunning-sprite-197909.netlify.app"
+        uptime: process.uptime()
     });
 });
 
@@ -85,18 +69,31 @@ app.use('/api', apiRoutes);
 /* ===============================
    Frontend Fallback (الحل المستقر)
 ================================ */
-app.get('*', (req, res, next) => {
+// هذا المسار يجب أن يكون في النهاية ليعمل كـ catch-all
+app.use((req, res, next) => {
+    // إذا كان الطلب يبدأ بـ /api، نتركه يمر ليظهر خطأ 404 الخاص بالـ API
     if (req.url.startsWith('/api')) {
         return next();
     }
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    // حاول أولاً في مجلد frontend
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'), (err) => {
+        // إذا لم يوجد في frontend، حاول في public
+        if (err) {
+            res.sendFile(path.join(__dirname, 'public', 'index.html'), (err2) => {
+                // إذا لم يوجد في أي منهما، أرسل رسالة خطأ
+                if (err2) {
+                    res.status(404).send('الصفحة غير موجودة');
+                }
+            });
+        }
+    });
 });
 
 /* ===============================
    Error Handler (معالج الأخطاء)
 ================================ */
 app.use((err, req, res, next) => {
-    console.error('❌ خطأ في الخادم:', err.message);
+    console.error('❌ خطأ في الخادم:', err);
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'حدث خطأ داخلي في الخادم',
