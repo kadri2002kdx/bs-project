@@ -19,15 +19,27 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "fonts.googleapis.com", "cdnjs.cloudflare.com"],
-            fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "data:", "file:"], // تمت إضافة "file:" هنا
+            fontSrc: ["'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com", "data:", "file:"],
             imgSrc: ["'self'", "data:", "blob:"],
-            connectSrc: ["'self'"]
+            connectSrc: ["'self'", "https://stunning-sprite-197909.netlify.app"] // رابط Netlify الجديد
         },
     },
     crossOriginEmbedderPolicy: false
 }));
 
-app.use(cors());
+// CORS مع السماح للـ Frontend الجديد على Netlify
+app.use(cors({
+    origin: [
+        'https://stunning-sprite-197909.netlify.app', // الرابط الجديد
+        'http://localhost:3000', // للتطوير المحلي
+        'http://localhost:5173', // للتطوير المحلي مع Vite
+        'https://stirring-cactus-373c6c.netlify.app' // الرابط القديم للتوافق
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '50mb' }));
@@ -36,7 +48,19 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 /* ===============================
    Frontend (الملفات الثابتة)
 ================================ */
-app.use(express.static(path.join(__dirname, 'frontend')));
+// تعديل المسار إذا كانت الملفات في مجلد مختلف
+app.use(express.static(path.join(__dirname, 'public')));
+
+/* ===============================
+   Health check endpoint (لمنع نوم السيرفر)
+================================ */
+app.get("/health", (req, res) => {
+    res.status(200).json({ 
+        status: "OK", 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
 
 /* ===============================
    API Routes (مسارات البرمجة)
@@ -46,15 +70,8 @@ app.use('/api', apiRoutes);
 /* ===============================
    Frontend Fallback (الحل المستقر)
 ================================ */
-// بدلاً من استخدام رموز مثل * أو (.*)، سنستخدم middleware عام 
-// يوضع في نهاية المسارات للتعامل مع أي طلب ليس API
-app.use((req, res, next) => {
-    // إذا كان الطلب يبدأ بـ /api، نتركه يمر ليظهر خطأ 404 الخاص بالـ API
-    if (req.url.startsWith('/api')) {
-        return next();
-    }
-    // أي طلب آخر (صفحات HTML)، أرسل ملف index.html
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 /* ===============================
@@ -64,7 +81,8 @@ app.use((err, req, res, next) => {
     console.error('❌ خطأ في الخادم:', err);
     res.status(err.status || 500).json({
         success: false,
-        message: err.message || 'حدث خطأ داخلي في الخادم'
+        message: err.message || 'حدث خطأ داخلي في الخادم',
+        timestamp: new Date().toISOString()
     });
 });
 
