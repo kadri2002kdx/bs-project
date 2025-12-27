@@ -1398,6 +1398,9 @@
     let savedSimulations = JSON.parse(localStorage.getItem('savedSimulations')) || [];
     let calculationWorker = null;
     
+    // رابط السيرفر الرئيسي - تم تحديثه ليعمل مع Render
+    const RENDER_SERVER_URL = 'https://bs-project-zi1d.onrender.com';
+    
     // دالة لتدمير جميع المخططات
     function destroyAllCharts() {
         if (costChart) {
@@ -1630,19 +1633,19 @@
         }, 2000);
     }
     
-    // تحميل بيانات النموذج من السيرفر
+    // تحميل بيانات النموذج من السيرفر - تم تحديثه ليعمل مع Render
     async function loadFormData() {
         try {
             // محاولة تحميل المسودة أولاً
             loadFormDraft();
             
-            // استخدام المسارات الصحيحة مع معالجة الأخطاء
+            // استخدام المسارات الصحيحة مع معالجة الأخطاء - تم تحديث الروابط
             const [plantsRes, wilayasRes, soilsRes, waterSystemsRes, fertilizersRes] = await Promise.all([
-                fetch('/api/plants').catch(() => null),
-                fetch('/api/wilayas').catch(() => null),
-                fetch('/api/soils').catch(() => null),
-                fetch('/api/water-systems').catch(() => null),
-                fetch('/api/fertilizers').catch(() => null)
+                fetch(`${RENDER_SERVER_URL}/api/plants`).catch(() => null),
+                fetch(`${RENDER_SERVER_URL}/api/wilayas`).catch(() => null),
+                fetch(`${RENDER_SERVER_URL}/api/soils`).catch(() => null),
+                fetch(`${RENDER_SERVER_URL}/api/water-systems`).catch(() => null),
+                fetch(`${RENDER_SERVER_URL}/api/fertilizers`).catch(() => null)
             ]);
             
             // التحقق من الاستجابات
@@ -1784,7 +1787,7 @@
         populateSelect('fertilizer_type', realFertilizers, 'name');
     }
     
-    // تشغيل المحاكاة
+    // تشغيل المحاكاة - تم تحديثه ليعمل مع Render
     async function runSimulation() {
         // التحقق من صحة النموذج
         if (!validateForm()) {
@@ -1816,7 +1819,7 @@
         };
         
         try {
-            const response = await fetch('/api/simulate', {
+            const response = await fetch(`${RENDER_SERVER_URL}/api/simulate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -2758,7 +2761,7 @@
         }
         
         const simulationId = currentSimulationData.simulation_id || Date.now();
-        const shareUrl = `${window.location.origin}/simulation/share/${simulationId}`;
+        const shareUrl = `${RENDER_SERVER_URL}/simulation/share/${simulationId}`;
         const scenarioName = currentSimulationData.input_data?.scenario_name || 'محاكاة زراعية';
         
         // نسخ الرابط للحافظة
@@ -2923,7 +2926,7 @@
         }
     }
     
-    // تنزيل التقرير PDF
+    // تنزيل التقرير PDF - تم تحديثه ليعمل مع Render
     async function downloadReport() {
         if (!currentSimulationData) {
             showError('لا توجد بيانات لإنشاء تقرير');
@@ -2934,7 +2937,7 @@
             document.getElementById('loadingOverlay').style.display = 'flex';
 
             // محاولة استخدام API لتوليد PDF
-            const response = await fetch('/api/generate-pdf', {
+            const response = await fetch(`${RENDER_SERVER_URL}/api/generate-pdf`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json'
